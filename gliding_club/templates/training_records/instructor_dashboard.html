@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Instructor Dashboard" %} - {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2>{% trans "Welcome" %}, {{ user.first_name }}!</h2>
+        <p class="lead">{% trans "Your Instructor Dashboard" %}</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <h5 class="card-title">{% trans "Total Flights" %}</h5>
+                <h2 class="display-4">{{ total_flights }}</h2>
+                <p>{% trans "instructional flights" %}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h5 class="card-title">{% trans "Flight Time" %}</h5>
+                <h2 class="display-5">{{ total_flight_time }}</h2>
+                <p>{% trans "hours:minutes:seconds" %}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body text-center">
+                <h5 class="card-title">{% trans "Students" %}</h5>
+                <h2 class="display-4">{{ students_count }}</h2>
+                <p>{% trans "students instructed" %}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark">
+            <div class="card-body text-center">
+                <h5 class="card-title">{% trans "Pending" %}</h5>
+                <h2 class="display-4">{{ pending_count }}</h2>
+                <p>{% trans "awaiting sign-off" %}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">{% trans "Records Awaiting Sign-Off" %}</h5>
+            </div>
+            <div class="card-body">
+                {% if unsigned_records %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>{% trans "Date" %}</th>
+                                    <th>{% trans "Student" %}</th>
+                                    <th>{% trans "Topic" %}</th>
+                                    <th>{% trans "Glider" %}</th>
+                                    <th>{% trans "Duration" %}</th>
+                                    <th>{% trans "Exercises" %}</th>
+                                    <th>{% trans "Actions" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in unsigned_records %}
+                                    <tr>
+                                        <td>{{ record.date }}</td>
+                                        <td>{{ record.student.get_full_name }}</td>
+                                        <td>{{ record.training_topic.name }}</td>
+                                        <td>{{ record.glider.tail_number }}</td>
+                                        <td>{{ record.flight_duration }}</td>
+                                        <td>{{ record.exercises.count }}</td>
+                                        <td>
+                                            <a href="{% url 'record_detail' record.pk %}" class="btn btn-sm btn-info">{% trans "View" %}</a>
+                                            <a href="{% url 'sign_record' record.pk %}" class="btn btn-sm btn-success">{% trans "Sign Off" %}</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% if unsigned_records.count > 5 %}
+                        <div class="text-center mt-3">
+                            <a href="{% url 'record_list' %}?signed_off=False" class="btn btn-outline-primary">{% trans "View All Pending Records" %}</a>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <p class="text-center my-3">{% trans "No records awaiting sign-off. Good job!" %}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">{% trans "Recent Training Records" %}</h5>
+                <a href="{% url 'record_list' %}" class="btn btn-sm btn-light">{% trans "View All" %}</a>
+            </div>
+            <div class="card-body">
+                {% if instructor_records %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>{% trans "Date" %}</th>
+                                    <th>{% trans "Student" %}</th>
+                                    <th>{% trans "Topic" %}</th>
+                                    <th>{% trans "Duration" %}</th>
+                                    <th>{% trans "Status" %}</th>
+                                    <th>{% trans "Actions" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in instructor_records %}
+                                    <tr>
+                                        <td>{{ record.date }}</td>
+                                        <td>{{ record.student.get_full_name }}</td>
+                                        <td>{{ record.training_topic.name }}</td>
+                                        <td>{{ record.flight_duration }}</td>
+                                        <td>
+                                            {% if record.signed_off %}
+                                                <span class="badge bg-success">{% trans "Signed Off" %}</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">{% trans "Pending" %}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'record_detail' record.pk %}" class="btn btn-sm btn-info">{% trans "View" %}</a>
+                                            {% if not record.signed_off %}
+                                                <a href="{% url 'sign_record' record.pk %}" class="btn btn-sm btn-success">{% trans "Sign" %}</a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-center my-3">{% trans "No training records found." %}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">{% trans "Quick Links" %}</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    <a href="{% url 'record_list' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-list-check {% if LANGUAGE_CODE == 'he' %}ms-2{% else %}me-2{% endif %}"></i> {% trans "View All Training Records" %}
+                    </a>
+                    <a href="{% url 'profile' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-person {% if LANGUAGE_CODE == 'he' %}ms-2{% else %}me-2{% endif %}"></i> {% trans "Your Profile" %}
+                    </a>
+                    {% if pending_count > 0 %}
+                        <a href="{% url 'record_list' %}?signed_off=False" class="list-group-item list-group-item-action list-group-item-warning">
+                            <i class="bi bi-exclamation-triangle {% if LANGUAGE_CODE == 'he' %}ms-2{% else %}me-2{% endif %}"></i> {% trans "Records Awaiting Sign-Off" %} ({{ pending_count }})
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

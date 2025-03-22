@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Your Profile" %} - {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">{% trans "Your Profile" %}</h4>
+                {% if user.is_student or user.is_instructor %}
+                <a href="{% url 'profile_update' %}" class="btn btn-light btn-sm">
+                    <i class="bi bi-pencil-square"></i> {% trans "Update Profile" %}
+                </a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="border-bottom pb-2 mb-3">{% trans "Personal Information" %}</h5>
+                        <p><strong>{% trans "Username" %}:</strong> {{ user.username }}</p>
+                        <p><strong>{% trans "Name" %}:</strong> {{ user.get_full_name }}</p>
+                        <p><strong>{% trans "Email" %}:</strong> {{ user.email }}</p>
+                        <p><strong>{% trans "Role" %}:</strong> 
+                            {% if user.is_student %}
+                                {% trans "Student" %}
+                            {% elif user.is_instructor %}
+                                {% trans "Instructor" %}
+                            {% else %}
+                                {% trans "Administrator" %}
+                            {% endif %}
+                        </p>
+                        <p><strong>{% trans "Member Since" %}:</strong> {{ user.date_joined|date:"F j, Y" }}</p>
+                    </div>
+                    
+                    {% if user.is_student %}
+                    <div class="col-md-6">
+                        <h5 class="border-bottom pb-2 mb-3">{% trans "Student Information" %}</h5>
+                        <p><strong>{% trans "License Number" %}:</strong> 
+                            {% if user.student_license_number %}
+                                {{ user.student_license_number }}
+                            {% else %}
+                                <span class="text-muted">{% trans "Not provided" %}</span>
+                            {% endif %}
+                        </p>
+                        
+                        {% if user.student_license_photo %}
+                        <div class="mb-3">
+                            <p><strong>{% trans "License Photo" %}:</strong></p>
+                            <img src="{{ user.student_license_photo.url }}" alt="{% trans 'Student License' %}" class="img-thumbnail" style="max-height: 200px;">
+                        </div>
+                        {% else %}
+                        <p><strong>{% trans "License Photo" %}:</strong> <span class="text-muted">{% trans "Not uploaded" %}</span></p>
+                        {% endif %}
+                        
+                        {% if user.student_medical_id_photo %}
+                        <div class="mb-3">
+                            <p><strong>{% trans "Medical ID Photo" %}:</strong></p>
+                            <img src="{{ user.student_medical_id_photo.url }}" alt="{% trans 'Medical ID' %}" class="img-thumbnail" style="max-height: 200px;">
+                        </div>
+                        {% else %}
+                        <p><strong>{% trans "Medical ID Photo" %}:</strong> <span class="text-muted">{% trans "Not uploaded" %}</span></p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    {% if user.is_instructor %}
+                    <div class="col-md-6">
+                        <h5 class="border-bottom pb-2 mb-3">{% trans "Instructor Information" %}</h5>
+                        <p><strong>{% trans "Instructor License" %}:</strong> 
+                            {% if user.instructor_license_number %}
+                                {{ user.instructor_license_number }}
+                            {% else %}
+                                <span class="text-muted">{% trans "Not provided" %}</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mt-4 d-flex">
+                    <a href="{% url 'change_password' %}" class="btn btn-outline-primary {% if LANGUAGE_CODE == 'he' %}ms-2{% else %}me-2{% endif %}">
+                        <i class="bi bi-key"></i> {% trans "Change Password" %}
+                    </a>
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> {% trans "Back to Dashboard" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        {% if user.is_student %}
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">{% trans "Training Summary" %}</h5>
+            </div>
+            <div class="card-body">
+                <!-- This section could display a summary of the student's training progress -->
+                <p class="text-center my-3">
+                    <a href="{% url 'record_list' %}" class="btn btn-primary">
+                        <i class="bi bi-journal-text"></i> {% trans "View All Training Records" %}
+                    </a>
+                </p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

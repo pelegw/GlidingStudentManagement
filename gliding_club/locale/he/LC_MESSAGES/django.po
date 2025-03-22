@@ -1,0 +1,820 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-22 02:58+0200\n"
+"PO-Revision-Date: 2025-03-22 14:30+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: he\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n == 2 && n % "
+"1 == 0) ? 1: (n % 10 == 0 && n % 1 == 0 && n > 10) ? 2 : 3;\n"
+
+#: .\templates\base.html:8 .\templates\base.html:72
+#: .\templates\training_records\record_list.html:3
+#: .\templates\training_records\record_list.html:7
+#: .\templates\training_records\student_history.html:84
+msgid "Training Records"
+msgstr "רשומות הדרכה"
+
+#: .\templates\base.html:69
+msgid "Dashboard"
+msgstr "לוח בקרה"
+
+#: .\templates\base.html:76 .\templates\training_records\record_list.html:12
+msgid "New Record"
+msgstr "רשומה חדשה"
+
+#: .\templates\base.html:112
+msgid "Profile"
+msgstr "פרופיל"
+
+#: .\templates\base.html:115
+#: .\templates\training_records\change_password.html:3
+#: .\templates\training_records\change_password.html:9
+#: .\templates\training_records\change_password.html:59
+#: .\templates\training_records\first_login.html:3
+#: .\templates\training_records\first_login.html:39
+#: .\templates\training_records\profile.html:82
+msgid "Change Password"
+msgstr "שינוי סיסמה"
+
+#: .\templates\base.html:122
+#: .\templates\training_records\student_dashboard.html:168
+msgid "Logout"
+msgstr "התנתקות"
+
+#: .\templates\base.html:130 .\templates\training_records\login.html:3
+#: .\templates\training_records\login.html:9
+#: .\templates\training_records\login.html:23
+msgid "Login"
+msgstr "התחברות"
+
+#: .\templates\training_records\change_password.html:15
+msgid "Current password"
+msgstr "סיסמה נוכחית"
+
+#: .\templates\training_records\change_password.html:26
+#: .\templates\training_records\first_login.html:19
+msgid "New password"
+msgstr "סיסמה חדשה"
+
+#: .\templates\training_records\change_password.html:36
+msgid ""
+"Your password should be at least 8 characters long and not be too common."
+msgstr "הסיסמה שלך צריכה להיות באורך של 8 תווים לפחות ולא נפוצה מדי."
+
+#: .\templates\training_records\change_password.html:40
+#: .\templates\training_records\first_login.html:26
+msgid "Confirm new password"
+msgstr "אישור סיסמה חדשה"
+
+#: .\templates\training_records\change_password.html:58
+#: .\templates\training_records\profile_update.html:78
+#: .\templates\training_records\record_form.html:273
+#: .\templates\training_records\sign_record.html:79
+msgid "Cancel"
+msgstr "ביטול"
+
+#: .\templates\training_records\first_login.html:9
+msgid "First Login - Change Password"
+msgstr "התחברות ראשונה - שינוי סיסמה"
+
+#: .\templates\training_records\first_login.html:13
+msgid "Welcome to the Training Records system!"
+msgstr "ברוכים הבאים למערכת ניהול תיק חניך!"
+
+#: .\templates\training_records\first_login.html:14
+msgid ""
+"Since this is your first login, you need to change your password before "
+"continuing."
+msgstr "מכיוון שזו ההתחברות הראשונה שלך, עליך לשנות את הסיסמה לפני שתמשיך."
+
+#: .\templates\training_records\first_login.html:22
+msgid "Your password must be at least 12 characters long and not too common."
+msgstr "הסיסמה שלך חייבת להיות באורך של 12 תווים לפחות ולא נפוצה מדי."
+
+#: .\templates\training_records\instructor_dashboard.html:3
+msgid "Instructor Dashboard"
+msgstr "לוח בקרה למדריך"
+
+#: .\templates\training_records\instructor_dashboard.html:8
+#: .\templates\training_records\student_dashboard.html:7
+msgid "Welcome"
+msgstr "ברוכים הבאים"
+
+#: .\templates\training_records\instructor_dashboard.html:9
+msgid "Your Instructor Dashboard"
+msgstr "לוח הבקרה שלך כמדריך"
+
+#: .\templates\training_records\instructor_dashboard.html:17
+#: .\templates\training_records\student_dashboard.html:21
+#: .\templates\training_records\student_history.html:23
+msgid "Total Flights"
+msgstr "סך כל הטיסות"
+
+#: .\templates\training_records\instructor_dashboard.html:19
+msgid "instructional flights"
+msgstr "טיסות הדרכה"
+
+#: .\templates\training_records\instructor_dashboard.html:26
+#: .\templates\training_records\student_history.html:53
+msgid "Flight Time"
+msgstr "זמן טיסה"
+
+#: .\templates\training_records\instructor_dashboard.html:28
+msgid "hours:minutes:seconds"
+msgstr "שעות:דקות:שניות"
+
+#: .\templates\training_records\instructor_dashboard.html:35
+msgid "Students"
+msgstr "חניכים"
+
+#: .\templates\training_records\instructor_dashboard.html:37
+msgid "students instructed"
+msgstr "חניכים שהודרכו"
+
+#: .\templates\training_records\instructor_dashboard.html:44
+#: .\templates\training_records\instructor_dashboard.html:136
+#: .\templates\training_records\record_list.html:63
+#: .\templates\training_records\student_dashboard.html:89
+#: .\templates\training_records\student_history.html:115
+#: .\templates\training_records\student_lookup.html:107
+msgid "Pending"
+msgstr "ממתין"
+
+#: .\templates\training_records\instructor_dashboard.html:46
+msgid "awaiting sign-off"
+msgstr "ממתין לאישור"
+
+#: .\templates\training_records\instructor_dashboard.html:56
+#: .\templates\training_records\instructor_dashboard.html:171
+msgid "Records Awaiting Sign-Off"
+msgstr "רשומות ממתינות לאישור"
+
+#: .\templates\training_records\instructor_dashboard.html:64
+#: .\templates\training_records\instructor_dashboard.html:117
+#: .\templates\training_records\record_detail.html:20
+#: .\templates\training_records\record_form.html:125
+#: .\templates\training_records\record_list.html:32
+#: .\templates\training_records\sign_record.html:29
+#: .\templates\training_records\student_dashboard.html:67
+#: .\templates\training_records\student_history.html:92
+#: .\templates\training_records\student_lookup.html:80
+msgid "Date"
+msgstr "תאריך"
+
+#: .\templates\training_records\instructor_dashboard.html:65
+#: .\templates\training_records\instructor_dashboard.html:118
+#: .\templates\training_records\profile.html:25
+#: .\templates\training_records\record_detail.html:18
+#: .\templates\training_records\record_list.html:33
+#: .\templates\training_records\sign_record.html:33
+#: .\templates\training_records\student_lookup.html:81
+msgid "Student"
+msgstr "חניך"
+
+#: .\templates\training_records\instructor_dashboard.html:66
+#: .\templates\training_records\instructor_dashboard.html:119
+#: .\templates\training_records\record_list.html:35
+#: .\templates\training_records\sign_record.html:37
+#: .\templates\training_records\student_dashboard.html:68
+#: .\templates\training_records\student_history.html:94
+#: .\templates\training_records\student_lookup.html:83
+msgid "Topic"
+msgstr "נושא"
+
+#: .\templates\training_records\instructor_dashboard.html:67
+#: .\templates\training_records\record_detail.html:28
+#: .\templates\training_records\record_form.html:132
+#: .\templates\training_records\record_list.html:36
+#: .\templates\training_records\sign_record.html:41
+msgid "Glider"
+msgstr "דאון"
+
+#: .\templates\training_records\instructor_dashboard.html:68
+#: .\templates\training_records\instructor_dashboard.html:120
+#: .\templates\training_records\record_list.html:37
+#: .\templates\training_records\sign_record.html:45
+#: .\templates\training_records\student_history.html:95
+msgid "Duration"
+msgstr "משך"
+
+#: .\templates\training_records\instructor_dashboard.html:69
+#: .\templates\training_records\record_list.html:38
+msgid "Exercises"
+msgstr "תרגילים"
+
+#: .\templates\training_records\instructor_dashboard.html:70
+#: .\templates\training_records\instructor_dashboard.html:122
+#: .\templates\training_records\student_dashboard.html:71
+#: .\templates\training_records\student_history.html:97
+#: .\templates\training_records\student_lookup.html:85
+msgid "Actions"
+msgstr "פעולות"
+
+#: .\templates\training_records\instructor_dashboard.html:83
+#: .\templates\training_records\instructor_dashboard.html:140
+#: .\templates\training_records\record_list.html:67
+#: .\templates\training_records\student_dashboard.html:93
+#: .\templates\training_records\student_dashboard.html:136
+#: .\templates\training_records\student_history.html:119
+#: .\templates\training_records\student_lookup.html:111
+msgid "View"
+msgstr "צפייה"
+
+#: .\templates\training_records\instructor_dashboard.html:84
+msgid "Sign Off"
+msgstr "אישור"
+
+#: .\templates\training_records\instructor_dashboard.html:93
+msgid "View All Pending Records"
+msgstr "צפייה בכל הרשומות הממתינות"
+
+#: .\templates\training_records\instructor_dashboard.html:97
+msgid "No records awaiting sign-off. Good job!"
+msgstr "אין רשומות ממתינות לאישור. עבודה טובה!"
+
+#: .\templates\training_records\instructor_dashboard.html:108
+#: .\templates\training_records\student_dashboard.html:55
+#: .\templates\training_records\student_lookup.html:72
+msgid "Recent Training Records"
+msgstr "רשומות הדרכה אחרונות"
+
+#: .\templates\training_records\instructor_dashboard.html:109
+#: .\templates\training_records\student_dashboard.html:58
+msgid "View All"
+msgstr "צפייה בהכל"
+
+#: .\templates\training_records\instructor_dashboard.html:121
+#: .\templates\training_records\record_list.html:39
+#: .\templates\training_records\student_dashboard.html:70
+#: .\templates\training_records\student_history.html:96
+#: .\templates\training_records\student_lookup.html:84
+msgid "Status"
+msgstr "סטטוס"
+
+#: .\templates\training_records\instructor_dashboard.html:134
+#: .\templates\training_records\record_list.html:61
+#: .\templates\training_records\student_dashboard.html:45
+#: .\templates\training_records\student_dashboard.html:87
+#: .\templates\training_records\student_history.html:68
+#: .\templates\training_records\student_history.html:113
+#: .\templates\training_records\student_lookup.html:105
+msgid "Signed Off"
+msgstr "אושר"
+
+#: .\templates\training_records\instructor_dashboard.html:142
+#: .\templates\training_records\record_list.html:73
+#: .\templates\training_records\student_history.html:121
+msgid "Sign"
+msgstr "אישור"
+
+#: .\templates\training_records\instructor_dashboard.html:151
+#: .\templates\training_records\record_list.html:126
+#: .\templates\training_records\student_lookup.html:123
+msgid "No training records found."
+msgstr "לא נמצאו רשומות הדרכה."
+
+#: .\templates\training_records\instructor_dashboard.html:159
+msgid "Quick Links"
+msgstr "קישורים מהירים"
+
+#: .\templates\training_records\instructor_dashboard.html:164
+#: .\templates\training_records\profile.html:100
+msgid "View All Training Records"
+msgstr "צפייה בכל רשומות ההדרכה"
+
+#: .\templates\training_records\instructor_dashboard.html:167
+#: .\templates\training_records\profile.html:3
+#: .\templates\training_records\profile.html:9
+#: .\templates\training_records\student_dashboard.html:163
+msgid "Your Profile"
+msgstr "הפרופיל שלך"
+
+#: .\templates\training_records\login.html:15
+#: .\templates\training_records\profile.html:20
+#: .\templates\training_records\student_history.html:146
+msgid "Username"
+msgstr "שם משתמש"
+
+#: .\templates\training_records\login.html:19
+msgid "Password"
+msgstr "סיסמה"
+
+#: .\templates\training_records\profile.html:12
+#: .\templates\training_records\profile_update.html:79
+msgid "Update Profile"
+msgstr "עדכון פרופיל"
+
+#: .\templates\training_records\profile.html:19
+msgid "Personal Information"
+msgstr "מידע אישי"
+
+#: .\templates\training_records\profile.html:21
+msgid "Name"
+msgstr "שם"
+
+#: .\templates\training_records\profile.html:22
+#: .\templates\training_records\student_history.html:147
+msgid "Email"
+msgstr "דוא\"ל"
+
+#: .\templates\training_records\profile.html:23
+msgid "Role"
+msgstr "תפקיד"
+
+#: .\templates\training_records\profile.html:27
+#: .\templates\training_records\record_detail.html:19
+#: .\templates\training_records\record_form.html:117
+#: .\templates\training_records\record_list.html:34
+#: .\templates\training_records\student_dashboard.html:69
+#: .\templates\training_records\student_dashboard.html:130
+#: .\templates\training_records\student_history.html:93
+#: .\templates\training_records\student_lookup.html:82
+msgid "Instructor"
+msgstr "מדריך"
+
+#: .\templates\training_records\profile.html:29
+msgid "Administrator"
+msgstr "מנהל"
+
+#: .\templates\training_records\profile.html:32
+#: .\templates\training_records\student_history.html:148
+msgid "Member Since"
+msgstr "חבר מאז"
+
+#: .\templates\training_records\profile.html:37
+#: .\templates\training_records\profile_update.html:17
+#: .\templates\training_records\student_history.html:141
+msgid "Student Information"
+msgstr "מידע חניך"
+
+#: .\templates\training_records\profile.html:38
+#: .\templates\training_records\student_history.html:151
+msgid "License Number"
+msgstr "מספר רישיון"
+
+#: .\templates\training_records\profile.html:42
+#: .\templates\training_records\profile.html:73
+#: .\templates\training_records\student_history.html:155
+msgid "Not provided"
+msgstr "לא סופק"
+
+#: .\templates\training_records\profile.html:48
+#: .\templates\training_records\profile.html:52
+#: .\templates\training_records\student_history.html:160
+#: .\templates\training_records\student_history.html:162
+msgid "License Photo"
+msgstr "תמונת רישיון"
+
+#: .\templates\training_records\profile.html:49
+msgid "Student License"
+msgstr "רישיון חניך"
+
+#: .\templates\training_records\profile.html:52
+#: .\templates\training_records\profile.html:61
+#: .\templates\training_records\student_history.html:162
+msgid "Not uploaded"
+msgstr "לא הועלה"
+
+#: .\templates\training_records\profile.html:57
+#: .\templates\training_records\profile.html:61
+#: .\templates\training_records\profile_update.html:42
+msgid "Medical ID Photo"
+msgstr "תמונת תעודה רפואית"
+
+#: .\templates\training_records\profile.html:58
+msgid "Medical ID"
+msgstr "תעודה רפואית"
+
+#: .\templates\training_records\profile.html:68
+#: .\templates\training_records\profile_update.html:59
+msgid "Instructor Information"
+msgstr "מידע מדריך"
+
+#: .\templates\training_records\profile.html:69
+msgid "Instructor License"
+msgstr "רישיון מדריך"
+
+#: .\templates\training_records\profile.html:85
+msgid "Back to Dashboard"
+msgstr "חזרה ללוח הבקרה"
+
+#: .\templates\training_records\profile.html:94
+msgid "Training Summary"
+msgstr "תיק חניך מלא"
+
+#: .\templates\training_records\profile_update.html:3
+#: .\templates\training_records\profile_update.html:9
+msgid "Update Your Profile"
+msgstr "עדכון הפרופיל שלך"
+
+#: .\templates\training_records\profile_update.html:19
+msgid "Student License Number"
+msgstr "מספר רישיון חניך"
+
+#: .\templates\training_records\profile_update.html:27
+msgid "Student License Photo"
+msgstr "תמונת רישיון חניך"
+
+#: .\templates\training_records\profile_update.html:30
+msgid "Current License Photo"
+msgstr "תמונת רישיון נוכחית"
+
+#: .\templates\training_records\profile_update.html:31
+msgid "Current license photo"
+msgstr "תמונת רישיון נוכחית"
+
+#: .\templates\training_records\profile_update.html:45
+msgid "Current Medical ID Photo"
+msgstr "תמונת אישור רפואי נוכחית"
+
+#: .\templates\training_records\profile_update.html:46
+msgid "Current medical ID photo"
+msgstr "תמונת אישור רפואי נוכחית"
+
+#: .\templates\training_records\profile_update.html:61
+msgid "Instructor License Number"
+msgstr "מספר רישיון מדריך"
+
+#: .\templates\training_records\record_detail.html:3
+msgid "Training Record Details"
+msgstr "פרטי רשומת הדרכה"
+
+#: .\templates\training_records\record_detail.html:6
+msgid "Flight"
+msgstr "טיסה"
+
+#: .\templates\training_records\record_detail.html:7
+msgid "for"
+msgstr "עבור"
+
+#: .\templates\training_records\record_detail.html:13
+msgid "Training Details"
+msgstr "פרטי הדרכה"
+
+#: .\templates\training_records\record_detail.html:21
+#: .\templates\training_records\record_form.html:142
+msgid "Flight Duration"
+msgstr "משך טיסה"
+
+#: .\templates\training_records\record_detail.html:23
+#: .\templates\training_records\record_form.html:183
+msgid "Solo Flight"
+msgstr "טיסת סולו"
+
+#: .\templates\training_records\record_detail.html:27
+#: .\templates\training_records\record_form.html:174
+msgid "Training Topic"
+msgstr "נושא הדרכה"
+
+#: .\templates\training_records\record_detail.html:29
+#: .\templates\training_records\record_form.html:162
+msgid "Field/Location"
+msgstr "שדה/מיקום"
+
+#: .\templates\training_records\record_detail.html:33
+#: .\templates\training_records\record_form.html:193
+msgid "Exercises Performed"
+msgstr "תרגילים שבוצעו"
+
+#: .\templates\training_records\record_detail.html:37
+#: .\templates\training_records\record_form.html:199
+#: .\templates\training_records\student_history.html:176
+msgid "Pre-Solo Exercises"
+msgstr "תרגילים טרום-סולו"
+
+#: .\templates\training_records\record_detail.html:44
+msgid "No pre-solo exercises"
+msgstr "אין תרגילי טרום-סולו"
+
+#: .\templates\training_records\record_detail.html:49
+#: .\templates\training_records\record_form.html:220
+#: .\templates\training_records\student_history.html:189
+msgid "Post-Solo Exercises"
+msgstr "תרגילים לאחר סולו"
+
+#: .\templates\training_records\record_detail.html:56
+msgid "No post-solo exercises"
+msgstr "אין תרגילים לאחר סולו"
+
+#: .\templates\training_records\record_detail.html:62
+msgid "No specific exercises recorded for this training session."
+msgstr "לא נרשמו תרגילים ספציפיים עבור מפגש הדרכה זה."
+
+#: .\templates\training_records\record_detail.html:66
+#: .\templates\training_records\record_form.html:255
+msgid "Student Comments"
+msgstr "הערות חניך"
+
+#: .\templates\training_records\record_detail.html:71
+msgid "No student comments provided."
+msgstr "לא סופקו הערות חניך."
+
+#: .\templates\training_records\record_detail.html:76
+#: .\templates\training_records\sign_record.html:53
+msgid "Instructor Comments"
+msgstr "הערות מדריך"
+
+#: .\templates\training_records\record_detail.html:81
+msgid "No instructor comments provided."
+msgstr "לא סופקו הערות מדריך."
+
+#: .\templates\training_records\record_detail.html:87
+#: .\templates\training_records\sign_record.html:59
+msgid "Internal Comments"
+msgstr "הערות פנימיות"
+
+#: .\templates\training_records\record_detail.html:87
+msgid "Instructors Only"
+msgstr "למדריכים בלבד"
+
+#: .\templates\training_records\record_form.html:5
+#: .\templates\training_records\record_form.html:101
+#: .\templates\training_records\record_list.html:70
+#: .\templates\training_records\student_dashboard.html:95
+msgid "Edit"
+msgstr "עריכה"
+
+#: .\templates\training_records\record_form.html:5
+#: .\templates\training_records\record_form.html:101
+msgid "New"
+msgstr "חדש"
+
+#: .\templates\training_records\record_form.html:5
+#: .\templates\training_records\record_form.html:101
+msgid "Training Record"
+msgstr "רשומת הדרכה"
+
+#: .\templates\training_records\record_form.html:102
+msgid "Record details about your flight training session"
+msgstr "רשום פרטים על מפגש הדרכה הטיסה שלך"
+
+#: .\templates\training_records\record_form.html:111
+msgid "Flight Information"
+msgstr "מידע טיסה"
+
+#: .\templates\training_records\record_form.html:120
+msgid "Select the instructor for this training session"
+msgstr "בחר את המדריך עבור מפגש הדרכה זה"
+
+#: .\templates\training_records\record_form.html:152
+msgid "Tow Height"
+msgstr "גובה גרירה"
+
+#: .\templates\training_records\record_form.html:185
+msgid "No instructor present during the flight"
+msgstr "לא נכח מדריך במהלך הטיסה"
+
+#: .\templates\training_records\record_form.html:194
+msgid "Select all exercises that were performed during this training session"
+msgstr "בחר את כל התרגילים שבוצעו במהלך מפגש הדרכה זה"
+
+#: .\templates\training_records\record_form.html:251
+msgid "Comments"
+msgstr "הערות"
+
+#: .\templates\training_records\record_form.html:275
+msgid "Save Changes"
+msgstr "שמירת שינויים"
+
+#: .\templates\training_records\record_form.html:275
+msgid "Create Record"
+msgstr "יצירת רשומה"
+
+#: .\templates\training_records\record_list.html:19
+msgid "Records"
+msgstr "רשומות"
+
+#: .\templates\training_records\record_list.html:21
+msgid "Search..."
+msgstr "חיפוש..."
+
+#: .\templates\training_records\record_list.html:22
+msgid "Search"
+msgstr "חיפוש"
+
+#: .\templates\training_records\record_list.html:31
+msgid "Flight Number"
+msgstr "מספר טיסה"
+
+#: .\templates\training_records\record_list.html:52
+#: .\templates\training_records\student_dashboard.html:82
+#: .\templates\training_records\student_dashboard.html:132
+#: .\templates\training_records\student_history.html:106
+#: .\templates\training_records\student_lookup.html:99
+msgid "Solo"
+msgstr "סולו"
+
+#: .\templates\training_records\record_list.html:87
+#: .\templates\training_records\record_list.html:94
+msgid "First"
+msgstr "ראשון"
+
+#: .\templates\training_records\record_list.html:90
+#: .\templates\training_records\record_list.html:97
+msgid "Previous"
+msgstr "קודם"
+
+#: .\templates\training_records\record_list.html:102
+#, python-format
+msgid ""
+"\n"
+"                                    Page %(page_number)s of %(total_pages)s\n"
+"                                "
+msgstr ""
+"\n"
+"                                    עמוד %(page_number)s מתוך "
+"%(total_pages)s\n"
+"                                "
+
+#: .\templates\training_records\record_list.html:109
+#: .\templates\training_records\record_list.html:116
+msgid "Next"
+msgstr "הבא"
+
+#: .\templates\training_records\record_list.html:112
+#: .\templates\training_records\record_list.html:119
+msgid "Last"
+msgstr "אחרון"
+
+#: .\templates\training_records\record_list.html:130
+msgid "Create First Record"
+msgstr "יצירת רשומה ראשונה"
+
+#: .\templates\training_records\sign_record.html:3
+#: .\templates\training_records\sign_record.html:80
+msgid "Sign Off Record"
+msgstr "אישור רשומה"
+
+#: .\templates\training_records\sign_record.html:9
+msgid "Sign Off Training Record"
+msgstr "אישור רשומת הדרכה"
+
+#: .\templates\training_records\sign_record.html:13
+msgid "Important"
+msgstr "חשוב"
+
+#: .\templates\training_records\sign_record.html:13
+msgid "Signing off on a training record confirms that:"
+msgstr "אישור רשומת הדרכה מאשר כי:"
+
+#: .\templates\training_records\sign_record.html:15
+msgid "You supervised this training session"
+msgstr "פיקחת על מפגש הדרכה זה"
+
+#: .\templates\training_records\sign_record.html:16
+msgid "The information recorded is accurate"
+msgstr "המידע שנרשם הוא מדויק"
+
+#: .\templates\training_records\sign_record.html:17
+msgid "The student has completed this training element satisfactorily"
+msgstr "החניך השלים את מרכיב ההדרכה הזה באופן משביע רצון"
+
+#: .\templates\training_records\sign_record.html:19
+msgid "Once signed off, this record cannot be modified."
+msgstr "לאחר אישור, לא ניתן לשנות רשומה זו."
+
+#:.\templates\training_records\sign_record.html:22
+msgid "Record Details"
+msgstr "פרטי הרשומה"
+
+#: .\templates\training_records\sign_record.html:25
+msgid "ID"
+msgstr "מזהה"
+
+#: .\templates\training_records\sign_record.html:59
+msgid "Visible to Instructors Only"
+msgstr "נראה למדריכים בלבד"
+
+#: .\templates\training_records\student_dashboard.html:3
+msgid "Student Dashboard"
+msgstr "לוח בקרה לחניך"
+
+#: .\templates\training_records\student_dashboard.html:8
+msgid "Here's your pilot training progress and recent activity"
+msgstr "הנה התקדמות הדרכת הטיסה והפעילות האחרונה שלך"
+
+#: .\templates\training_records\student_dashboard.html:12
+#: .\templates\training_records\student_dashboard.html:157
+msgid "New Training Record"
+msgstr "רשומת הדרכה חדשה"
+
+#: .\templates\training_records\student_dashboard.html:29
+#: .\templates\training_records\student_history.html:38
+msgid "Solo Flights"
+msgstr "טיסות סולו"
+
+#: .\templates\training_records\student_dashboard.html:37
+msgid "Flight Hours"
+msgstr "שעות טיסה"
+
+#: .\templates\training_records\student_dashboard.html:105
+msgid "No training records yet."
+msgstr "עדיין אין רשומות הדרכה."
+
+#: .\templates\training_records\student_dashboard.html:107
+msgid "Create Your First Record"
+msgstr "צור את הרשומה הראשונה שלך"
+
+#: .\templates\training_records\student_dashboard.html:118
+msgid "Pending Approvals"
+msgstr "אישורים ממתינים"
+
+#: .\templates\training_records\student_dashboard.html:143
+msgid "All your records are signed off!"
+msgstr "כל הרשומות שלך אושרו!"
+
+#: .\templates\training_records\student_dashboard.html:151
+msgid "Quick Actions"
+msgstr "פעולות מהירות"
+
+#: .\templates\training_records\student_dashboard.html:160
+msgid "All Training Records"
+msgstr "כל רשומות ההדרכה"
+
+#: .\templates\training_records\student_history.html:3
+msgid "Student History"
+msgstr "היסטוריית חניך"
+
+#: .\templates\training_records\student_history.html:8
+msgid "Student Training History"
+msgstr "היסטוריית הדרכת חניך"
+
+#: .\templates\training_records\student_history.html:12
+msgid "Back to Student Records"
+msgstr "חזרה לרשומות החניך"
+
+#: .\templates\training_records\student_history.html:131
+msgid "No training records found for this student."
+msgstr "לא נמצאו רשומות הדרכה עבור חניך זה."
+
+#: .\templates\training_records\student_history.html:160
+msgid "Available"
+msgstr "זמין"
+
+#: .\templates\training_records\student_history.html:171
+msgid "Completed Exercises"
+msgstr "תרגילים שהושלמו"
+
+#: .\templates\training_records\student_history.html:184
+msgid "No pre-solo exercises completed"
+msgstr "לא הושלמו תרגילי טרום-סולו"
+
+#: .\templates\training_records\student_history.html:197
+msgid "No post-solo exercises completed"
+msgstr "לא הושלמו תרגילים לאחר סולו"
+
+#: .\templates\training_records\student_history.html:207
+msgid "Instructors"
+msgstr "מדריכים"
+
+#: .\templates\training_records\student_history.html:215
+msgid "You"
+msgstr "את/ה"
+
+#: .\templates\training_records\student_history.html:219
+msgid "No instructors yet"
+msgstr "עדיין אין מדריכים"
+
+#: .\templates\training_records\student_lookup.html:3
+#: .\templates\training_records\student_lookup.html:7
+msgid "Student Records"
+msgstr "רשומות חניך"
+
+#: .\templates\training_records\student_lookup.html:8
+msgid "Review training records for any student"
+msgstr "סקירת רשומות הדרכה עבור כל חניך"
+
+#: .\templates\training_records\student_lookup.html:16
+msgid "Find a Student"
+msgstr "מציאת חניך"
+
+#: .\templates\training_records\student_lookup.html:22
+msgid "Select a student..."
+msgstr "בחר חניך..."
+
+#: .\templates\training_records\student_lookup.html:30
+msgid "View History"
+msgstr "צפה בהיסטוריה"
+
+#: .\templates\training_records\student_lookup.html:41
+msgid "Recent Student Activity"
+msgstr "פעילות חניך אחרונה"
+
+#: .\templates\training_records\student_lookup.html:62
+msgid "No recent student activity"
+msgstr "אין פעילות חניך אחרונה"
+
+#: .\templates\training_records\student_lookup.html:113
+msgid "History"
+msgstr "היסטוריה"

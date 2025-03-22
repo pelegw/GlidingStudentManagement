@@ -1,0 +1,344 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}
+    {% if form.instance.pk %}{% trans "Edit" %}{% else %}{% trans "New" %}{% endif %} {% trans "Training Record" %} - {{ CLUB_NAME }}
+{% endblock %}
+{% block extra_css %}
+<style>
+    .form-card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 25px;
+        margin-bottom: 25px;
+    }
+    
+    .form-section-title {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 8px;
+    }
+    
+    .form-check-input:checked {
+        background-color: #3498db;
+        border-color: #3498db;
+    }
+    
+    label {
+        font-weight: 500;
+        margin-bottom: 6px;
+    }
+    
+    .help-text {
+        color: #6c757d;
+        font-size: 0.875rem;
+        margin-top: 4px;
+    }
+    
+    .exercise-column {
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        padding: 15px;
+        height: 100%;
+    }
+    
+    .exercise-title {
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #2c3e50;
+    }
+    
+    .textarea-label {
+        display: block;
+        margin-bottom: 8px;
+    }
+    
+    /* Improved checkbox styling */
+    .exercise-list {
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+        background-color: white;
+    }
+    
+    .form-check {
+        padding: 8px 12px;
+        border-bottom: 1px solid #f0f0f0;
+        margin-bottom: 0 !important;
+        transition: background-color 0.2s;
+    }
+    
+    .form-check:last-child {
+        border-bottom: none;
+    }
+    
+    .form-check:hover {
+        background-color: #f5f9ff;
+    }
+    
+    .form-check-input {
+        margin-top: 0.3em;
+    }
+    
+    .form-check-label {
+        margin-left: 5px;
+        font-weight: normal;
+    }
+    
+    .form-check-input:checked + .form-check-label {
+        color: #2980b9;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>{% if form.instance.pk %}{% trans "Edit" %}{% else %}{% trans "New" %}{% endif %} {% trans "Training Record" %}</h2>
+            <p class="text-muted">{% trans "Record details about your flight training session" %}</p>
+        </div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <!-- Basic Information Card -->
+        <div class="form-card">
+    <h4 class="form-section-title">{% trans "Flight Information" %}</h4>
+    
+    <!-- First row -->
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label for="{{ form.instructor.id_for_label }}" class="form-label">
+                {% trans "Instructor" %}:
+            </label>
+            {{ form.instructor }}
+            <div class="form-text small">{% trans "Select the instructor for this training session" %}</div>
+        </div>
+        
+        <div class="col-md-4">
+            <label for="{{ form.date.id_for_label }}" class="form-label">
+                {% trans "Date" %}:
+            </label>
+            {{ form.date }}
+        </div>
+
+        <div class="col-md-4">
+            <label for="{{ form.glider.id_for_label }}" class="form-label">
+                {% trans "Glider" %}:
+            </label>
+            {{ form.glider }}
+        </div>
+    </div>
+    
+    <!-- Second row -->
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label for="{{ form.duration_display.id_for_label }}" class="form-label">
+                {% trans "Flight Duration" %}:
+            </label>
+            <div class="input-group">
+                {{ form.duration_display }}
+                <span class="input-group-text">HH:MM</span>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <label for="{{ form.tow_height.id_for_label }}" class="form-label">
+                {% trans "Tow Height" %}:
+            </label>
+            <div class="input-group">
+                {{ form.tow_height }}
+                <span class="input-group-text">feet</span>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <label for="{{ form.field.id_for_label }}" class="form-label">
+                {% trans "Field/Location" %}:
+            </label>
+            <div class="input-group">
+                {{ form.field }}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Third row -->
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label for="{{ form.training_topic.id_for_label }}" class="form-label">
+                {% trans "Training Topic" %}:
+            </label>
+            {{ form.training_topic }}
+        </div>
+        
+        <div class="col-md-8 d-flex align-items-end">
+            <div class="form-check ms-2">
+                {{ form.is_solo }}
+                <label class="form-check-label" for="{{ form.is_solo.id_for_label }}">
+                    {% trans "Solo Flight" %}
+                </label>
+                <div class="form-text small">{% trans "No instructor present during the flight" %}</div>
+            </div>
+        </div>
+    </div>
+</div>
+        
+        <!-- Exercises Card -->
+        <div class="form-card">
+            <h4 class="form-section-title">{% trans "Exercises Performed" %}</h4>
+            <p class="text-muted mb-4">{% trans "Select all exercises that were performed during this training session" %}</p>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <div class="exercise-column">
+                        <h5 class="exercise-title">{% trans "Pre-Solo Exercises" %}</h5>
+                        <div class="exercise-list" style="height: 250px; overflow-y: auto; padding: 10px;">
+                            {% for exercise in all_pre_solo_exercises %}
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" 
+                                           class="form-check-input exercise-checkbox" 
+                                           id="exercise_{{ exercise.id }}" 
+                                           value="{{ exercise.id }}"
+                                           data-exercise-name="{{ exercise.name }}"
+                                           {% if exercise in form.instance.exercises.all %}checked{% endif %}>
+                                    <label class="form-check-label" for="exercise_{{ exercise.id }}">
+                                        {% if exercise.number %}{{ exercise.number }} - {% endif %}{{ exercise.name }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="exercise-column">
+                        <h5 class="exercise-title">{% trans "Post-Solo Exercises" %}</h5>
+                        <div class="exercise-list" style="height: 250px; overflow-y: auto; padding: 10px;">
+                            {% for exercise in all_post_solo_exercises %}
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" 
+                                           class="form-check-input exercise-checkbox" 
+                                           id="exercise_{{ exercise.id }}" 
+                                           value="{{ exercise.id }}"
+                                           data-exercise-name="{{ exercise.name }}"
+                                           {% if exercise in form.instance.exercises.all %}checked{% endif %}>
+                                    <label class="form-check-label" for="exercise_{{ exercise.id }}">
+                                        {% if exercise.number %}{{ exercise.number }} - {% endif %}{{ exercise.name }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Hidden select that will be populated with the selected exercises -->
+            <div class="d-none">
+                {{ form.exercises }}
+            </div>
+            {% if form.exercises.errors %}
+                <div class="text-danger mt-2">{{ form.exercises.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <!-- Comments Card -->
+        <div class="form-card">
+            <h4 class="form-section-title">{% trans "Comments" %}</h4>
+            
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label class="textarea-label" for="{{ form.student_comments.id_for_label }}">{% trans "Student Comments" %}:</label>
+                    {{ form.student_comments }}
+                    {% if form.student_comments.errors %}
+                        <div class="text-danger">{{ form.student_comments.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <div class="d-flex justify-content-between mt-4 mb-5">
+            <a href="{% url 'record_list' %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+            <button type="submit" class="btn btn-primary">
+                {% if form.instance.pk %}{% trans "Save Changes" %}{% else %}{% trans "Create Record" %}{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+
+<!-- Update the JavaScript at the bottom of the template -->
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get reference to the main exercises select field
+    const mainExercises = document.getElementById('{{ form.exercises.id_for_label }}');
+    
+    // Get all exercise checkboxes
+    const exerciseCheckboxes = document.querySelectorAll('.exercise-checkbox');
+    
+    // Function to update the main exercises field
+    function updateExercisesField() {
+        // Clear current options
+        while (mainExercises.options.length) {
+            mainExercises.remove(0);
+        }
+        
+        // Add selected exercises based on checkboxes
+        exerciseCheckboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                const newOption = document.createElement('option');
+                newOption.value = checkbox.value;
+                newOption.text = checkbox.dataset.exerciseName;
+                newOption.selected = true;
+                mainExercises.add(newOption);
+            }
+        });
+    }
+    
+    // Set up event listeners for all checkboxes
+    exerciseCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateExercisesField);
+    });
+    
+    // Initialize main exercises field on page load
+    updateExercisesField();
+    
+    // When the form is submitted, ensure all selected options are included
+    document.querySelector('form').addEventListener('submit', function() {
+        updateExercisesField();
+    });
+
+    // Add Bootstrap form classes to all form inputs
+    const formElements = document.querySelectorAll('input, select, textarea');
+    formElements.forEach(element => {
+        if (!element.classList.contains('form-control') && 
+            !element.classList.contains('form-select') && 
+            !element.classList.contains('form-check-input') &&
+            !element.classList.contains('d-none')) {
+            
+            if (element.tagName === 'SELECT') {
+                element.classList.add('form-select');
+            } else if (element.type === 'checkbox' || element.type === 'radio') {
+                element.classList.add('form-check-input');
+            } else {
+                element.classList.add('form-control');
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

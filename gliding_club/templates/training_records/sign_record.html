@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Sign Off Record" %} - {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">{% trans "Sign Off Training Record" %}</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <p><strong>{% trans "Important" %}:</strong> {% trans "Signing off on a training record confirms that:" %}</p>
+                    <ul>
+                        <li>{% trans "You supervised this training session" %}</li>
+                        <li>{% trans "The information recorded is accurate" %}</li>
+                        <li>{% trans "The student has completed this training element satisfactorily" %}</li>
+                    </ul>
+                    <p>{% trans "Once signed off, this record cannot be modified." %}</p>
+                </div>
+                <div class="mb-4">
+                    <h5>{% trans "Record Details" %}:</h5>
+                    <table class="table">
+                        <tr>
+                            <th>{% trans "ID" %}:</th>
+                            <td>#{{ record.id }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Date" %}:</th>
+                            <td>{{ record.date }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Student" %}:</th>
+                            <td>{{ record.student.get_full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Topic" %}:</th>
+                            <td>{{ record.training_topic.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Glider" %}:</th>
+                            <td>{{ record.glider.tail_number }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Duration" %}:</th>
+                            <td>{{ record.flight_duration }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="{{ form.instructor_comments.id_for_label }}" class="form-label">{% trans "Instructor Comments" %}:</label>
+                        {{ form.instructor_comments }}
+                        <div class="form-text">{{ form.instructor_comments.help_text }}</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.internal_comments.id_for_label }}" class="form-label">{% trans "Internal Comments" %} ({% trans "Visible to Instructors Only" %}):</label>
+                        {{ form.internal_comments }}
+                        <div class="form-text">{{ form.internal_comments.help_text }}</div>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" name="confirm_sign_off" id="id_confirm_sign_off" class="form-check-input" required>
+                        <label for="id_confirm_sign_off" class="form-check-label">
+                            {{ form.confirm_sign_off.label }}
+                        </label>
+                    </div>
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'record_detail' record.pk %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+                        <button type="submit" class="btn btn-success">{% trans "Sign Off Record" %}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

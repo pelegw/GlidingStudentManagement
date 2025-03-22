@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Training Record Details" %} - {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+<div class="alert alert-info">
+    <strong>{% trans "Flight" %} #{{ record.get_flight_number }}</strong> 
+    {% trans "for" %} {{ record.student.get_full_name }}
+</div>
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">{% trans "Training Details" %}</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>{% trans "Student" %}:</strong> {{ record.student.get_full_name }}</p>
+                        <p><strong>{% trans "Instructor" %}:</strong> {{ record.instructor.get_full_name }}</p>
+                        <p><strong>{% trans "Date" %}:</strong> {{ record.date }}</p>
+                        <p><strong>{% trans "Flight Duration" %}:</strong> {{ formatted_duration }}</p>
+                        {% if record.is_solo %}
+                            <p><span class="badge bg-primary">{% trans "Solo Flight" %}</span></p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>{% trans "Training Topic" %}:</strong> {{ record.training_topic.name }}</p>
+                        <p><strong>{% trans "Glider" %}:</strong> {{ record.glider.tail_number }} ({{ record.glider.model }})</p>
+                        <p><strong>{% trans "Field/Location" %}:</strong> {{ record.field }}</p>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <h6>{% trans "Exercises Performed" %}:</h6>
+                    {% if record.exercises.exists %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">{% trans "Pre-Solo Exercises" %}</h6>
+                            <ul class="list-group">
+                                {% for exercise in pre_solo_exercises %}
+                                    <li class="list-group-item">
+                                        {% if exercise.number %}{{ exercise.number }} - {% endif %}{{ exercise.name }}
+                                    </li>
+                                {% empty %}
+                                    <li class="list-group-item text-muted">{% trans "No pre-solo exercises" %}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">{% trans "Post-Solo Exercises" %}</h6>
+                            <ul class="list-group">
+                                {% for exercise in post_solo_exercises %}
+                                    <li class="list-group-item">
+                                        {% if exercise.number %}{{ exercise.number }} - {% endif %}{{ exercise.name }}
+                                    </li>
+                                {% empty %}
+                                    <li class="list-group-item text-muted">{% trans "No post-solo exercises" %}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    {% else %}
+                        <p class="text-muted">{% trans "No specific exercises recorded for this training session." %}</p>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <h6>{% trans "Student Comments" %}:</h6>
+                    <div class="p-3 bg-light rounded">
+                        {% if record.student_comments %}
+                            {{ record.student_comments|linebreaks }}
+                        {% else %}
+                            <em>{% trans "No student comments provided." %}</em>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <h6>{% trans "Instructor Comments" %}:</h6>
+                    <div class="p-3 bg-light rounded">
+                        {% if record.instructor_comments %}
+                            {{ record.instructor_comments|linebreaks }}
+                        {% else %}
+                            <em>{% trans "No instructor comments provided." %}</em>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if user.is_instructor and record.internal_comments %}
+                <div class="mb-3">
+                    <h6 class="text-danger">{% trans "Internal Comments" %} ({% trans "Instructors Only" %}):</h6>
+                    <div class="p-3 bg-light rounded border border-danger">
+                        {{ record.internal_comments|linebreaks }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

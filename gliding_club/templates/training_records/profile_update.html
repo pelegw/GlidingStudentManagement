@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Update Your Profile" %} - {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">{% trans "Update Your Profile" %}</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    {% if user.is_student %}
+                    <!-- Student-specific fields -->
+                    <h5 class="mb-3">{% trans "Student Information" %}</h5>
+                    <div class="mb-3">
+                        <label for="{{ form.student_license_number.id_for_label }}" class="form-label">{% trans "Student License Number" %}:</label>
+                        <input type="text" name="student_license_number" id="{{ form.student_license_number.id_for_label }}" value="{{ form.student_license_number.value|default:'' }}" class="form-control">
+                        {% if form.student_license_number.errors %}
+                            <div class="text-danger">{{ form.student_license_number.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.student_license_photo.id_for_label }}" class="form-label">{% trans "Student License Photo" %}:</label>
+                        {% if user.student_license_photo %}
+                            <div class="mb-2">
+                                <img src="{{ user.student_license_photo.url }}" alt="{% trans 'Current License Photo' %}" class="img-thumbnail" style="max-height: 200px;">
+                                <p class="form-text">{% trans "Current license photo" %}</p>
+                            </div>
+                        {% endif %}
+                        <input type="file" name="student_license_photo" id="{{ form.student_license_photo.id_for_label }}" class="form-control">
+                        <div class="form-text">{{ form.student_license_photo.help_text }}</div>
+                        {% if form.student_license_photo.errors %}
+                            <div class="text-danger">{{ form.student_license_photo.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.student_medical_id_photo.id_for_label }}" class="form-label">{% trans "Medical ID Photo" %}:</label>
+                        {% if user.student_medical_id_photo %}
+                            <div class="mb-2">
+                                <img src="{{ user.student_medical_id_photo.url }}" alt="{% trans 'Current Medical ID Photo' %}" class="img-thumbnail" style="max-height: 200px;">
+                                <p class="form-text">{% trans "Current medical ID photo" %}</p>
+                            </div>
+                        {% endif %}
+                        <input type="file" name="student_medical_id_photo" id="{{ form.student_medical_id_photo.id_for_label }}" class="form-control">
+                        <div class="form-text">{{ form.student_medical_id_photo.help_text }}</div>
+                        {% if form.student_medical_id_photo.errors %}
+                            <div class="text-danger">{{ form.student_medical_id_photo.errors }}</div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    {% if user.is_instructor %}
+                    <!-- Instructor-specific fields -->
+                    <h5 class="mb-3">{% trans "Instructor Information" %}</h5>
+                    <div class="mb-3">
+                        <label for="{{ form.instructor_license_number.id_for_label }}" class="form-label">{% trans "Instructor License Number" %}:</label>
+                        <input type="text" name="instructor_license_number" id="{{ form.instructor_license_number.id_for_label }}" value="{{ form.instructor_license_number.value|default:'' }}" class="form-control">
+                        {% if form.instructor_license_number.errors %}
+                            <div class="text-danger">{{ form.instructor_license_number.errors }}</div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'profile' %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+                        <button type="submit" class="btn btn-primary">{% trans "Update Profile" %}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

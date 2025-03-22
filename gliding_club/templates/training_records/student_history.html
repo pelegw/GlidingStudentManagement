@@ -1,0 +1,226 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Student History" %}: {{ student.get_full_name }} - {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">{{ student.get_full_name }}</h2>
+        <p class="text-muted">{% trans "Student Training History" %}</p>
+    </div>
+    <div>
+        <a href="{% url 'student_lookup' %}" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left"></i> {% trans "Back to Student Records" %}
+        </a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card shadow h-100">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted mb-1">{% trans "Total Flights" %}</p>
+                        <h3 class="mb-0">{{ total_flights }}</h3>
+                    </div>
+                    <div class="bg-primary text-white p-3 rounded">
+                        <i class="bi bi-airplane fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card shadow h-100">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted mb-1">{% trans "Solo Flights" %}</p>
+                        <h3 class="mb-0">{{ solo_flights }}</h3>
+                    </div>
+                    <div class="bg-info text-white p-3 rounded">
+                        <i class="bi bi-person-check fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card shadow h-100">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted mb-1">{% trans "Flight Time" %}</p>
+                        <h3 class="mb-0">{{ total_flight_time }}</h3>
+                    </div>
+                    <div class="bg-success text-white p-3 rounded">
+                        <i class="bi bi-clock fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card shadow h-100">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted mb-1">{% trans "Signed Off" %}</p>
+                        <h3 class="mb-0">{{ signed_off_count }}</h3>
+                    </div>
+                    <div class="bg-warning text-dark p-3 rounded">
+                        <i class="bi bi-check-circle fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-lg-7">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">{% trans "Training Records" %}</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if training_records %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>{% trans "Date" %}</th>
+                                    <th>{% trans "Instructor" %}</th>
+                                    <th>{% trans "Topic" %}</th>
+                                    <th>{% trans "Duration" %}</th>
+                                    <th>{% trans "Status" %}</th>
+                                    <th>{% trans "Actions" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in training_records %}
+                                    <tr>
+                                        <td>{{ record.date }}</td>
+                                        <td>{{ record.instructor.get_full_name }}
+                                            {% if record.is_solo %}
+                                                <span class="badge bg-info">{% trans "Solo" %}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ record.training_topic.name }}</td>
+                                        <td>{{ record.flight_duration }}</td>
+                                        <td>
+                                            {% if record.signed_off %}
+                                                <span class="badge bg-success">{% trans "Signed Off" %}</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">{% trans "Pending" %}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'record_detail' record.pk %}" class="btn btn-sm btn-outline-primary">{% trans "View" %}</a>
+                                            {% if not record.signed_off and record.instructor == user %}
+                                                <a href="{% url 'sign_record' record.pk %}" class="btn btn-sm btn-outline-success">{% trans "Sign" %}</a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="p-4 text-center">
+                        <p class="mb-0">{% trans "No training records found for this student." %}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-5">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">{% trans "Student Information" %}</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>{% trans "Username" %}:</strong> {{ student.username }}</p>
+                        <p><strong>{% trans "Email" %}:</strong> {{ student.email }}</p>
+                        <p><strong>{% trans "Member Since" %}:</strong> {{ student.date_joined|date:"F j, Y" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>{% trans "License Number" %}:</strong> 
+                            {% if student.student_license_number %}
+                                {{ student.student_license_number }}
+                            {% else %}
+                                <span class="text-muted">{% trans "Not provided" %}</span>
+                            {% endif %}
+                        </p>
+                        
+                        {% if student.student_license_photo %}
+                        <p><strong>{% trans "License Photo" %}:</strong> {% trans "Available" %}</p>
+                        {% else %}
+                        <p><strong>{% trans "License Photo" %}:</strong> <span class="text-muted">{% trans "Not uploaded" %}</span></p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">{% trans "Completed Exercises" %}</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-primary">{% trans "Pre-Solo Exercises" %}</h6>
+                        <ul class="list-group list-group-flush">
+                            {% for exercise in pre_solo_exercises %}
+                                <li class="list-group-item px-0 py-2 border-bottom">
+                                    <i class="bi bi-check-circle-fill text-success {% if LANGUAGE_CODE == 'he' %}ms-2{% else %}me-2{% endif %}"></i>
+                                    {% if exercise.number %}{{ exercise.number }} - {% endif %}{{ exercise.name }}
+                                </li>
+                            {% empty %}
+                                <li class="list-group-item px-0 py-2 text-muted">{% trans "No pre-solo exercises completed" %}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-primary">{% trans "Post-Solo Exercises" %}</h6>
+                        <ul class="list-group list-group-flush">
+                            {% for exercise in post_solo_exercises %}
+                                <li class="list-group-item px-0 py-2 border-bottom">
+                                    <i class="bi bi-check-circle-fill text-success {% if LANGUAGE_CODE == 'he' %}ms-2{% else %}me-2{% endif %}"></i>
+                                    {% if exercise.number %}{{ exercise.number }} - {% endif %}{{ exercise.name }}
+                                </li>
+                            {% empty %}
+                                <li class="list-group-item px-0 py-2 text-muted">{% trans "No post-solo exercises completed" %}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">{% trans "Instructors" %}</h5>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    {% for instructor in instructors %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ instructor.get_full_name }}
+                            {% if instructor == user %}
+                                <span class="badge bg-primary rounded-pill">{% trans "You" %}</span>
+                            {% endif %}
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item text-muted">{% trans "No instructors yet" %}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

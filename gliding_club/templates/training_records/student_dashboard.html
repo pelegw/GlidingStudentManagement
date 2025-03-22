@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Student Dashboard" %} - {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">{% trans "Welcome" %}, {{ user.first_name }}!</h2>
+        <p class="text-muted">{% trans "Here's your pilot training progress and recent activity" %}</p>
+    </div>
+    <div>
+        <a href="{% url 'record_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg {% if LANGUAGE_CODE == 'he' %}ms-2{% else %}me-2{% endif %}"></i> {% trans "New Training Record" %}
+        </a>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-md-3 mb-3 mb-md-0">
+        <div class="card">
+            <div class="stat-card blue">
+                <div class="stat-value">{{ total_flights }}</div>
+                <div class="stat-label">{% trans "Total Flights" %}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3 mb-md-0">
+        <div class="card">
+            <div class="stat-card teal">
+                <div class="stat-value">{{ solo_flights_count }}</div>
+                <div class="stat-label">{% trans "Solo Flights" %}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3 mb-md-0">
+        <div class="card">
+            <div class="stat-card green">
+                <div class="stat-value">{{ total_flight_time }}</div>
+                <div class="stat-label">{% trans "Flight Hours" %}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3 mb-md-0">
+        <div class="card">
+            <div class="stat-card dark">
+                <div class="stat-value">{{ signed_off_count }}</div>
+                <div class="stat-label">{% trans "Signed Off" %}</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-journal-text {% if LANGUAGE_CODE == 'he' %}ms-2{% else %}me-2{% endif %}"></i>{% trans "Recent Training Records" %}
+                </h5>
+                <a href="{% url 'record_list' %}" class="btn btn-sm btn-outline-primary">
+                    {% trans "View All" %}
+                </a>
+            </div>
+            <div class="card-body p-0">
+                {% if training_records %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>{% trans "Date" %}</th>
+                                    <th>{% trans "Topic" %}</th>
+                                    <th>{% trans "Instructor" %}</th>
+                                    <th>{% trans "Status" %}</th>
+                                    <th>{% trans "Actions" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in training_records %}
+                                    <tr>
+                                        <td>{{ record.date }}</td>
+                                        <td>{{ record.training_topic.name }}</td>
+                                        <td>
+                                            {{ record.instructor.get_full_name }}
+                                            {% if record.is_solo %}
+                                                <span class="badge bg-info">{% trans "Solo" %}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if record.signed_off %}
+                                                <span class="badge bg-success">{% trans "Signed Off" %}</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">{% trans "Pending" %}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'record_detail' record.pk %}" class="btn btn-sm btn-outline-primary">{% trans "View" %}</a>
+                                            {% if not record.signed_off %}
+                                                <a href="{% url 'record_update' record.pk %}" class="btn btn-sm btn-outline-secondary">{% trans "Edit" %}</a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center p-4">
+                        <p class="mb-3 text-muted">{% trans "No training records yet." %}</p>
+                        <a href="{% url 'record_create' %}" class="btn btn-primary">
+                            {% trans "Create Your First Record" %}
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-hourglass-split {% if LANGUAGE_CODE == 'he' %}ms-2{% else %}me-2{% endif %}"></i>{% trans "Pending Approvals" %}
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                {% if pending_records %}
+                    <ul class="list-group list-group-flush">
+                        {% for record in pending_records %}
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">{{ record.date }} - {{ record.training_topic.name }}</h6>
+                                        <p class="mb-0 text-muted small">
+                                            {% trans "Instructor" %}: {{ record.instructor.get_full_name }}
+                                            {% if record.is_solo %}
+                                                <span class="badge bg-info {% if LANGUAGE_CODE == 'he' %}ms-1{% else %}ms-1{% endif %}">{% trans "Solo" %}</span>
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    <a href="{% url 'record_detail' record.pk %}" class="btn btn-sm btn-outline-primary">{% trans "View" %}</a>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="text-center p-4">
+                        <p class="text-muted">{% trans "All your records are signed off!" %}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-lightning-charge {% if LANGUAGE_CODE == 'he' %}ms-2{% else %}me-2{% endif %}"></i>{% trans "Quick Actions" %}
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'record_create' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-plus-circle {% if LANGUAGE_CODE == 'he' %}ms-2{% else %}me-2{% endif %} text-primary"></i> {% trans "New Training Record" %}
+                    </a>
+                    <a href="{% url 'record_list' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-list-check {% if LANGUAGE_CODE == 'he' %}ms-2{% else %}me-2{% endif %} text-info"></i> {% trans "All Training Records" %}
+                    </a>
+                    <a href="{% url 'profile' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-person {% if LANGUAGE_CODE == 'he' %}ms-2{% else %}me-2{% endif %} text-success"></i> {% trans "Your Profile" %}
+                    </a>
+                    <form method="post" action="{% url 'logout' %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="list-group-item list-group-item-action w-100 text-start border-0">
+                            <i class="bi bi-box-arrow-right {% if LANGUAGE_CODE == 'he' %}ms-2{% else %}me-2{% endif %} text-secondary"></i> {% trans "Logout" %}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_css %}
+<style>
+    /* Stats Card Styling */
+    .stat-card {
+        color: white;
+        height: 100%;
+        text-align: center;
+        padding: 1.5rem;
+    }
+    .stat-card.blue { background-color: #3498db; }
+    .stat-card.green { background-color: #2ecc71; }
+    .stat-card.teal { background-color: #1abc9c; }
+    .stat-card.dark { background-color: #2c3e50; }
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+    .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+</style>
+{% endblock %}

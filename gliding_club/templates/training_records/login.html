@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Login" %} - {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-5 col-md-7 col-sm-9">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">{% trans "Login" %}</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">{% trans "Username" %}:</label>
+                        <input type="text" name="username" id="id_username" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_password" class="form-label">{% trans "Password" %}:</label>
+                        <input type="password" name="password" id="id_password" class="form-control" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">{% trans "Login" %}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
