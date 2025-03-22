@@ -11,7 +11,7 @@ python manage.py collectstatic --noinput
 
 # Start Gunicorn
 echo "Starting Gunicorn server..."
-exec gunicorn --bind 0.0.0.0:8000 gliding_club.wsgi:application --bind 0.0.0.0:8000 \
+exec gunicorn gliding_club.wsgi:application --bind 0.0.0.0:8000 \
     --workers 3 \
     --timeout 120 \
     --access-logfile - \

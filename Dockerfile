@@ -21,9 +21,6 @@ RUN apk add --no-cache --virtual .build-deps \
 # Copy only the application code (not the venv)
 COPY gliding_club/ /app/
 RUN chmod 755 /app/entrypoint.sh
-RUN ls -la /app/ && \
-    cat /app/entrypoint.sh && \
-    chmod +x /app/entrypoint.sh
 # Create a non-root user and switch to it
 RUN adduser -D appuser
 RUN chown -R appuser:appuser /app
