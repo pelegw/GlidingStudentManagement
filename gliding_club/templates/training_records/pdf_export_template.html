@@ -1,0 +1,276 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="{% if rtl %}he{% else %}en{% endif %}" dir="{% if rtl %}rtl{% else %}ltr{% endif %}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ student.get_full_name }} - Training Records</title>
+    <style>
+        /* Full stylesheet embedded directly in the template */
+        @page {
+            size: A4;
+            margin: 2cm;
+            @top-right {
+                content: "{{ student.get_full_name }}";
+                font-size: 9pt;
+            }
+            @bottom-right {
+                content: "עמוד " counter(page) " מתוך " counter(pages);
+                font-size: 9pt;
+            }
+        }
+        
+        /* Font declarations - using system fonts as fallbacks */
+        body {
+            font-family: DejaVu Sans, Arial, Helvetica, sans-serif;
+            font-size: 11pt;
+            line-height: 1.4;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+            {% if rtl %}
+            direction: rtl;
+            text-align: right;
+            {% endif %}
+        }
+        
+        /* Headings */
+        h1 {
+            font-size: 18pt;
+            color: #003366;
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #003366;
+            padding-bottom: 10px;
+        }
+        
+        h2 {
+            font-size: 14pt;
+            color: #003366;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        /* Student information section */
+        .student-info {
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            border: 1px solid #ddd;
+        }
+        
+        .student-info p {
+            margin: 5px 0;
+        }
+        
+        /* Summary table */
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+        
+        .summary-table th {
+            background-color: #e6e6e6;
+            padding: 10px;
+            border: 1px solid #ccc;
+            font-weight: bold;
+            width: 30%;
+            {% if rtl %}
+            text-align: right;
+            {% else %}
+            text-align: left;
+            {% endif %}
+        }
+        
+        .summary-table td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            width: 70%;
+            {% if rtl %}
+            text-align: right;
+            {% else %}
+            text-align: left;
+            {% endif %}
+        }
+        
+        /* Record containers and details */
+        .record-container {
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .record-header {
+            background-color: #003366;
+            color: white;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 11pt;
+            {% if rtl %}
+            text-align: right;
+            {% else %}
+            text-align: left;
+            {% endif %}
+        }
+        
+        .record-details-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .record-details-table th {
+            background-color: #f2f2f2;
+            padding: 8px;
+            border: 1px solid #ddd;
+            width: 20%;
+            font-weight: bold;
+            {% if rtl %}
+            text-align: right;
+            {% else %}
+            text-align: left;
+            {% endif %}
+            vertical-align: top;
+        }
+        
+        .record-details-table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            width: 30%;
+            {% if rtl %}
+            text-align: right;
+            {% else %}
+            text-align: left;
+            {% endif %}
+            vertical-align: top;
+        }
+        
+        /* Comments table */
+        .comments-table {
+        width: 100%;
+        table-layout: fixed; /* Force equal column widths */
+        border-collapse: collapse;
+    }
+
+    .comments-table th,
+    .comments-table td {
+        width: 50%; /* Set equal width for both columns */
+        max-width: 50%; /* Prevent columns from expanding */
+        word-break: break-word; /* Break words to fit in the column */
+        overflow-wrap: break-word;
+        white-space: normal; /* Allow text to wrap */
+}
+        
+        /* RTL specific overrides */
+        {% if rtl %}
+        .record-header {
+            text-align: right;
+        }
+        
+        .record-details-table th, 
+        .record-details-table td, 
+        .comments-table th,
+        .comments-table td,
+        .summary-table th,
+        .summary-table td {
+            text-align: right;
+        }
+        {% endif %}
+    </style>
+</head>
+<body>
+    <h1>{% if rtl %}תיק חניך: {% else %}Training Report: {% endif %}{{ student.get_full_name }}</h1>
+    
+    <div class="student-info">
+        <p><strong>{% if rtl %}חניך:{% else %}Student:{% endif %}</strong> {{ student.get_full_name }}</p>
+        <p><strong>{% if rtl %}מספר רישיון:{% else %}License Number:{% endif %}</strong> {{ student.student_license_number|default:"Not provided" }}</p>
+        <p><strong>{% if rtl %}הופק בתאריך:{% else %}Generated on:{% endif %}</strong> {{ current_date }}</p>
+    </div>
+    
+    <h2>{% if rtl %}סיכום הדרכה{% else %}Training Summary{% endif %}</h2>
+    <table class="summary-table">
+        <tr>
+            <th>{% if rtl %}סה"כ טיסות{% else %}Total Flights{% endif %}</th>
+            <td>{{ total_flights }}</td>
+        </tr>
+        <tr>
+            <th>{% if rtl %}סה"כ זמן טיסה{% else %}Total Flight Time{% endif %}</th>
+            <td>{{ total_flight_time }}</td>
+        </tr>
+        <tr>
+            <th>{% if rtl %}טיסות סולו{% else %}Solo Flights{% endif %}</th>
+            <td>{{ solo_flights }}</td>
+        </tr>
+        <tr>
+            <th>{% if rtl %}טיסות חתומות{% else %}Signed Off Flights{% endif %}</th>
+            <td>{{ signed_off_count }}</td>
+        </tr>
+    </table>
+    
+    <h2>{% if rtl %}יומן טיסות{% else %}Flight Log{% endif %}</h2>
+    
+    {% for record in records %}
+    <div class="record-container">
+        <div class="record-header">
+            {% if rtl %}מספר טיסה:{% else %}Flight Number:{% endif %} {{ record.flight_number }} - {{ record.date_formatted }}
+        </div>
+        
+        <table class="record-details-table">
+            <tr>
+                <th>{% if rtl %}נושא הדרכה{% else %}Training Topic{% endif %}</th>
+                <td>{{ record.topic }}</td>
+                <th>{% if rtl %}מדריך{% else %}Instructor{% endif %}</th>
+                <td>{{ record.instructor }}</td>
+            </tr>
+            <tr>
+                <th>{% if rtl %}דאון{% else %}Glider{% endif %}</th>
+                <td>{{ record.glider }}</td>
+                <th>{% if rtl %}שדה/מיקום{% else %}Field/Location{% endif %}</th>
+                <td>{{ record.field }}</td>
+            </tr>
+            <tr>
+                <th>{% if rtl %}גובה גרירה{% else %}Tow Height{% endif %}</th>
+                <td>{{ record.tow_height }}</td>
+                <th>{% if rtl %}משך טיסה{% else %}Flight Duration{% endif %}</th>
+                <td>{{ record.duration }}</td>
+            </tr>
+        </table>
+        
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <th style="width: 100%; padding: 8px; border: 1px solid #ddd; background-color: #f2f2f2;">
+                    {% if rtl %}הערות חניך{% else %}Student Comments{% endif %}
+                </th>
+            </tr>
+            <tr>
+                <td style="width: 100%; padding: 8px; border: 1px solid #ddd; vertical-align: top;">
+                    {{ record.student_comments|default:"" }}
+                </td>
+            </tr>
+            <tr>
+                <th style="width: 100%; padding: 8px; border: 1px solid #ddd; background-color: #f2f2f2;">
+                    {% if rtl %}הערות מדריך{% else %}Instructor Comments{% endif %}
+                </th>
+            </tr>
+            <tr>
+                <td style="width: 100%; padding: 8px; border: 1px solid #ddd; vertical-align: top;">
+                    {{ record.instructor_comments|default:"" }}
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 100%; padding: 8px; border: 1px solid #ddd; vertical-align: top; font-style: italic; background-color: #f2f2f2; text-align: right;">
+                    <strong>אושר ע"י:</strong> {{ record.instructor_name }}
+                    
+                    <strong>מס' רשיון:</strong> {{ record.instructor_license }}
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% endfor %}
+</body>
+</html>

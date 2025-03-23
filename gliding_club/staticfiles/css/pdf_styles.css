@@ -1,0 +1,197 @@
+/* PDF Styles for Training Records Export */
+
+/* Font definitions */
+@font-face {
+    font-family: 'DejaVu Sans';
+    src: url('../fonts/DejaVuSans.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'DejaVu Sans';
+    src: url('../fonts/DejaVuSans-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+/* RTL specific styles */
+[dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+}
+
+[dir="rtl"] .record-header {
+    text-align: right;
+}
+
+[dir="rtl"] .signature-info {
+    text-align: right;
+}
+
+/* Enhanced styling for professional look */
+body {
+    font-family: 'DejaVu Sans', Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+    line-height: 1.4;
+    color: #333;
+    background-color: #fff;
+}
+
+h1 {
+    font-size: 18pt;
+    color: #003366;
+    border-bottom: 1px solid #003366;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 14pt;
+    color: #003366;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eee;
+}
+
+.student-info {
+    background-color: #f8f8f8;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 25px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.student-info p {
+    margin: 5px 0;
+}
+
+.summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+}
+
+.summary-table th {
+    background-color: #e6e6e6;
+    padding: 10px;
+    border: 1px solid #ccc;
+    font-weight: bold;
+}
+
+.summary-table td {
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.record-container {
+    margin-bottom: 30px;
+    page-break-inside: avoid;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.record-header {
+    background-color: #003366;
+    color: white;
+    padding: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 11pt;
+}
+
+.record-details-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.record-details-table th {
+    background-color: #f2f2f2;
+    padding: 8px;
+    border: 1px solid #ddd;
+    width: 25%;
+    font-weight: bold;
+    vertical-align: top;
+}
+
+.record-details-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    vertical-align: top;
+}
+
+.comments-header {
+    background-color: #4f81bd;
+    color: white;
+    padding: 8px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.comments-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.comments-table th {
+    background-color: #f2f2f2;
+    padding: 8px;
+    border: 1px solid #ddd;
+    font-weight: bold;
+}
+
+.comments-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    vertical-align: top;
+    min-height: 50px;
+}
+
+.signature-info {
+    padding: 10px;
+    background-color: #f9f9f9;
+    font-style: italic;
+    border-top: 1px solid #eee;
+}
+
+.exercise-tag {
+    display: inline-block;
+    background-color: #e0e0e0;
+    padding: 4px 8px;
+    margin: 3px;
+    border-radius: 3px;
+    font-size: 9pt;
+    border: 1px solid #ccc;
+}
+
+.exercises-container {
+    margin: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 3px;
+}
+
+/* Status indicators */
+.status-approved {
+    color: #008800;
+    font-weight: bold;
+}
+
+.status-pending {
+    color: #cc6600;
+    font-weight: bold;
+}
+
+/* Print specific styles */
+@page {
+    size: A4;
+    margin: 2cm;
+}
+
+@page :first {
+    margin-top: 3cm;
+}

@@ -134,4 +134,22 @@
         {% endif %}
     </div>
 </div>
+{% if user.is_student %}
+<div class="card shadow mb-4 mt-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Export Your Training Records</h5>
+    </div>
+    <div class="card-body">
+        <p class="text-muted mb-3">Export your complete training history in your preferred format.</p>
+        <div class="d-flex">
+            <a href="{% url 'export_student_records' user.id 'pdf' %}" class="btn btn-primary {% if LANGUAGE_CODE == 'he' %}ms-2{% else %}me-2{% endif %}">
+                <i class="bi bi-file-pdf {% if LANGUAGE_CODE == 'he' %}ms-1{% else %}me-1{% endif %}"></i> Export as PDF
+            </a>
+            <a href="{% url 'export_student_records' user.id 'csv' %}" class="btn btn-secondary">
+                <i class="bi bi-file-spreadsheet {% if LANGUAGE_CODE == 'he' %}ms-1{% else %}me-1{% endif %}"></i> Export as CSV
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}

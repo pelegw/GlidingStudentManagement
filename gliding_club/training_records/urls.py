@@ -33,4 +33,6 @@ urlpatterns = [
 
     path('students/lookup/', views.student_lookup, name='student_lookup'),
     path('students/<int:student_id>/history/', views.student_history, name='student_history'),
+
+    path('students/<int:student_id>/export/<str:format>/', views.export_student_records, name='export_student_records'),
 ]

@@ -1,0 +1,169 @@
+/* static/css/style.css */
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --accent-color: #e74c3c;
+    --light-bg: #f8f9fa;
+    --dark-text: #343a40;
+    --light-text: #f8f9fa;
+    --success-color: #2ecc71;
+    --warning-color: #f39c12;
+    --info-color: #1abc9c;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f5f7fa;
+    color: var(--dark-text);
+    line-height: 1.6;
+}
+
+/* Navigation */
+.navbar {
+    background-color: var(--primary-color) !important;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    font-weight: 500;
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    font-weight: 600;
+    background-color: var(--light-bg);
+    border-bottom: 1px solid rgba(0,0,0,0.125);
+}
+
+/* Stat Cards */
+.stat-card {
+    color: white;
+    height: 100%;
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.stat-card.blue {
+    background-color: var(--secondary-color);
+}
+
+.stat-card.green {
+    background-color: var(--success-color);
+}
+
+.stat-card.teal {
+    background-color: var(--info-color);
+}
+
+.stat-card.dark {
+    background-color: var(--primary-color);
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* Tables */
+.table thead th {
+    background-color: var(--light-bg);
+    border-bottom: 2px solid #dee2e6;
+    color: #495057;
+    font-weight: 600;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* Buttons */
+.btn {
+    font-weight: 500;
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem;
+}
+
+.btn-primary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+}
+
+.btn-success {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.btn-success:hover {
+    background-color: #27ae60;
+    border-color: #27ae60;
+}
+
+/* List group */
+.list-group-item {
+    border-left: none;
+    border-right: none;
+    padding: 1rem 1.25rem;
+}
+
+.list-group-item:first-child {
+    border-top: none;
+}
+
+.list-group-item-action:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* Badges */
+.badge {
+    font-weight: 500;
+    padding: 0.4em 0.6em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Logo styling */
+.logo-img {
+    height: 80px;
+    width: auto;
+}
+
+/* For darker backgrounds like the navbar */
+.navbar-dark .logo-img {
+    /* Optional: add a subtle white glow around the logo to make it stand out on dark backgrounds */
+    filter: drop-shadow(0px 0px 2px rgba(255, 255, 255, 0.7));
+}
+
+/* You can also add a media query to adjust the logo size on smaller screens */
+@media (max-width: 576px) {
+    .logo-img {
+        height: 30px;
+    }
+}

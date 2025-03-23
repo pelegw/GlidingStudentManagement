@@ -23,9 +23,12 @@ from django.core.exceptions import ValidationError
 from io import StringIO, BytesIO
 import csv
 from django.template.loader import render_to_string
-from weasyprint import HTML, CSS
-from django.conf import settings
-import tempfile
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter, landscape
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+
 
 class StudentRequiredMixin(UserPassesTestMixin):
     def test_func(self):
@@ -578,7 +581,7 @@ def export_student_records(request, student_id, format='pdf'):
         if format.lower() == 'csv':
             return _export_csv(student, records)
         else:  # Default to PDF
-            return _export_pdf_weasyprint(student, records, request)
+            return _export_pdf(student, records)
     
     except Exception as e:
         # Log the detailed error with traceback
@@ -589,8 +592,6 @@ def export_student_records(request, student_id, format='pdf'):
         # Show a user-friendly message
         messages.error(request, f"An error occurred while exporting records: {str(e)}")
         return redirect('record_list')
-
-    
 def _export_csv(student, records):
     """Generate a CSV export of student training records with proper UTF-8 encoding."""
     try:
@@ -659,107 +660,574 @@ def _export_csv(student, records):
         logger.error(traceback.format_exc())
         raise
 
-
-def _export_pdf_weasyprint(student, records, request):
-    """Generate a PDF export using WeasyPrint with HTML/CSS templates."""
+def _export_pdf(student, records):
+    """Generate a professional PDF export with improved layout and RTL support."""
     try:
-        # Calculate summary statistics
-        total_flights = records.count()
-        solo_flights = records.filter(is_solo=True).count()
-        signed_off_count = records.filter(signed_off=True).count()
+        buffer = BytesIO()
         
-        # Calculate total flight time
+        # Define the hebrew character pattern at the beginning for reuse
+        import re
+        hebrew_char_pattern = re.compile(r'[\u0590-\u05FF\uFB1D-\uFB4F]')
+        
+        # Load fonts with proper RTL/Hebrew support
+        from reportlab.pdfbase import pdfmetrics
+        from reportlab.pdfbase.ttfonts import TTFont
+        import os
+        from django.conf import settings
+        
+        # Register fonts - first look in common locations
+        font_paths = [
+            os.path.join(settings.BASE_DIR, 'static', 'fonts', 'NotoSansHebrew-Regular.ttf'),
+            os.path.join(settings.BASE_DIR, 'static', 'fonts', 'DejaVuSans.ttf'),
+            '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',  # Linux common location
+            os.path.join(settings.BASE_DIR, 'DejaVuSans.ttf'),
+        ]
+        
+        hebrew_font_found = False
+        for path in font_paths:
+            if os.path.exists(path):
+                try:
+                    font_name = os.path.basename(path).split('.')[0]
+                    pdfmetrics.registerFont(TTFont(font_name, path))
+                    hebrew_font_found = True
+                    logger.info(f"Using font: {font_name} from {path}")
+                    break
+                except Exception as e:
+                    logger.warning(f"Could not register font {path}: {e}")
+        
+        if not hebrew_font_found:
+            logger.warning("No Hebrew-compatible font found, using default fonts")
+            font_name = 'Helvetica'
+        
+        # Set up the document with a more professional layout
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib.units import cm
+        
+        # Use A4 instead of letter for international standard
+        doc = SimpleDocTemplate(
+            buffer,
+            pagesize=A4,
+            rightMargin=1.5*cm,
+            leftMargin=1.5*cm,
+            topMargin=2*cm,
+            bottomMargin=2*cm
+        )
+        
+        # Define styles with improved typography
+        styles = getSampleStyleSheet()
+        
+        # Set up custom styles with our font
+        if hebrew_font_found:
+            title_style = ParagraphStyle(
+                'HebrewTitle',
+                parent=styles['Title'],
+                fontName=font_name,
+                fontSize=16,
+                alignment=1,  # Center alignment
+                spaceAfter=0.5*cm
+            )
+            
+            heading_style = ParagraphStyle(
+                'HebrewHeading',
+                parent=styles['Heading2'],
+                fontName=font_name,
+                fontSize=14, 
+                alignment=1,  # Center alignment
+                spaceAfter=0.3*cm
+            )
+            
+            normal_style = ParagraphStyle(
+                'HebrewNormal',
+                parent=styles['Normal'],
+                fontName=font_name,
+                fontSize=10,
+                alignment=2,  # Right alignment for RTL text
+                leading=14
+            )
+            
+            cell_style = ParagraphStyle(
+                'HebrewCell',
+                parent=normal_style,
+                fontSize=9,
+                leading=12,
+                alignment=2  # Right alignment for RTL text
+            )
+            
+            cell_style_left = ParagraphStyle(
+                'HebrewCellLeft',
+                parent=cell_style,
+                alignment=0  # Left alignment
+            )
+            
+            header_style = ParagraphStyle(
+                'HebrewHeader',
+                parent=cell_style,
+                fontSize=9,
+                leading=12,
+                fontName=font_name,
+                textColor=colors.white,
+                alignment=1  # Center alignment
+            )
+        else:
+            # Use default styles if Hebrew fonts not available
+            title_style = styles['Title']
+            heading_style = styles['Heading2']
+            normal_style = styles['Normal']
+            cell_style = ParagraphStyle(
+                'Cell',
+                parent=normal_style,
+                fontSize=9,
+                leading=12
+            )
+            cell_style_left = ParagraphStyle(
+                'CellLeft',
+                parent=cell_style,
+                alignment=0
+            )
+            header_style = ParagraphStyle(
+                'Header',
+                parent=cell_style,
+                textColor=colors.white,
+                alignment=1
+            )
+        
+        # Create a dictionary of Hebrew labels - expanded with more professional labels
+        hebrew_labels = {
+            'Training Record for': 'רשומת אימון עבור',
+            'Training Topic': 'נושא הדרכה',
+            'Flight Number': 'מספר טיסה',
+            'Date': 'תאריך',
+            'Glider': 'דאון',
+            'Field/Location': 'שדה/מיקום',
+            'Instructor': 'מדריך',
+            'Tow Height': 'גובה גרירה',
+            'Flight Duration': 'משך טיסה',
+            'Solo Flight': 'טיסת סולו',
+            'Student Comments': 'הערות חניך',
+            'Instructor Comments': 'הערות מדריך',
+            'License Number': 'מספר רישיון',
+            'Status': 'סטטוס',
+            'Signed Off Date': 'תאריך אישור',
+            'Flight Information': 'פרטי טיסה',
+            'Student Information': 'פרטי חניך',
+            'Flight Log': 'יומן טיסות',
+            'Not provided': 'לא צוין',
+            'Yes': 'כן',
+            'No': 'לא',
+            'Approved': 'אושר',
+            'Pending': 'ממתין',
+            'N/A': 'לא זמין',
+            'No comments provided.': 'לא נמסרו הערות.',
+            'Student': 'חניך',
+            'Page': 'עמוד',
+            'of': 'מתוך',
+            'Training Summary': 'סיכום הדרכה',
+            'Total Flights': 'סה"כ טיסות',
+            'Total Flight Time': 'סה"כ זמן טיסה',
+            'Solo Flights': 'טיסות סולו',
+            'Training Report': 'דו"ח אימונים',
+            'Generated on': 'הופק בתאריך'
+        }
+        
+        # Helper function for proper RTL text handling
+        def fix_rtl_text(text):
+            """Handle RTL text properly for PDF rendering using python-bidi for best results."""
+            if not text or not isinstance(text, str):
+                return ""
+                
+            # Check if the text contains Hebrew characters
+            import re
+            hebrew_char_pattern = re.compile(r'[\u0590-\u05FF\uFB1D-\uFB4F]')
+            
+            if not hebrew_char_pattern.search(text):
+                return text
+                
+            # Use python-bidi for proper bidirectional text handling
+            try:
+                from bidi.algorithm import get_display
+                
+                # First, process the text with python-bidi
+                processed_text = get_display(text)
+                
+                # Special handling for HTML entity characters that need to be preserved
+                processed_text = processed_text.replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>')
+                processed_text = processed_text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+                
+                return processed_text
+            except ImportError:
+                # Log a more specific error to encourage installation of python-bidi
+                logger.error("python-bidi package is not installed. For proper RTL text handling, install with: pip install python-bidi")
+                
+                # Fall back to basic RTL handling (existing code)
+                pattern = re.compile(r'([\u0590-\u05FF\uFB1D-\uFB4F]+\s*)(\d+)')
+                
+                def fix_hebrew_with_numbers(match):
+                    hebrew_part = match.group(1)
+                    number_part = match.group(2)
+                    return number_part + " " + hebrew_part[::-1]
+                
+                # First handle Hebrew with numbers
+                text = pattern.sub(fix_hebrew_with_numbers, text)
+                
+                # Then handle any remaining Hebrew text (without numbers)
+                segments = []
+                current_text = text
+                
+                while current_text:
+                    match = hebrew_char_pattern.search(current_text)
+                    if not match:
+                        segments.append(("non-hebrew", current_text))
+                        break
+                    
+                    start = match.start()
+                    if start > 0:
+                        segments.append(("non-hebrew", current_text[:start]))
+                    
+                    # Find the end of this Hebrew segment
+                    end = start
+                    while end < len(current_text) and hebrew_char_pattern.match(current_text[end]):
+                        end += 1
+                    
+                    segments.append(("hebrew", current_text[start:end]))
+                    current_text = current_text[end:]
+                
+                # Process segments appropriately
+                result = ""
+                for seg_type, seg_text in segments:
+                    if seg_type == "hebrew":
+                        result += seg_text[::-1]  # Reverse Hebrew characters
+                    else:
+                        result += seg_text
+                
+                return result
+        
+        # Helper function to wrap text in Paragraph objects
+        def wrap_text(text, style=cell_style, rtl=True):
+            """Create a properly formatted paragraph for the PDF with improved RTL handling."""
+            if not text:
+                return Paragraph("", style)
+                
+            # Convert to string and handle special characters
+            text_str = str(text)
+            text_str = text_str.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+            
+            # For longer text that might contain multiple lines, split and process each line
+            if rtl and contains_hebrew(text_str) and '\n' in text_str:
+                lines = text_str.split('\n')
+                rtl_lines = [fix_rtl_text(line) for line in lines]
+                text_str = '<br/>'.join(rtl_lines)
+            # Process single-line RTL text
+            elif rtl and contains_hebrew(text_str):
+                text_str = fix_rtl_text(text_str)
+                
+            return Paragraph(text_str, style)
+        
+        # Create document content with a more professional structure
+        content = []
+        
+        # Add a header with logo placeholder and title
+        # This would be replaced with your actual logo in a real implementation
+        from reportlab.platypus import Image, Table
+        
+        # Get current date in Hebrew-friendly format
+        from datetime import datetime
+        current_date = datetime.now().strftime('%Y-%m-%d')
+        
+        # Create header
+        header_text = f"{hebrew_labels['Training Report']}: {student.get_full_name()}"
+        content.append(Paragraph(fix_rtl_text(header_text), title_style))
+        
+        # Add student information block
+        student_info = [
+            [wrap_text(f"{hebrew_labels['Student']}: {student.get_full_name()}", normal_style)],
+            [wrap_text(f"{hebrew_labels['License Number']}: {student.student_license_number or hebrew_labels['Not provided']}", normal_style)],
+            [wrap_text(f"{hebrew_labels['Generated on']}: {current_date}", normal_style)]
+        ]
+        
+        student_table = Table(student_info, colWidths=[doc.width])
+        student_table.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (0, -1), 'RIGHT'),
+            ('BOTTOMPADDING', (0, 0), (0, -1), 6),
+            ('TOPPADDING', (0, 0), (0, -1), 6),
+        ]))
+        content.append(student_table)
+        content.append(Spacer(1, 0.5*cm))
+        
+        # Add a summary section
+        total_flights = len(records)
         total_duration = records.aggregate(total=Sum('flight_duration'))['total']
-        total_flight_time = "0:00"
+        solo_flights = records.filter(is_solo=True).count()
+        
+        # Format total flight time
         if total_duration:
             total_seconds = int(total_duration.total_seconds())
             hours = total_seconds // 3600
             minutes = (total_seconds % 3600) // 60
             total_flight_time = f"{hours}:{minutes:02d}"
+        else:
+            total_flight_time = "0:00"
         
-        # Process records to format durations and other data
-        processed_records = []
-        for record in records:
-            # Format duration
+        # Create summary section
+        summary_heading = Paragraph(fix_rtl_text(hebrew_labels['Training Summary']), heading_style)
+        content.append(summary_heading)
+        
+        summary_data = [
+            [wrap_text(str(total_flights), cell_style_left),
+            wrap_text(hebrew_labels['Total Flights'], cell_style)],
+            [wrap_text(total_flight_time, cell_style_left),
+            wrap_text(hebrew_labels['Total Flight Time'], cell_style)],
+            [wrap_text(str(solo_flights), cell_style_left),
+            wrap_text(hebrew_labels['Solo Flights'], cell_style)]
+        ]
+
+        # Reverse the width percentages to make Hebrew column 30%
+        summary_table = Table(summary_data, colWidths=[doc.width * 0.7, doc.width * 0.3])
+
+        summary_table.setStyle(TableStyle([
+            ('BACKGROUND', (1, 0), (1, -1), colors.lightgrey),  # Hebrew labels column background
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+            ('ALIGN', (0, 0), (0, -1), 'RIGHT'),  # Right-align numbers (not center)
+            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),  # Right-align Hebrew text
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('FONTNAME', (0, 0), (-1, -1), font_name if hebrew_font_found else 'Helvetica'),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
+            ('DIRECTION', (0, 0), (-1, -1), 'RTL'),
+        ]))
+        
+        content.append(summary_table)
+        content.append(Spacer(1, 1*cm))
+        
+        # Add flight log heading
+        flight_log_heading = Paragraph(fix_rtl_text(hebrew_labels['Flight Log']), heading_style)
+        content.append(flight_log_heading)
+        
+        # Process each flight record with a more attractive layout
+        for i, record in enumerate(records):
+            # Get and format all the record data
+            flight_num = record.get_flight_number() if hasattr(record, 'get_flight_number') else i+1
+            date_str = record.date.strftime('%Y-%m-%d') if record.date else hebrew_labels['N/A']
+            
+            topic = record.training_topic.name if record.training_topic else hebrew_labels['N/A']
+            glider = f"{record.glider.tail_number} ({record.glider.model})" if record.glider else hebrew_labels['N/A']
+            field = record.field or hebrew_labels['N/A']
+            
+            # Format duration as HH:MM
             if record.flight_duration:
                 total_seconds = int(record.flight_duration.total_seconds())
                 hours = total_seconds // 3600
                 minutes = (total_seconds % 3600) // 60
-                formatted_duration = f"{hours}:{minutes:02d}"
+                duration = f"{hours}:{minutes:02d}"
             else:
-                formatted_duration = "0:00"
+                duration = "0:00"
             
-            # Format instructor info
+            tow_height = f"{record.tow_height} ft" if record.tow_height else hebrew_labels['N/A']
+            solo_flight = hebrew_labels['Yes'] if record.is_solo else hebrew_labels['No']
+            
+            # Get instructor info
             if record.is_solo:
-                instructor_name = "Solo Flight"
+                instructor_name = hebrew_labels['Solo Flight']
             else:
                 instructor_name = record.instructor.get_full_name() if record.instructor else "Unknown"
+                
+            # Get comments
+            student_comments = record.student_comments or hebrew_labels['No comments provided.']
+            instructor_comments = record.instructor_comments or hebrew_labels['No comments provided.']
+            
+            # Get approval info
+            status = hebrew_labels['Approved'] if record.signed_off else hebrew_labels['Pending']
+            sign_date = record.sign_off_timestamp.strftime('%Y-%m-%d %H:%M') if record.signed_off and record.sign_off_timestamp else hebrew_labels['N/A']
+            
+            # Special fixed handling for flight titles with numbers
+            # In the reference image, the format is "מספר טיסה: 1 - 2025-03-03"
+            # We need to directly format it to match exactly as shown in the example
+            
+            # Format the title exactly as shown in the reference image
+            # Format the date in DD-MM-YYYY format instead of YYYY-MM-DD
+            # Format the date in DD-MM-YYYY format
+            if record.date:
+                date_str = record.date.strftime('%d-%m-%Y')
+            else:
+                date_str = hebrew_labels['N/A']
 
-            # Get instructor license for signature
-            instructor_license = ""
-            if record.instructor and record.instructor.instructor_license_number:
-                instructor_license = record.instructor.instructor_license_number
+            # Restructure the title for proper RTL display
+            # In RTL, we need to reverse the logical order of the elements
+            flight_title = f"{hebrew_labels['Flight Number']} : {flight_num} - {date_str}"
+           
+            # Create table header
+            header_data = [
+                [wrap_text(flight_title, header_style, rtl=True)]
+            ]
+            
+            header_table = Table(header_data, colWidths=[doc.width])
+            header_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (0, 0), colors.darkblue),
+                ('TEXTCOLOR', (0, 0), (0, 0), colors.white),
+                ('ALIGN', (0, 0), (0, 0), 'RIGHT'),
+                ('VALIGN', (0, 0), (0, 0), 'MIDDLE'),
+                ('FONTNAME', (0, 0), (0, 0), font_name if hebrew_font_found else 'Helvetica-Bold'),
+                ('BOTTOMPADDING', (0, 0), (0, 0), 6),
+                ('TOPPADDING', (0, 0), (0, 0), 6),
+                ('DIRECTION', (0, 0), (0, 0), 'RTL'),  # Set RTL direction
+            ]))
+            
+            # Main flight details - reverse column order for RTL display
+            flight_data = [
+                # First row - main flight details (reversed column order)
+                [wrap_text(instructor_name, cell_style), wrap_text(hebrew_labels['Instructor'], cell_style),
+                 wrap_text(topic, cell_style), wrap_text(hebrew_labels['Training Topic'], cell_style)],
+                
+                # Second row - aircraft details (reversed column order)
+                [wrap_text(field, cell_style), wrap_text(hebrew_labels['Field/Location'], cell_style),
+                 wrap_text(glider, cell_style), wrap_text(hebrew_labels['Glider'], cell_style)],
+                
+                # Third row - technical details (reversed column order)
+                [wrap_text(duration, cell_style), wrap_text(hebrew_labels['Flight Duration'], cell_style),
+                 wrap_text(tow_height, cell_style), wrap_text(hebrew_labels['Tow Height'], cell_style)],
 
-            # Format glider info
-            glider_info = f"{record.glider.tail_number} ({record.glider.model})" if record.glider else "N/A"
+            ]
+            
+            details_table = Table(flight_data, colWidths=[doc.width * 0.3, doc.width * 0.2, doc.width * 0.3, doc.width * 0.2])
+            details_table.setStyle(TableStyle([
+                ('BACKGROUND', (1, 0), (1, -1), colors.lightgrey),
+                ('BACKGROUND', (3, 0), (3, -1), colors.lightgrey),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+                ('ALIGN', (0, 0), (-1, -1), 'RIGHT'),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ('FONTNAME', (0, 0), (-1, -1), font_name if hebrew_font_found else 'Helvetica'),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+                ('TOPPADDING', (0, 0), (-1, -1), 6),
+                ('DIRECTION', (0, 0), (-1, -1), 'RTL'),  # Set RTL direction for entire table
+            ]))
+            
+            # Comments section - reverse order for RTL layout
+            comment_labels = [
+                [wrap_text(hebrew_labels['Instructor Comments'], header_style),
+                 wrap_text(hebrew_labels['Student Comments'], header_style)]
+            ]
+            
+            comment_label_table = Table(comment_labels, colWidths=[doc.width * 0.5, doc.width * 0.5])
+            comment_label_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
+                ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+                ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
+                ('FONTNAME', (0, 0), (-1, 0), font_name if hebrew_font_found else 'Helvetica-Bold'),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
+                ('TOPPADDING', (0, 0), (-1, 0), 6),
+                ('DIRECTION', (0, 0), (-1, 0), 'RTL'),  # Set RTL direction
+            ]))
+            
+            comment_data = [
+                [wrap_text(instructor_comments, cell_style, rtl=True),
+                 Paragraph(fix_rtl_text(student_comments), cell_style)]
+            ]
+            
+            comment_table = Table(comment_data, colWidths=[doc.width * 0.5, doc.width * 0.5])
+            comment_table.setStyle(TableStyle([
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+                ('ALIGN', (0, 0), (-1, -1), 'RIGHT'),
+                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                ('FONTNAME', (0, 0), (-1, -1), font_name if hebrew_font_found else 'Helvetica'),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+                ('TOPPADDING', (0, 0), (-1, -1), 6),
+                ('LEFTPADDING', (0, 0), (-1, -1), 6),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+                ('DIRECTION', (0, 0), (-1, -1), 'RTL'),  # Set RTL direction
+            ]))
+            
+            # Get instructor info for signature (even for solo flights)
+            # Get instructor info for signature (even for solo flights)
+            instructor_signature_info = ""
+            if record.instructor:
+                instructor_name = record.instructor.get_full_name() if record.instructor else "Unknown"
+                
+                # Get license number from whichever field it might be in
+                instructor_license = ""
+                if hasattr(record.instructor, 'instructor_license_number') and record.instructor.instructor_license_number:
+                    instructor_license = record.instructor.instructor_license_number
+                elif hasattr(record.instructor, 'license_number') and record.instructor.license_number:
+                    instructor_license = record.instructor.license_number
+                
+                # Create a 4-column table with license number in separate column
+                instructor_data = [[
+                    wrap_text(instructor_license, cell_style),            # License number
+                    wrap_text(hebrew_labels['License Number'], cell_style), # License label
+                    wrap_text(instructor_name, cell_style),               # Instructor name
+                    wrap_text(hebrew_labels['Instructor'], cell_style)    # Instructor label
+                ]]
 
-            # Add the processed record to the list
-            processed_records.append({
-                'id': record.id,
-                'flight_number': record.get_flight_number() if hasattr(record, 'get_flight_number') else "",
-                'date': record.date,
-                'date_formatted': record.date.strftime('%Y-%m-%d') if record.date else "N/A",
-                'topic': record.training_topic.name if record.training_topic else "N/A",
-                'glider': glider_info,
-                'field': record.field or "N/A",
-                'instructor': instructor_name,
-                'instructor_name': record.instructor.get_full_name() if record.instructor else "",
-                'instructor_license': instructor_license,
-                'tow_height': f"{record.tow_height} ft" if record.tow_height else "N/A",
-                'duration': formatted_duration,
-                'is_solo': record.is_solo,
-                'student_comments': record.student_comments or "No comments provided.",
-                'instructor_comments': record.instructor_comments or "No comments provided.",
-                'signed_off': record.signed_off,
-                'sign_off_timestamp': record.sign_off_timestamp.strftime('%Y-%m-%d %H:%M') if record.sign_off_timestamp else "N/A",
-                'pre_solo_exercises': record.exercises.filter(category='pre-solo'),
-                'post_solo_exercises': record.exercises.filter(category='post-solo'),
-            })
+                instructor_table = Table(instructor_data, colWidths=[doc.width * 0.2, doc.width * 0.3, doc.width * 0.2, doc.width * 0.3])
+                instructor_table.setStyle(TableStyle([
+                    ('BACKGROUND', (1, 0), (1, 0), colors.lightgrey),  # Background for license label
+                    ('BACKGROUND', (3, 0), (3, 0), colors.lightgrey),  # Background for instructor label
+                    ('GRID', (0, 0), (3, 0), 0.5, colors.grey),        # Grid for all cells
+                    ('ALIGN', (0, 0), (3, 0), 'RIGHT'),                # Right-align all cells
+                    ('VALIGN', (0, 0), (3, 0), 'MIDDLE'),
+                    ('FONTNAME', (0, 0), (3, 0), font_name if hebrew_font_found else 'Helvetica'),
+                    ('BOTTOMPADDING', (0, 0), (3, 0), 6),
+                    ('TOPPADDING', (0, 0), (3, 0), 6),
+                    ('DIRECTION', (0, 0), (3, 0), 'RTL'),              # RTL direction
+                ]))
+
+            # Signature information - keep this the same as before
+            signature_color = colors.lightgrey
+
+            signature_data = [[
+                wrap_text(sign_date, cell_style_left),  # Value on left
+                wrap_text(hebrew_labels['Signed Off Date'], cell_style)  # Label on right
+            ]]
+
+            signature_table = Table(signature_data, colWidths=[doc.width * 0.7, doc.width * 0.3])
+            signature_table.setStyle(TableStyle([
+                ('BACKGROUND', (1, 0), (1, 0), signature_color),  # Background for label cell
+                ('GRID', (0, 0), (1, 0), 0.5, colors.grey),  # Grid for both cells
+                ('ALIGN', (1, 0), (1, 0), 'RIGHT'),  # Right-align the label
+                ('ALIGN', (0, 0), (0, 0), 'RIGHT'),  # Right-align the value
+                ('VALIGN', (0, 0), (1, 0), 'MIDDLE'),
+                ('FONTNAME', (0, 0), (1, 0), font_name if hebrew_font_found else 'Helvetica'),
+                ('BOTTOMPADDING', (0, 0), (1, 0), 6),
+                ('TOPPADDING', (0, 0), (1, 0), 6),
+                ('DIRECTION', (0, 0), (1, 0), 'RTL'),  # RTL direction
+            ]))
+
+
+            # Add all components of this record
+            content.append(header_table)
+            content.append(details_table)
+            content.append(comment_label_table)
+            content.append(comment_table)
+            content.append(instructor_table)  # Add the instructor info table first
+            content.append(signature_table)
+            
+            # Add space between records
+            if i < len(records) - 1:
+                content.append(Spacer(1, 0.8*cm))
         
-        # Context for the template
-        context = {
-            'student': student,
-            'records': processed_records,
-            'total_flights': total_flights,
-            'solo_flights': solo_flights,
-            'signed_off_count': signed_off_count,
-            'total_flight_time': total_flight_time,
-            'current_date': timezone.now().strftime('%Y-%m-%d'),
-            'rtl': True,  # Flag for RTL support
-        }
+        # Create a function to add page numbers
+        def add_page_numbers(canvas, doc):
+            canvas.saveState()
+            canvas.setFont(font_name if hebrew_font_found else 'Helvetica', 8)
+            
+            # Draw the page number at the bottom of each page
+            page_num = canvas.getPageNumber()
+            text = f"{hebrew_labels['Page']} {page_num}"
+            
+            # Calculate center of page
+            canvas.drawRightString(doc.pagesize[0] - doc.rightMargin, doc.bottomMargin/2, fix_rtl_text(text))
+            
+            canvas.restoreState()
         
-        # Render the HTML template
-        html_string = render_to_string('training_records/pdf_export_template.html', context)
+        # Build the PDF with page numbers
+        doc.build(content, onFirstPage=add_page_numbers, onLaterPages=add_page_numbers)
+        buffer.seek(0)
         
-        # Create a temporary file to write the PDF to
-        with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as tmp:
-            # Generate the PDF file
-            HTML(string=html_string, base_url=request.build_absolute_uri('/')).write_pdf(
-                tmp.name,
-                stylesheets=[
-                    CSS(filename=os.path.join(settings.STATIC_ROOT, 'css', 'pdf_styles.css'))
-                ]
-            )
-        
-        # Read the PDF file into memory and return as a response
-        with open(tmp.name, 'rb') as pdf_file:
-            response = HttpResponse(pdf_file.read(), content_type='application/pdf')
-            response['Content-Disposition'] = f'attachment; filename="{student.username}_training_records.pdf"'
-        
-        # Clean up the temporary file
-        os.unlink(tmp.name)
-        
-        return response
+        # Return the PDF as a response
+        return FileResponse(
+            buffer, 
+            as_attachment=True, 
+            filename=f"{student.username}_training_records.pdf",
+            content_type='application/pdf'
+        )
     
     except Exception as e:
         # Log the error for debugging
@@ -767,3 +1235,11 @@ def _export_pdf_weasyprint(student, records, request):
         logger.error(f"PDF export error: {str(e)}")
         logger.error(traceback.format_exc())
         raise
+    
+def contains_hebrew(s):
+    """Detect if a string contains Hebrew characters."""
+    if not s:
+        return False
+    import re
+    hebrew_pattern = re.compile(r'[\u0590-\u05FF\uFB1D-\uFB4F]')
+    return bool(hebrew_pattern.search(s))
