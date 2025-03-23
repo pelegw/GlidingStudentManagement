@@ -19,6 +19,19 @@ RUN apk add --no-cache --virtual .build-deps \
     && apk del .build-deps \
     && apk add weasyprint
 
+RUN apk add --no-cache \
+    pango \
+    harfbuzz \
+    cairo \
+    libffi \
+    fontconfig \
+    ttf-dejavu \
+    ttf-freefont \
+    && mkdir -p /usr/share/fonts/noto
+    
+RUN wget -O /usr/share/fonts/noto/NotoSansHebrew-Regular.ttf \
+    https://github.com/googlefonts/noto-fonts/raw/main/hinted/ttf/NotoSansHebrew/NotoSansHebrew-Regular.ttf \
+    && fc-cache -fv    
 # Copy only the application code (not the venv)
 COPY gliding_club/ /app/
 RUN chmod 755 /app/entrypoint.sh
