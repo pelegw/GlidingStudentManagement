@@ -2,3 +2,7 @@ Django==5.1.7
 pandas==2.2.3
 Pillow==11.1.0
 weasyprint==65.0
+django-axes==7.0.2
+django_csp==3.8
+gunicorn==23.0.0
+psycopg2-binary==2.9.10

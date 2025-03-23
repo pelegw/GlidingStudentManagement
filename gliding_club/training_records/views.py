@@ -602,7 +602,7 @@ def _export_csv(student, records):
         # Add BOM (Byte Order Mark) for Excel to recognize UTF-8
         response.write('\ufeff')
         
-        writer = csv.writer(response)
+        writer = csv.writer(response, quoting=csv.QUOTE_ALL)
         
         # Write header row
         writer.writerow([
