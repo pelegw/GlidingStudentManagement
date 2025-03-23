@@ -17,6 +17,7 @@ RUN apk add --no-cache --virtual .build-deps \
     && pip install --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt \
     && apk del .build-deps
+    && apk add weasyprint
 
 # Copy only the application code (not the venv)
 COPY gliding_club/ /app/
