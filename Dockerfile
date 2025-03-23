@@ -16,7 +16,7 @@ RUN apk add --no-cache --virtual .build-deps \
         # ... other build dependencies ...
     && pip install --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt \
-    && apk del .build-deps
+    && apk del .build-deps \
     && apk add weasyprint
 
 # Copy only the application code (not the venv)
