@@ -49,7 +49,26 @@ MIDDLEWARE = [
     'training_records.middleware.AuditLogMiddleware',  # Custom middleware for audit logging
     'axes.middleware.AxesMiddleware',  # Should be the last middleware
 ]
-
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'django_auth.log',
+        },
+    },
+    'loggers': {
+        'django.security.authentication': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
 ROOT_URLCONF = 'gliding_club.urls'
 CLUB_NAME = "NGC - Student Records Management"  # Change this to whatever name you want
 
@@ -176,8 +195,8 @@ CSP_IMG_SRC = ("'self'", "data:")
 
 # Django Axes Configuration
 AUTHENTICATION_BACKENDS = [
-    'training_records.auth_backends.CaseInsensitiveModelBackend',
     'axes.backends.AxesBackend',
+    'training_records.auth_backends.CaseInsensitiveModelBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 AXES_FAILURE_LIMIT = 5  # Number of login attempts before lockout

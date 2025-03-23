@@ -18,6 +18,8 @@ from django.db import transaction
 import logging
 logger = logging.getLogger(__name__)
 from django.core.files.storage import default_storage
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 class StudentRequiredMixin(UserPassesTestMixin):
     def test_func(self):
@@ -361,29 +363,38 @@ def change_password(request):
     
     return render(request, 'training_records/change_password.html', {'form': form})
 
+
 @login_required
 def first_login_password_change(request):
-    """Force password change on first login"""
-    # If password change not required, redirect to dashboard
     if not request.user.password_change_required:
         return redirect('dashboard')
-    
+
     if request.method == 'POST':
         form = PasswordChangeRequiredForm(request.POST)
         if form.is_valid():
-            # Set the new password
-            request.user.set_password(form.cleaned_data['new_password1'])
-            request.user.password_change_required = False
-            request.user.save()
+            password = form.cleaned_data['new_password1']
             
-            # Update the session to prevent logging out
-            update_session_auth_hash(request, request.user)
-            
-            messages.success(request, "Your password has been changed successfully. You can now access the system.")
-            return redirect('dashboard')
+            # Validate password against your configured validators
+            try:
+                validate_password(password, request.user)
+                
+                # If validation passes, set the password
+                request.user.set_password(password)
+                request.user.password_change_required = False
+                request.user.save()
+                
+                # Update session
+                update_session_auth_hash(request, request.user)
+                
+                messages.success(request, "Your password has been changed successfully. You can now access the system.")
+                return redirect('dashboard')
+                
+            except ValidationError as error:
+                # Add validation errors to the form
+                form.add_error('new_password1', error)
     else:
         form = PasswordChangeRequiredForm()
-    
+
     return render(request, 'training_records/first_login.html', {'form': form})
 
 # Sign-off functionality
