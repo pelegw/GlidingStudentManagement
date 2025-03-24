@@ -264,9 +264,13 @@
             </tr>
             <tr>
                 <td style="width: 100%; padding: 8px; border: 1px solid #ddd; vertical-align: top; font-style: italic; background-color: #f2f2f2; text-align: right;">
-                    <strong>אושר ע"י:</strong> {{ record.instructor_name }}
-                    
-                    <strong>מס' רשיון:</strong> {{ record.instructor_license }}
+                    {% if record.signed_off %}
+                        <strong>אושר ע"י:</strong> {{ record.instructor_name }}
+                        
+                        <strong>מס' רשיון:</strong> {{ record.instructor_license }}
+                    {% else %}
+                        <strong>הטיסה טרם אושרה</strong>
+                    {% endif %}
                 </td>
             </tr>
         </table>
