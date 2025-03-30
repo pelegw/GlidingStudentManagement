@@ -200,7 +200,13 @@ class TrainingRecordDetailView(LoginRequiredMixin, DetailView):
         else:
             context['formatted_duration'] = "0:00"
 
-        # Get exercise performances grouped by category
+        # Check if any performed exercises exist (not just 'not_performed')
+        performed_exercises_exist = self.object.exercise_performances.filter(
+            performance__in=['performed_well', 'needs_improvement']
+        ).exists()
+        context['performed_exercises_exist'] = performed_exercises_exist
+
+        # Get exercise performances grouped by category - only include performed ones
         context['pre_solo_performances'] = self.object.exercise_performances.filter(
             exercise__category='pre-solo',
             performance__in=['performed_well', 'needs_improvement']
@@ -243,6 +249,10 @@ class TrainingRecordCreateView(LoginRequiredMixin, CreateView):
         # Process the main form and get the TrainingRecord instance
         self.object = form.save()
         
+        # Get all exercises to ensure we have a performance record for each
+        all_exercises = Exercise.objects.all()
+        processed_exercise_ids = set()
+        
         # Process the exercise performance data from the POST request
         if self.request.POST:
             total_forms = int(self.request.POST.get('form-TOTAL_FORMS', 0))
@@ -255,18 +265,31 @@ class TrainingRecordCreateView(LoginRequiredMixin, CreateView):
                 
                 if exercise_id and performance:
                     try:
+                        exercise_id = int(exercise_id)
+                        processed_exercise_ids.add(exercise_id)
                         exercise = Exercise.objects.get(pk=exercise_id)
                         
-                        # Create or update the performance record
+                        # Create the performance record
                         ExercisePerformance.objects.create(
                             training_record=self.object,
                             exercise=exercise,
                             performance=performance,
                             notes=notes
                         )
-                    except Exercise.DoesNotExist:
+                    except (Exercise.DoesNotExist, ValueError) as e:
                         # Log an error but continue processing
-                        print(f"Exercise with ID {exercise_id} not found")
+                        logger.error(f"Error processing exercise {exercise_id}: {str(e)}")
+                        print(f"Error processing exercise {exercise_id}: {str(e)}")
+        
+        # For any exercises not processed (not in the form), create a default 'not_performed' record
+        for exercise in all_exercises:
+            if exercise.id not in processed_exercise_ids:
+                ExercisePerformance.objects.create(
+                    training_record=self.object,
+                    exercise=exercise,
+                    performance='not_performed',
+                    notes=''
+                )
         
         messages.success(self.request, 'Training record created successfully.')
         return redirect(self.get_success_url())
@@ -303,6 +326,117 @@ class TrainingRecordUpdateView(LoginRequiredMixin, UpdateView):
         
         context['existing_performances'] = existing_performances
         
+        return context
+    
+    def form_valid(self, form):
+        # Save the main form first to get/update the TrainingRecord instance
+        self.object = form.save()
+        
+        # Check if the form includes exercise-related data
+        has_exercise_data = False
+        exercise_ids = []
+        
+        for key in self.request.POST:
+            if '-exercise' in key:
+                has_exercise_data = True
+                try:
+                    exercise_id = self.request.POST.get(key)
+                    if exercise_id:
+                        exercise_ids.append(int(exercise_id))
+                except (ValueError, TypeError):
+                    pass
+        
+        # Only process exercises if we have exercise data
+        if has_exercise_data:
+            # Track processed exercises
+            processed_exercise_ids = set()
+            
+            # Process form data for exercises
+            total_forms = int(self.request.POST.get('form-TOTAL_FORMS', 0))
+            
+            for i in range(total_forms):
+                prefix = f'form-{i}'
+                exercise_id = self.request.POST.get(f'{prefix}-exercise')
+                performance = self.request.POST.get(f'{prefix}-performance')
+                notes = self.request.POST.get(f'{prefix}-notes', '')
+                
+                if exercise_id and performance:
+                    try:
+                        exercise_id = int(exercise_id)
+                        exercise = Exercise.objects.get(pk=exercise_id)
+                        processed_exercise_ids.add(exercise_id)
+                        
+                        # Update or create performance record
+                        ExercisePerformance.objects.update_or_create(
+                            training_record=self.object,
+                            exercise=exercise,
+                            defaults={
+                                'performance': performance,
+                                'notes': notes
+                            }
+                        )
+                    except (Exercise.DoesNotExist, ValueError, TypeError) as e:
+                        # Log error but continue processing
+                        logger.error(f"Error processing exercise {exercise_id}: {str(e)}")
+            
+            # If no exercises were processed but we had exercise_ids in the form,
+            # something might have gone wrong with the form processing
+            if not processed_exercise_ids and exercise_ids:
+                logger.warning(f"No exercises processed despite having IDs in form: {exercise_ids}")
+        
+        messages.success(self.request, 'Training record updated successfully.')
+        return redirect(self.get_success_url())
+
+
+class TrainingRecordUpdateView(LoginRequiredMixin, UpdateView):
+    """Update an existing training record with exercise performances"""
+    model = TrainingRecord
+    form_class = TrainingRecordForm
+    template_name = 'training_records/record_form.html'
+    
+    def get_success_url(self):
+        return reverse_lazy('record_detail', kwargs={'pk': self.object.pk})
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['can_sign'] = (
+            self.request.user.is_instructor() and 
+            self.object.instructor == self.request.user and
+            not self.object.signed_off
+        )
+
+        # Format the duration as HH:MM
+        duration = self.object.flight_duration
+        if duration:
+            total_seconds = int(duration.total_seconds())
+            hours = total_seconds // 3600
+            minutes = (total_seconds % 3600) // 60
+            context['formatted_duration'] = f"{hours}:{minutes:02d}"
+        else:
+            context['formatted_duration'] = "0:00"
+
+        # Check if any performed exercises exist
+        has_performed_exercises = self.object.exercise_performances.filter(
+            performance__in=['performed_well', 'needs_improvement']
+        ).exists()
+        context['has_performed_exercises'] = has_performed_exercises
+
+        # Get exercise performances grouped by category - only include performed ones
+        context['pre_solo_performances'] = self.object.exercise_performances.filter(
+            exercise__category='pre-solo',
+            performance__in=['performed_well', 'needs_improvement']
+        ).select_related('exercise').order_by('exercise__number', 'exercise__name')
+        
+        context['post_solo_performances'] = self.object.exercise_performances.filter(
+            exercise__category='post-solo',
+            performance__in=['performed_well', 'needs_improvement']
+        ).select_related('exercise').order_by('exercise__number', 'exercise__name')
+
         return context
     
     def form_valid(self, form):

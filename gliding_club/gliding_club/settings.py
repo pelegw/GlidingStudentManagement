@@ -44,6 +44,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'training_records.middleware.CSPNonceMiddleware',
     'csp.middleware.CSPMiddleware',
     'training_records.middleware.FirstLoginMiddleware',  # Custom middleware for first login redirect
     'training_records.middleware.AuditLogMiddleware',  # Custom middleware for audit logging
@@ -85,6 +86,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'training_records.context_processors.club_settings',
                 'django.template.context_processors.i18n',
+                'training_records.context_processors.csp_nonce',
             ],
         },
     },
@@ -187,11 +189,18 @@ CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in csrf_trusted_origins.split(
 if not CSRF_TRUSTED_ORIGINS:
     CSRF_TRUSTED_ORIGINS = ['https://studentlog.wasserman.me']
 # Content Security Policy
+# Content Security Policy with nonce support
 CSP_DEFAULT_SRC = ("'self'",)
-CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "fonts.googleapis.com")
-CSP_SCRIPT_SRC = ("'self'", "cdn.jsdelivr.net")
+CSP_STYLE_SRC = ("'self'", "'nonce-%(csp_nonce)s'", "cdn.jsdelivr.net", "fonts.googleapis.com")
+CSP_SCRIPT_SRC = ("'self'", "'nonce-%(csp_nonce)s'", "cdn.jsdelivr.net")
 CSP_FONT_SRC = ("'self'", "fonts.gstatic.com", "cdn.jsdelivr.net")
 CSP_IMG_SRC = ("'self'", "data:")
+
+# Enable nonces for scripts and styles (important!)
+CSP_INCLUDE_NONCE_IN = ['script-src', 'style-src']
+
+# If you want to temporarily disable CSP while debugging, uncomment this line:
+# CSP_REPORT_ONLY = True
 
 # Django Axes Configuration
 AUTHENTICATION_BACKENDS = [

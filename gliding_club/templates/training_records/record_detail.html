@@ -3,7 +3,7 @@
 {% block title %}{% trans "Training Record Details" %} - {{ CLUB_NAME }}{% endblock %}
 
 {% block extra_css %}
-<style>
+<style nonce="{{ csp_nonce }}">
     .exercise-badge {
         display: inline-block;
         padding: 4px 8px;
@@ -68,34 +68,32 @@
                 </div>
                 <div class="mb-3">
                     <h6>{% trans "Exercises Performed" %}:</h6>
-                    {% if record.exercise_performances.exists %}
+                    {% if performed_exercises_exist %}
                     <div class="row">
                         <div class="col-md-6">
                             <h6 class="text-muted">{% trans "Pre-Solo Exercises" %}</h6>
                             <div class="list-group">
                                 {% for performance in pre_solo_performances %}
-                                    {% if performance.performance != 'not_performed' %}
-                                        <div class="list-group-item">
-                                            <div class="d-flex align-items-center">
-                                                <div>
-                                                    {% if performance.exercise.number %}{{ performance.exercise.number }} - {% endif %}
-                                                    {{ performance.exercise.name }}
-                                                </div>
-                                                <div class="ms-auto">
-                                                    {% if performance.performance == 'performed_well' %}
-                                                        <span class="exercise-badge exercise-performed">Performed Well</span>
-                                                    {% elif performance.performance == 'needs_improvement' %}
-                                                        <span class="exercise-badge exercise-needs-improvement">Needs Improvement</span>
-                                                    {% endif %}
-                                                </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex align-items-center">
+                                            <div>
+                                                {% if performance.exercise.number %}{{ performance.exercise.number }} - {% endif %}
+                                                {{ performance.exercise.name }}
                                             </div>
-                                            {% if performance.notes %}
-                                                <div class="exercise-notes">{{ performance.notes }}</div>
-                                            {% endif %}
+                                            <div class="ms-auto">
+                                                {% if performance.performance == 'performed_well' %}
+                                                    <span class="exercise-badge exercise-performed">Performed Well</span>
+                                                {% elif performance.performance == 'needs_improvement' %}
+                                                    <span class="exercise-badge exercise-needs-improvement">Needs Improvement</span>
+                                                {% endif %}
+                                            </div>
                                         </div>
-                                    {% endif %}
+                                        {% if performance.notes %}
+                                            <div class="exercise-notes">{{ performance.notes }}</div>
+                                        {% endif %}
+                                    </div>
                                 {% empty %}
-                                    <div class="list-group-item text-muted">{% trans "No pre-solo exercises performed" %}</div>
+                                    <div class="list-group-item text-muted">{% trans "No pre-solo exercises" %}</div>
                                 {% endfor %}
                             </div>
                         </div>
@@ -103,28 +101,26 @@
                             <h6 class="text-muted">{% trans "Post-Solo Exercises" %}</h6>
                             <div class="list-group">
                                 {% for performance in post_solo_performances %}
-                                    {% if performance.performance != 'not_performed' %}
-                                        <div class="list-group-item">
-                                            <div class="d-flex align-items-center">
-                                                <div>
-                                                    {% if performance.exercise.number %}{{ performance.exercise.number }} - {% endif %}
-                                                    {{ performance.exercise.name }}
-                                                </div>
-                                                <div class="ms-auto">
-                                                    {% if performance.performance == 'performed_well' %}
-                                                        <span class="exercise-badge exercise-performed">Performed Well</span>
-                                                    {% elif performance.performance == 'needs_improvement' %}
-                                                        <span class="exercise-badge exercise-needs-improvement">Needs Improvement</span>
-                                                    {% endif %}
-                                                </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex align-items-center">
+                                            <div>
+                                                {% if performance.exercise.number %}{{ performance.exercise.number }} - {% endif %}
+                                                {{ performance.exercise.name }}
                                             </div>
-                                            {% if performance.notes %}
-                                                <div class="exercise-notes">{{ performance.notes }}</div>
-                                            {% endif %}
+                                            <div class="ms-auto">
+                                                {% if performance.performance == 'performed_well' %}
+                                                    <span class="exercise-badge exercise-performed">Performed Well</span>
+                                                {% elif performance.performance == 'needs_improvement' %}
+                                                    <span class="exercise-badge exercise-needs-improvement">Needs Improvement</span>
+                                                {% endif %}
+                                            </div>
                                         </div>
-                                    {% endif %}
+                                        {% if performance.notes %}
+                                            <div class="exercise-notes">{{ performance.notes }}</div>
+                                        {% endif %}
+                                    </div>
                                 {% empty %}
-                                    <div class="list-group-item text-muted">{% trans "No post-solo exercises performed" %}</div>
+                                    <div class="list-group-item text-muted">{% trans "No post-solo exercises" %}</div>
                                 {% endfor %}
                             </div>
                         </div>

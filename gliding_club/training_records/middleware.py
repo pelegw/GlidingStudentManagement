@@ -6,7 +6,27 @@ from django.db import models
 import datetime
 from django.forms.models import model_to_dict
 from django.core.serializers.json import DjangoJSONEncoder  # Add this import
+import secrets
+from django.utils.functional import SimpleLazyObject
 
+class CSPNonceMiddleware:
+    """
+    Middleware that adds a random nonce to the request object for CSP.
+    This nonce can then be used in templates and CSP headers.
+    """
+    def __init__(self, get_response):
+        self.get_response = get_response
+        
+    def __call__(self, request):
+        # Generate a cryptographically secure random nonce
+        # Using base64 encoding for compatibility with CSP requirements
+        nonce = base64.b64encode(secrets.token_bytes(16)).decode('ascii')
+        request.csp_nonce = nonce
+        
+        # Process the request and get the response
+        response = self.get_response(request)
+        return response
+    
 class CustomJSONEncoder(DjangoJSONEncoder):
     """Custom JSON encoder that can handle Django model objects and more"""
     def default(self, obj):

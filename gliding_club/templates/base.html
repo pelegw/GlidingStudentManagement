@@ -19,7 +19,7 @@
     {% block extra_css %}{% endblock %}
     
     <!-- Additional fixes for RTL layout -->
-    <style>
+    <style nonce="{{ csp_nonce }}">
         /* Ensure tables display correctly in RTL */
         html[dir="rtl"] .table {
             text-align: right;
