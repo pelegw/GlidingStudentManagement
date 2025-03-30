@@ -1,9 +1,46 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% block title %}{% trans "Sign Off Record" %} - {{ CLUB_NAME }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 25px;
+        margin-bottom: 25px;
+    }
+    
+    .form-section-title {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 8px;
+    }
+    
+    /* Improve form layout and alignment */
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+    
+    /* Add bottom margin between rows */
+    .mb-4 {
+        margin-bottom: 1.5rem;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-lg-6 col-md-8">
+    <div class="col-lg-10 col-md-12">
         <div class="card shadow">
             <div class="card-header bg-success text-white">
                 <h4 class="mb-0">{% trans "Sign Off Training Record" %}</h4>
@@ -18,63 +55,160 @@
                     </ul>
                     <p>{% trans "Once signed off, this record cannot be modified." %}</p>
                 </div>
-                <div class="mb-4">
-                    <h5>{% trans "Record Details" %}:</h5>
-                    <table class="table">
-                        <tr>
-                            <th>{% trans "ID" %}:</th>
-                            <td>#{{ record.id }}</td>
-                        </tr>
-                        <tr>
-                            <th>{% trans "Date" %}:</th>
-                            <td>{{ record.date }}</td>
-                        </tr>
-                        <tr>
-                            <th>{% trans "Student" %}:</th>
-                            <td>{{ record.student.get_full_name }}</td>
-                        </tr>
-                        <tr>
-                            <th>{% trans "Topic" %}:</th>
-                            <td>{{ record.training_topic.name }}</td>
-                        </tr>
-                        <tr>
-                            <th>{% trans "Glider" %}:</th>
-                            <td>{{ record.glider.tail_number }}</td>
-                        </tr>
-                        <tr>
-                            <th>{% trans "Duration" %}:</th>
-                            <td>{{ record.flight_duration }}</td>
-                        </tr>
-                    </table>
-                </div>
+
                 <form method="post">
                     {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="{{ form.instructor_comments.id_for_label }}" class="form-label">{% trans "Instructor Comments" %}:</label>
-                        {{ form.instructor_comments }}
-                        <div class="form-text">{{ form.instructor_comments.help_text }}</div>
+                    
+                    <!-- Flight Information Section -->
+                    <div class="form-card">
+                        <h4 class="form-section-title">{% trans "Flight Information" %}</h4>
+                        
+                        <!-- First row with Date, Glider, and Training Topic -->
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.date.id_for_label }}" class="form-label">
+                                        {% trans "Date" %}:
+                                    </label>
+                                    {{ form.date }}
+                                    {% if form.date.errors %}
+                                        <div class="text-danger">{{ form.date.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.glider.id_for_label }}" class="form-label">
+                                        {% trans "Glider" %}:
+                                    </label>
+                                    {{ form.glider }}
+                                    {% if form.glider.errors %}
+                                        <div class="text-danger">{{ form.glider.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.training_topic.id_for_label }}" class="form-label">
+                                        {% trans "Training Topic" %}:
+                                    </label>
+                                    {{ form.training_topic }}
+                                    {% if form.training_topic.errors %}
+                                        <div class="text-danger">{{ form.training_topic.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Second row with Duration, Tow Height, Field/Location -->
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.duration_display.id_for_label }}" class="form-label">
+                                        {% trans "Flight Duration" %}:
+                                    </label>
+                                    <div class="input-group">
+                                        {{ form.duration_display }}
+                                        <span class="input-group-text">HH:MM</span>
+                                    </div>
+                                    {% if form.duration_display.errors %}
+                                        <div class="text-danger">{{ form.duration_display.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.tow_height.id_for_label }}" class="form-label">
+                                        {% trans "Tow Height" %}:
+                                    </label>
+                                    <div class="input-group">
+                                        {{ form.tow_height }}
+                                        <span class="input-group-text">feet</span>
+                                    </div>
+                                    {% if form.tow_height.errors %}
+                                        <div class="text-danger">{{ form.tow_height.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.field.id_for_label }}" class="form-label">
+                                        {% trans "Field/Location" %}:
+                                    </label>
+                                    {{ form.field }}
+                                    {% if form.field.errors %}
+                                        <div class="text-danger">{{ form.field.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Hidden solo field - not shown to instructors -->
+                        <div class="d-none">
+                            {{ form.is_solo }}
+                        </div>
                     </div>
                     
-                    <div class="mb-3">
-                        <label for="{{ form.internal_comments.id_for_label }}" class="form-label">{% trans "Internal Comments" %} ({% trans "Visible to Instructors Only" %}):</label>
-                        {{ form.internal_comments }}
-                        <div class="form-text">{{ form.internal_comments.help_text }}</div>
+                    <!-- Comments Section -->
+                    <div class="form-card">
+                        <h4 class="form-section-title">{% trans "Comments" %}</h4>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.student_comments.id_for_label }}" class="form-label">{% trans "Student Comments" %}:</label>
+                                    {{ form.student_comments }}
+                                    <small class="form-text text-muted">{{ form.student_comments.help_text }}</small>
+                                    {% if form.student_comments.errors %}
+                                        <div class="text-danger">{{ form.student_comments.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.instructor_comments.id_for_label }}" class="form-label">{% trans "Instructor Comments" %}:</label>
+                                    {{ form.instructor_comments }}
+                                    <small class="form-text text-muted">{{ form.instructor_comments.help_text }}</small>
+                                    {% if form.instructor_comments.errors %}
+                                        <div class="text-danger">{{ form.instructor_comments.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" name="confirm_sign_off" id="id_confirm_sign_off" class="form-check-input" required>
-                        <label for="id_confirm_sign_off" class="form-check-label">
-                            {{ form.confirm_sign_off.label }}
-                        </label>
-                    </div>
-                    {% if form.errors %}
-                        <div class="alert alert-danger">
-                            {% for field in form %}
-                                {% for error in field.errors %}
+                    
+                    <!-- Sign-off confirmation -->
+                    <div class="form-card">
+                        <h4 class="form-section-title">{% trans "Sign Off" %}</h4>
+                        
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" name="confirm_sign_off" id="id_confirm_sign_off" class="form-check-input" required>
+                                <label for="id_confirm_sign_off" class="form-check-label">
+                                    {{ form.confirm_sign_off.label }}
+                                </label>
+                            </div>
+                        </div>
+                        
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                {% endfor %}
+                                {% for error in form.non_field_errors %}
                                     <p>{{ error }}</p>
                                 {% endfor %}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
                     <div class="d-flex justify-content-between mt-4">
                         <a href="{% url 'record_detail' record.pk %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
                         <button type="submit" class="btn btn-success">{% trans "Sign Off Record" %}</button>
@@ -84,4 +218,31 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add Bootstrap form classes to all form inputs
+    const formElements = document.querySelectorAll('input:not(.form-check-input), select, textarea');
+    formElements.forEach(element => {
+        if (!element.classList.contains('form-control') && 
+            !element.classList.contains('form-select') && 
+            !element.classList.contains('d-none')) {
+            
+            if (element.tagName === 'SELECT') {
+                element.classList.add('form-select');
+            } else {
+                element.classList.add('form-control');
+            }
+        }
+    });
+    
+    // Make sure checkboxes have the right class
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.classList.add('form-check-input');
+    });
+});
+</script>
 {% endblock %}

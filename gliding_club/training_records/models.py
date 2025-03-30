@@ -108,7 +108,7 @@ class TrainingRecord(models.Model):
     student_comments = models.TextField(blank=True)
     instructor_comments = models.TextField(blank=True)
     
-    # Exercises performed during this training session
+    # Keep the old exercises field for backward compatibility during migration
     exercises = models.ManyToManyField('Exercise', related_name='training_records', blank=True)
     
     # Sign-off and verification
@@ -122,11 +122,6 @@ class TrainingRecord(models.Model):
         help_text="Height of aerotow in feet"
     )
     
-    # Add internal comments visible only to instructors
-    internal_comments = models.TextField(
-        blank=True, 
-        help_text="Internal comments visible only to instructors"
-    )
     # Metadata
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -134,10 +129,32 @@ class TrainingRecord(models.Model):
     
     class Meta:
         ordering = ['-date', '-created_at']
-        
+    
     def __str__(self):
         return f"{self.student.username} - {self.training_topic} - {self.date}"
     
+    def get_performed_exercises(self):
+        """Get exercises that were performed (either well or needs improvement)"""
+        return Exercise.objects.filter(
+            performances__training_record=self, 
+            performances__performance__in=['performed_well', 'needs_improvement']
+        )
+    
+    def get_well_performed_exercises(self):
+        """Get exercises that were performed well"""
+        return Exercise.objects.filter(
+            performances__training_record=self, 
+            performances__performance='performed_well'
+        )
+    
+    def get_needs_improvement_exercises(self):
+        """Get exercises that need improvement"""
+        return Exercise.objects.filter(
+            performances__training_record=self, 
+            performances__performance='needs_improvement'
+        )
+    
+    # Keep the sign method the same as before
     def sign(self, instructor):
         """Method to sign off a training record"""
         if not self.signed_off and instructor.is_instructor() and instructor.id == self.instructor.id:
@@ -145,7 +162,6 @@ class TrainingRecord(models.Model):
             self.sign_off_timestamp = timezone.now()
             
             # Generate a signature hash based on the record data and timestamp
-            # This creates a unique hash that can verify the record hasn't been tampered with
             import hashlib
             data_string = (
                 f"{self.id}|{self.student.id}|{self.instructor.id}|{self.training_topic.id}|"
@@ -154,8 +170,6 @@ class TrainingRecord(models.Model):
             self.signature_hash = hashlib.sha256(data_string.encode()).hexdigest()
             
             self.save()
-            
-            # Log message can be accessed from audit log
             return True
         return False
     
@@ -207,3 +221,23 @@ class Exercise(models.Model):
         if self.number:
             return f"{self.number} - {self.name}"
         return self.name
+    
+class ExercisePerformance(models.Model):
+    """Model to track individual exercise performance in a training session"""
+    PERFORMANCE_CHOICES = (
+        ('not_performed', 'Not Performed'),
+        ('needs_improvement', 'Needs Improvement'),
+        ('performed_well', 'Performed Well'),
+    )
+    
+    training_record = models.ForeignKey('TrainingRecord', on_delete=models.CASCADE, related_name='exercise_performances')
+    exercise = models.ForeignKey('Exercise', on_delete=models.CASCADE, related_name='performances')
+    performance = models.CharField(max_length=20, choices=PERFORMANCE_CHOICES, default='not_performed')
+    notes = models.TextField(blank=True, help_text="Optional notes about this exercise performance")
+    
+    class Meta:
+        unique_together = ('training_record', 'exercise')
+        ordering = ('exercise__category', 'exercise__number')
+    
+    def __str__(self):
+        return f"{self.exercise.name} - {self.get_performance_display()}"

@@ -12,8 +12,8 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.db.models import Sum
 import os 
-from .models import TrainingRecord, TrainingTopic, Glider, User, Exercise
-from .forms import TrainingRecordForm, SignOffForm, ProfileUpdateForm, PasswordChangeRequiredForm
+from .models import TrainingRecord, TrainingTopic, Glider, User, Exercise, ExercisePerformance
+from .forms import TrainingRecordForm, SignOffForm, ProfileUpdateForm, PasswordChangeRequiredForm, ExercisePerformanceFormSet
 from django.db import transaction
 import logging
 logger = logging.getLogger(__name__)
@@ -200,16 +200,22 @@ class TrainingRecordDetailView(LoginRequiredMixin, DetailView):
         else:
             context['formatted_duration'] = "0:00"
 
-        # Filter exercises by category
-        context['pre_solo_exercises'] = self.object.exercises.filter(category='pre-solo')
-        context['post_solo_exercises'] = self.object.exercises.filter(category='post-solo')
+        # Get exercise performances grouped by category
+        context['pre_solo_performances'] = self.object.exercise_performances.filter(
+            exercise__category='pre-solo',
+            performance__in=['performed_well', 'needs_improvement']
+        ).select_related('exercise').order_by('exercise__number', 'exercise__name')
+        
+        context['post_solo_performances'] = self.object.exercise_performances.filter(
+            exercise__category='post-solo',
+            performance__in=['performed_well', 'needs_improvement']
+        ).select_related('exercise').order_by('exercise__number', 'exercise__name')
 
         return context
-
-# Update in training_records/views.py
+    
 
 class TrainingRecordCreateView(LoginRequiredMixin, CreateView):
-    """Create a new training record"""
+    """Create a new training record with exercise performances"""
     model = TrainingRecord
     form_class = TrainingRecordForm
     template_name = 'training_records/record_form.html'
@@ -223,9 +229,9 @@ class TrainingRecordCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Add split exercises lists to context
-        context['all_pre_solo_exercises'] = Exercise.objects.filter(category='pre-solo').order_by('number', 'name')
-        context['all_post_solo_exercises'] = Exercise.objects.filter(category='post-solo').order_by('number', 'name')
+        # Add exercise categories for display
+        context['pre_solo_exercises'] = Exercise.objects.filter(category='pre-solo').order_by('number', 'name')
+        context['post_solo_exercises'] = Exercise.objects.filter(category='post-solo').order_by('number', 'name')
         
         return context
     
@@ -234,11 +240,40 @@ class TrainingRecordCreateView(LoginRequiredMixin, CreateView):
         if self.request.user.is_student():
             form.instance.student = self.request.user
         
+        # Process the main form and get the TrainingRecord instance
+        self.object = form.save()
+        
+        # Process the exercise performance data from the POST request
+        if self.request.POST:
+            total_forms = int(self.request.POST.get('form-TOTAL_FORMS', 0))
+            
+            for i in range(total_forms):
+                prefix = f'form-{i}'
+                exercise_id = self.request.POST.get(f'{prefix}-exercise')
+                performance = self.request.POST.get(f'{prefix}-performance')
+                notes = self.request.POST.get(f'{prefix}-notes', '')
+                
+                if exercise_id and performance:
+                    try:
+                        exercise = Exercise.objects.get(pk=exercise_id)
+                        
+                        # Create or update the performance record
+                        ExercisePerformance.objects.create(
+                            training_record=self.object,
+                            exercise=exercise,
+                            performance=performance,
+                            notes=notes
+                        )
+                    except Exercise.DoesNotExist:
+                        # Log an error but continue processing
+                        print(f"Exercise with ID {exercise_id} not found")
+        
         messages.success(self.request, 'Training record created successfully.')
-        return super().form_valid(form)
+        return redirect(self.get_success_url())
+
 
 class TrainingRecordUpdateView(LoginRequiredMixin, UpdateView):
-    """Update an existing training record"""
+    """Update an existing training record with exercise performances"""
     model = TrainingRecord
     form_class = TrainingRecordForm
     template_name = 'training_records/record_form.html'
@@ -254,11 +289,56 @@ class TrainingRecordUpdateView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Add split exercises lists to context
-        context['all_pre_solo_exercises'] = Exercise.objects.filter(category='pre-solo').order_by('number', 'name')
-        context['all_post_solo_exercises'] = Exercise.objects.filter(category='post-solo').order_by('number', 'name')
+        # Add exercise categories for display
+        context['pre_solo_exercises'] = Exercise.objects.filter(category='pre-solo').order_by('number', 'name')
+        context['post_solo_exercises'] = Exercise.objects.filter(category='post-solo').order_by('number', 'name')
+        
+        # Get existing performances to mark as selected in the template
+        existing_performances = {}
+        for perf in self.object.exercise_performances.all():
+            existing_performances[perf.exercise_id] = {
+                'performance': perf.performance,
+                'notes': perf.notes
+            }
+        
+        context['existing_performances'] = existing_performances
         
         return context
+    
+    def form_valid(self, form):
+        self.object = form.save()
+        
+        # Process the exercise performance data
+        if self.request.POST:
+            total_forms = int(self.request.POST.get('form-TOTAL_FORMS', 0))
+            
+            # First, delete existing performances to avoid duplicates
+            self.object.exercise_performances.all().delete()
+            
+            # Then create new ones based on the form data
+            for i in range(total_forms):
+                prefix = f'form-{i}'
+                exercise_id = self.request.POST.get(f'{prefix}-exercise')
+                performance = self.request.POST.get(f'{prefix}-performance')
+                notes = self.request.POST.get(f'{prefix}-notes', '')
+                
+                if exercise_id and performance:
+                    try:
+                        exercise = Exercise.objects.get(pk=exercise_id)
+                        
+                        # Create the performance record
+                        ExercisePerformance.objects.create(
+                            training_record=self.object,
+                            exercise=exercise,
+                            performance=performance,
+                            notes=notes
+                        )
+                    except Exercise.DoesNotExist:
+                        # Log an error but continue processing
+                        print(f"Exercise with ID {exercise_id} not found")
+        
+        messages.success(self.request, 'Training record updated successfully.')
+        return redirect(self.get_success_url())
     
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -273,7 +353,7 @@ class TrainingRecordUpdateView(LoginRequiredMixin, UpdateView):
         
         # Admins can edit any record
         return queryset
-
+    
 # Profile management views
 @login_required
 def profile_view(request):
@@ -406,7 +486,7 @@ def first_login_password_change(request):
 # Sign-off functionality
 @login_required
 def sign_record(request, pk):
-    """Allow instructors to sign off on a training record"""
+    """Allow instructors to sign off on a training record and edit flight details"""
     record = get_object_or_404(TrainingRecord, pk=pk)
     
     # Only the instructor assigned to the record can sign it off
@@ -419,34 +499,30 @@ def sign_record(request, pk):
         return redirect('record_detail', pk=record.pk)
     
     if request.method == 'POST':
-        form = SignOffForm(request.POST)
+        form = SignOffForm(request.POST, instance=record)
         if form.is_valid():
-            # Perform the sign-off
-            instructor_comments = form.cleaned_data['instructor_comments']
-            internal_comments = form.cleaned_data['internal_comments']
-
-            # Update record with comments
-            if instructor_comments:
-                record.instructor_comments = instructor_comments
-            if internal_comments:
-                record.internal_comments = internal_comments
-
-
-            record.sign(request.user)
-            record.save()
-            # Create a log entry (this is already handled by our signal handler)
-            messages.success(request, f"Training record #{record.pk} has been successfully signed off.")
+            # Save the updated record - the form's save method ensures solo status is preserved
+            updated_record = form.save()
+            
+            # Perform the sign-off if confirmed
+            if form.cleaned_data.get('confirm_sign_off'):
+                updated_record.sign(request.user)
+                updated_record.save()
+                messages.success(request, f"Training record #{record.pk} has been successfully updated and signed off.")
+            else:
+                messages.success(request, f"Training record #{record.pk} has been updated but not signed off yet.")
+            
             return redirect('record_detail', pk=record.pk)
     else:
-        form = SignOffForm(initial={
-            'instructor_comments': record.instructor_comments,
-            'internal_comments': record.internal_comments
-        })
+        form = SignOffForm(instance=record)
     
-    return render(request, 'training_records/sign_record.html', {
+    context = {
         'form': form,
-        'record': record
-    })
+        'record': record,
+    }
+    
+    return render(request, 'training_records/sign_record.html', context)
+
 @login_required
 def student_history(request, student_id):
     # Check if user is an instructor

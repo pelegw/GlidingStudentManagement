@@ -2,7 +2,7 @@
 from django import forms
 from django.core.validators import MinValueValidator
 from django.utils import timezone
-from .models import TrainingRecord, User, Glider, TrainingTopic,Exercise
+from .models import TrainingRecord, User, Glider, TrainingTopic,Exercise,ExercisePerformance
 import os
 from django.core.exceptions import ValidationError
 from PIL import Image
@@ -10,8 +10,20 @@ import io
 from datetime import timedelta
 import re
 
+class ExercisePerformanceForm(forms.ModelForm):
+    """Form for a single exercise performance within a training record"""
+    class Meta:
+        model = ExercisePerformance
+        fields = ['exercise', 'performance', 'notes']
+        widgets = {
+            'exercise': forms.HiddenInput(),
+            'performance': forms.RadioSelect(),
+            'notes': forms.Textarea(attrs={'rows': 1, 'placeholder': 'Optional notes'})
+        }
+
+
 class TrainingRecordForm(forms.ModelForm):
-    """Form for creating and editing training records"""
+    """Form for creating and editing training records with exercise performances"""
     
     # Duration display field
     duration_display = forms.CharField(
@@ -31,13 +43,12 @@ class TrainingRecordForm(forms.ModelForm):
         model = TrainingRecord
         fields = [
             'instructor', 'training_topic', 'glider',
-            'date', 'field', 'exercises', 'tow_height',
+            'date', 'field', 'tow_height',
             'student_comments'
-        ]  # Student field deliberately omitted
+        ]
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
-            'student_comments': forms.Textarea(attrs={'rows': 3,'class': 'form-control w-100'}),
-            'exercises': forms.SelectMultiple(attrs={'class': 'form-control'}),
+            'student_comments': forms.Textarea(attrs={'rows': 3, 'class': 'form-control w-100'}),
         }
     
     def __init__(self, *args, **kwargs):
@@ -50,9 +61,6 @@ class TrainingRecordForm(forms.ModelForm):
         
         # Glider choices
         self.fields['glider'].queryset = Glider.objects.filter(is_active=True)
-        
-        # Group exercises
-        self.fields['exercises'].queryset = Exercise.objects.all().order_by('category', 'number', 'name')
         
         # Default date
         if not self.instance.pk:
@@ -70,7 +78,6 @@ class TrainingRecordForm(forms.ModelForm):
             # Make instructor field required even for solo flights
             self.fields['instructor'].required = True
             
-           
             # If record is signed off, disable all fields
             if self.instance and self.instance.signed_off:
                 for field in self.fields:
@@ -91,8 +98,6 @@ class TrainingRecordForm(forms.ModelForm):
             if self.instance and self.instance.signed_off:
                 for field in self.fields:
                     self.fields[field].widget.attrs['readonly'] = True
-        
-
     
     def clean_duration_display(self):
         """Convert HH:MM to timedelta"""
@@ -128,42 +133,105 @@ class TrainingRecordForm(forms.ModelForm):
             raise forms.ValidationError("Cannot modify a record that has been signed off.")
         
         return cleaned_data
-    
-    def save(self, commit=True):
-        """Override save to handle the student field"""
-        instance = super().save(commit=False)
-        
-        # If user is a student, set the student field
-        if self.user and self.user.is_student():
-            instance.student = self.user
-        
-        # Set is_solo from the form field
-        instance.is_solo = self.cleaned_data.get('is_solo', False)
-        
-        if commit:
-            instance.save()
-            self.save_m2m()  # Save many-to-many relationships
-        
-        return instance
 
-class SignOffForm(forms.Form):
-    """Form for instructors to sign off on a training record"""
+ExercisePerformanceFormSet = forms.inlineformset_factory(
+    TrainingRecord, 
+    ExercisePerformance,
+    form=ExercisePerformanceForm,
+    extra=0,  # No extra forms by default
+    can_delete=False  # Don't allow deletion (all exercises should have a state)
+)
+
+
+class SignOffForm(forms.ModelForm):
+    """Form for instructors to sign off on a training record with ability to edit flight details"""
+    
     confirm_sign_off = forms.BooleanField(
         label="I confirm that this training record is accurate and complete",
         required=True
     )
-
-    instructor_comments = forms.CharField(
-        widget=forms.Textarea(attrs={'rows': 3}),
-        required=False,
-        help_text="Comments that will be visible to the student"
+    
+    duration_display = forms.CharField(
+        label="Flight Duration (HH:MM)",
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'HH:MM'})
     )
     
-    internal_comments = forms.CharField(
-        widget=forms.Textarea(attrs={'rows': 3}),
-        required=False,
-        help_text="Internal comments visible only to instructors"
-    )
+    class Meta:
+        model = TrainingRecord
+        fields = [
+            'date', 'glider', 'training_topic', 'field', 'tow_height',
+            'is_solo', 'student_comments', 'instructor_comments'
+        ]
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+            'student_comments': forms.Textarea(attrs={'rows': 3}),
+            'instructor_comments': forms.Textarea(attrs={'rows': 3}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Set initial value for duration
+        if self.instance and self.instance.pk and self.instance.flight_duration:
+            total_minutes = self.instance.flight_duration.total_seconds() // 60
+            hours = total_minutes // 60
+            minutes = total_minutes % 60
+            self.fields['duration_display'].initial = f"{int(hours)}:{int(minutes):02d}"
+        
+        # Help text for comments
+        self.fields['instructor_comments'].help_text = "Comments that will be visible to the student"
+        self.fields['student_comments'].help_text = "Student's original comments (can be edited if needed)"
+    
+    def clean_duration_display(self):
+        """Convert HH:MM to timedelta"""
+        duration_str = self.cleaned_data.get('duration_display', '')
+        
+        try:
+            hours, minutes = map(int, duration_str.split(':'))
+            if minutes >= 60:
+                raise forms.ValidationError("Minutes should be less than 60")
+            
+            # Convert to timedelta
+            duration = timedelta(hours=hours, minutes=minutes)
+            
+            # Ensure duration is positive
+            if duration.total_seconds() <= 0:
+                raise forms.ValidationError("Flight duration must be greater than zero")
+                
+            return duration
+        except ValueError:
+            raise forms.ValidationError("Invalid duration format. Use HH:MM (e.g., 1:30)")
+    
+    def clean(self):
+        """Additional validation rules"""
+        cleaned_data = super().clean()
+        
+        # Get duration from duration_display
+        if 'duration_display' in cleaned_data:
+            # Set the actual flight_duration field
+            self.instance.flight_duration = cleaned_data['duration_display']
+        
+        # Validate that the record wasn't already signed off
+        if self.instance and self.instance.pk and self.instance.signed_off:
+            raise forms.ValidationError("Cannot modify a record that has already been signed off.")
+        
+        return cleaned_data
+    
+    def save(self, commit=True):
+        """Override save to handle the flight_duration field"""
+        instance = super().save(commit=False)
+        
+        # Preserve the is_solo value from the original record
+        if self.instance and self.instance.pk:
+            # This ensures we don't change the solo status even though it's hidden
+            instance.is_solo = self.instance.is_solo
+        
+        if commit:
+            instance.save()
+            self.save_m2m()
+        
+        return instance
 
 
 # Update in training_records/forms.py

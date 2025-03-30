@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-22 02:58+0200\n"
+"POT-Creation-Date: 2025-03-30 13:19+0300\n"
 "PO-Revision-Date: 2025-03-22 14:30+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,26 +18,26 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n == 2 && n % "
 "1 == 0) ? 1: (n % 10 == 0 && n % 1 == 0 && n > 10) ? 2 : 3;\n"
 
-#: .\templates\base.html:8 .\templates\base.html:72
+#: .\templates\base.html:8 .\templates\base.html:70
 #: .\templates\training_records\record_list.html:3
 #: .\templates\training_records\record_list.html:7
 #: .\templates\training_records\student_history.html:84
 msgid "Training Records"
 msgstr "רשומות הדרכה"
 
-#: .\templates\base.html:69
+#: .\templates\base.html:67
 msgid "Dashboard"
 msgstr "לוח בקרה"
 
-#: .\templates\base.html:76 .\templates\training_records\record_list.html:12
+#: .\templates\base.html:74 .\templates\training_records\record_list.html:12
 msgid "New Record"
 msgstr "רשומה חדשה"
 
-#: .\templates\base.html:112
+#: .\templates\base.html:110
 msgid "Profile"
 msgstr "פרופיל"
 
-#: .\templates\base.html:115
+#: .\templates\base.html:113
 #: .\templates\training_records\change_password.html:3
 #: .\templates\training_records\change_password.html:9
 #: .\templates\training_records\change_password.html:59
@@ -47,12 +47,12 @@ msgstr "פרופיל"
 msgid "Change Password"
 msgstr "שינוי סיסמה"
 
-#: .\templates\base.html:122
+#: .\templates\base.html:120
 #: .\templates\training_records\student_dashboard.html:168
 msgid "Logout"
 msgstr "התנתקות"
 
-#: .\templates\base.html:130 .\templates\training_records\login.html:3
+#: .\templates\base.html:128 .\templates\training_records\login.html:3
 #: .\templates\training_records\login.html:9
 #: .\templates\training_records\login.html:23
 msgid "Login"
@@ -80,7 +80,7 @@ msgstr "אישור סיסמה חדשה"
 #: .\templates\training_records\change_password.html:58
 #: .\templates\training_records\profile_update.html:78
 #: .\templates\training_records\record_form.html:273
-#: .\templates\training_records\sign_record.html:79
+#: .\templates\training_records\sign_record.html:76
 msgid "Cancel"
 msgstr "ביטול"
 
@@ -529,15 +529,6 @@ msgstr "הערות מדריך"
 msgid "No instructor comments provided."
 msgstr "לא סופקו הערות מדריך."
 
-#: .\templates\training_records\record_detail.html:87
-#: .\templates\training_records\sign_record.html:59
-msgid "Internal Comments"
-msgstr "הערות פנימיות"
-
-#: .\templates\training_records\record_detail.html:87
-msgid "Instructors Only"
-msgstr "למדריכים בלבד"
-
 #: .\templates\training_records\record_form.html:5
 #: .\templates\training_records\record_form.html:101
 #: .\templates\training_records\record_list.html:70
@@ -652,7 +643,7 @@ msgid "Create First Record"
 msgstr "יצירת רשומה ראשונה"
 
 #: .\templates\training_records\sign_record.html:3
-#: .\templates\training_records\sign_record.html:80
+#: .\templates\training_records\sign_record.html:77
 msgid "Sign Off Record"
 msgstr "אישור רשומה"
 
@@ -684,17 +675,13 @@ msgstr "החניך השלים את מרכיב ההדרכה הזה באופן מ�
 msgid "Once signed off, this record cannot be modified."
 msgstr "לאחר אישור, לא ניתן לשנות רשומה זו."
 
-#:.\templates\training_records\sign_record.html:22
+#: .\templates\training_records\sign_record.html:22
 msgid "Record Details"
 msgstr "פרטי הרשומה"
 
 #: .\templates\training_records\sign_record.html:25
 msgid "ID"
 msgstr "מזהה"
-
-#: .\templates\training_records\sign_record.html:59
-msgid "Visible to Instructors Only"
-msgstr "נראה למדריכים בלבד"
 
 #: .\templates\training_records\student_dashboard.html:3
 msgid "Student Dashboard"
