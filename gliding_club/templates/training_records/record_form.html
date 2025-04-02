@@ -1,676 +1,510 @@
 {% extends 'base.html' %}
 {% load i18n %}
-{% block title %}{% trans "Training Record" %} - {{ CLUB_NAME }}{% endblock %}
-
-{% block extra_css %}
-<style nonce="{{ csp_nonce }}">
-    /* Exercise selection styles */
-    .exercise-selector {
-        margin-bottom: 1.5rem;
-    }
-    
-    .exercise-list {
-        max-height: 300px;
-        overflow-y: auto;
-        border: 1px solid #dee2e6;
-        border-radius: 0.375rem;
-        padding: 0.5rem;
-        background-color: #f8f9fa;
-    }
-    
-    .exercise-item {
-        padding: 0.5rem;
-        margin-bottom: 0.5rem;
-        border: 1px solid #e9ecef;
-        border-radius: 0.25rem;
-        background-color: white;
-        cursor: pointer;
-    }
-    
-    .exercise-item:hover {
-        background-color: #f1f3f5;
-    }
-    
-    .selected-exercises {
-        margin-top: 1rem;
-    }
-    
-    .selected-exercise {
-        margin-bottom: 1rem;
-        padding: 1rem;
-        border: 1px solid #dee2e6;
-        border-radius: 0.375rem;
-        background-color: #f8f9fa;
-    }
-    
-    .selected-exercise-header {
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    .performance-options {
-        display: flex;
-        margin-bottom: 0.5rem;
-    }
-    
-    .performance-option {
-        cursor: pointer;
-        padding: 0.5rem 0.75rem;
-        margin-right: 0.5rem;
-        border: 1px solid #dee2e6;
-        border-radius: 0.25rem;
-        font-size: 0.875rem;
-    }
-    
-    .performance-option:hover {
-        background-color: #f8f9fa;
-    }
-    
-    .performance-option.selected {
-        font-weight: 600;
-    }
-    
-    .performance-option[data-value="needs_improvement"].selected {
-        background-color: #fff3cd;
-        border-color: #ffc107;
-    }
-    
-    .performance-option[data-value="performed_well"].selected {
-        background-color: #d1e7dd;
-        border-color: #198754;
-    }
-    
-    .remove-exercise {
-        color: #dc3545;
-        cursor: pointer;
-        font-size: 1.25rem;
-    }
-    
-    .notes-container {
-        margin-top: 0.5rem;
-    }
-    
-    /* Search and filter */
-    .search-box {
-        margin-bottom: 1rem;
-    }
-    
-    /* Form section styling */
-    .form-section {
-        margin-bottom: 2rem;
-    }
-</style>
+{% block title %}
+    {% if object %}
+        {% trans "Edit" %}
+    {% else %}
+        {% trans "New" %}
+    {% endif %}
+    {% trans "Training Record" %} - {{ CLUB_NAME }}
 {% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-lg-10 col-md-12">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">
-                    {% if object %}{% trans "Edit" %}{% else %}{% trans "New" %}{% endif %} {% trans "Training Record" %}
-                </h4>
-            </div>
-            <div class="card-body">
-                <p class="text-muted mb-4">{% trans "Record details about your flight training session" %}</p>
+<div class="container">
+    <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+                {% if object %}
+                    {% trans "Edit" %}
+                {% else %}
+                    {% trans "New" %}
+                {% endif %}
+                {% trans "Training Record" %}
+            </h4>
+            <p class="text-light mb-0 small">{% trans "Record details about your flight training session" %}</p>
+        </div>
+        <div class="card-body">
+            <form method="post" id="recordForm">
+                {% csrf_token %}
                 
-                <form method="post" id="training-record-form">
-                    {% csrf_token %}
-                    
-                    <!-- Flight Information Section -->
-                    <div class="card mb-4">
-                        <div class="card-header bg-light">
-                            <h5 class="mb-0">{% trans "Flight Information" %}</h5>
-                        </div>
-                        <div class="card-body">
-                            <!-- First row -->
-                            <div class="row mb-3">
-                                <!-- Instructor field -->
-                                <div class="col-md-6 mb-3">
-                                    <label for="{{ form.instructor.id_for_label }}" class="form-label">
-                                        {% trans "Instructor" %}:
-                                    </label>
-                                    {{ form.instructor }}
-                                    <div class="form-text">{% trans "Select the instructor for this training session" %}</div>
-                                    {% if form.instructor.errors %}
-                                        <div class="text-danger">{{ form.instructor.errors }}</div>
-                                    {% endif %}
-                                </div>
-                                
-                                <!-- Date field -->
-                                <div class="col-md-6 mb-3">
-                                    <label for="{{ form.date.id_for_label }}" class="form-label">
-                                        {% trans "Date" %}:
-                                    </label>
-                                    {{ form.date }}
-                                    {% if form.date.errors %}
-                                        <div class="text-danger">{{ form.date.errors }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            
-                            <!-- Second row -->
-                            <div class="row mb-3">
-                                <!-- Glider field -->
-                                <div class="col-md-6 mb-3">
-                                    <label for="{{ form.glider.id_for_label }}" class="form-label">
-                                        {% trans "Glider" %}:
-                                    </label>
-                                    {{ form.glider }}
-                                    {% if form.glider.errors %}
-                                        <div class="text-danger">{{ form.glider.errors }}</div>
-                                    {% endif %}
-                                </div>
-                                
-                                <!-- Flight Duration field -->
-                                <div class="col-md-6 mb-3">
-                                    <label for="{{ form.duration_display.id_for_label }}" class="form-label">
-                                        {% trans "Flight Duration" %}:
-                                    </label>
-                                    <div class="input-group">
-                                        {{ form.duration_display }}
-                                        <span class="input-group-text">HH:MM</span>
-                                    </div>
-                                    {% if form.duration_display.errors %}
-                                        <div class="text-danger">{{ form.duration_display.errors }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            
-                            <!-- Third row -->
-                            <div class="row mb-3">
-                                <!-- Tow Height field -->
-                                <div class="col-md-6 mb-3">
-                                    <label for="{{ form.tow_height.id_for_label }}" class="form-label">
-                                        {% trans "Tow Height" %}:
-                                    </label>
-                                    <div class="input-group">
-                                        {{ form.tow_height }}
-                                        <span class="input-group-text">feet</span>
-                                    </div>
-                                    {% if form.tow_height.errors %}
-                                        <div class="text-danger">{{ form.tow_height.errors }}</div>
-                                    {% endif %}
-                                </div>
-                                
-                                <!-- Field/Location field -->
-                                <div class="col-md-6 mb-3">
-                                    <label for="{{ form.field.id_for_label }}" class="form-label">
-                                        {% trans "Field/Location" %}:
-                                    </label>
-                                    {{ form.field }}
-                                    {% if form.field.errors %}
-                                        <div class="text-danger">{{ form.field.errors }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            
-                            <!-- Fourth row -->
-                            <div class="row mb-3">
-                                <!-- Training Topic field -->
-                                <div class="col-md-6 mb-3">
-                                    <label for="{{ form.training_topic.id_for_label }}" class="form-label">
-                                        {% trans "Training Topic" %}:
-                                    </label>
-                                    {{ form.training_topic }}
-                                    {% if form.training_topic.errors %}
-                                        <div class="text-danger">{{ form.training_topic.errors }}</div>
-                                    {% endif %}
-                                </div>
-                                
-                                <!-- Solo Flight checkbox -->
-                                <div class="col-md-6 mb-3">
-                                    <div class="form-check mt-4">
-                                        {{ form.is_solo }}
-                                        <label class="form-check-label" for="{{ form.is_solo.id_for_label }}">
-                                            {% trans "Solo Flight" %}
-                                        </label>
-                                        <div class="form-text">{% trans "No instructor present during the flight" %}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Flight Information Section -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">{% trans "Flight Information" %}</h5>
                     </div>
-                    
-                    <!-- Exercises Section -->
-                    <div class="card mb-4">
-                        <div class="card-header bg-light">
-                            <h5 class="mb-0">{% trans "Exercises Performed" %}</h5>
-                        </div>
-                        <div class="card-body">
-                            <p class="text-muted mb-4">{% trans "Select only the exercises that were performed during this training session" %}</p>
-                            
-                            <!-- Add exercise interface -->
-                            <div class="row mb-4">
-                                <div class="col-md-6">
-                                    <div class="exercise-selector">
-                                        <h6>{% trans "Add Exercises" %}</h6>
-                                        
-                                        <!-- Search and filter tools -->
-                                        <div class="search-box">
-                                            <div class="input-group mb-2">
-                                                <input type="text" id="exercise-search" class="form-control" placeholder="Search exercises...">
-                                                <button type="button" class="btn btn-outline-secondary" id="search-clear">Clear</button>
-                                            </div>
-                                            
-                                            <div class="btn-group mb-2" role="group" aria-label="Exercise category filter">
-                                                <button type="button" class="btn btn-outline-primary active" data-filter="all">All</button>
-                                                <button type="button" class="btn btn-outline-primary" data-filter="pre-solo">Pre-Solo</button>
-                                                <button type="button" class="btn btn-outline-primary" data-filter="post-solo">Post-Solo</button>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Exercise list to select from -->
-                                        <div class="exercise-list" id="exercise-list">
-                                            {% for exercise in pre_solo_exercises %}
-                                                <div class="exercise-item" data-id="{{ exercise.id }}" data-category="pre-solo">
-                                                    {% if exercise.number %}{{ exercise.number }} - {% endif %}{{ exercise.name }}
-                                                </div>
-                                            {% endfor %}
-                                            
-                                            {% for exercise in post_solo_exercises %}
-                                                <div class="exercise-item" data-id="{{ exercise.id }}" data-category="post-solo">
-                                                    {% if exercise.number %}{{ exercise.number }} - {% endif %}{{ exercise.name }}
-                                                </div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    <div class="selected-exercises">
-                                        <h6>{% trans "Selected Exercises" %} <span class="badge bg-primary" id="selected-count">0</span></h6>
-                                        <div id="selected-exercises-container">
-                                            <!-- Selected exercises will be added here dynamically -->
-                                            <div class="alert alert-info" id="no-exercises-message">
-                                                No exercises selected yet. Click on exercises from the list to add them.
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Comments Section -->
-                    <div class="card mb-4">
-                        <div class="card-header bg-light">
-                            <h5 class="mb-0">{% trans "Comments" %}</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label for="{{ form.student_comments.id_for_label }}" class="form-label">{% trans "Student Comments" %}:</label>
-                                {{ form.student_comments }}
-                                {% if form.student_comments.errors %}
-                                    <div class="text-danger">{{ form.student_comments.errors }}</div>
+                    <div class="card-body">
+                        <!-- Instructor selection field -->
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="{{ form.instructor.id_for_label }}" class="form-label">
+                                    {% trans "Instructor" %}:
+                                </label>
+                                {{ form.instructor }}
+                                <div class="form-text">{% trans "Select the instructor for this training session" %}</div>
+                                {% if form.instructor.errors %}
+                                    <div class="text-danger">{{ form.instructor.errors }}</div>
                                 {% endif %}
                             </div>
                         </div>
+                        
+                        <!-- Date and duration fields -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.date.id_for_label }}" class="form-label">
+                                    {% trans "Date" %}:
+                                </label>
+                                {{ form.date }}
+                                {% if form.date.errors %}
+                                    <div class="text-danger">{{ form.date.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="{{ form.duration_display.id_for_label }}" class="form-label">
+                                    {% trans "Flight Duration" %}:
+                                </label>
+                                <div class="input-group">
+                                    {{ form.duration_display }}
+                                    <span class="input-group-text">HH:MM</span>
+                                </div>
+                                {% if form.duration_display.errors %}
+                                    <div class="text-danger">{{ form.duration_display.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Glider and tow height fields -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.glider.id_for_label }}" class="form-label">
+                                    {% trans "Glider" %}:
+                                </label>
+                                {{ form.glider }}
+                                {% if form.glider.errors %}
+                                    <div class="text-danger">{{ form.glider.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="{{ form.tow_height.id_for_label }}" class="form-label">
+                                    {% trans "Tow Height" %}:
+                                </label>
+                                <div class="input-group">
+                                    {{ form.tow_height }}
+                                    <span class="input-group-text">feet</span>
+                                </div>
+                                {% if form.tow_height.errors %}
+                                    <div class="text-danger">{{ form.tow_height.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Field/Location -->
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="{{ form.field.id_for_label }}" class="form-label">
+                                    {% trans "Field/Location" %}:
+                                </label>
+                                {{ form.field }}
+                                {% if form.field.errors %}
+                                    <div class="text-danger">{{ form.field.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Training topic and solo flight -->
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label for="{{ form.training_topic.id_for_label }}" class="form-label">
+                                    {% trans "Training Topic" %}:
+                                </label>
+                                {{ form.training_topic }}
+                                {% if form.training_topic.errors %}
+                                    <div class="text-danger">{{ form.training_topic.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="form-check mt-4">
+                                    {{ form.is_solo }}
+                                    <label class="form-check-label" for="{{ form.is_solo.id_for_label }}">
+                                        {% trans "Solo Flight" %}
+                                    </label>
+                                    <div class="form-text">{% trans "No instructor present during the flight" %}</div>
+                                    {% if form.is_solo.errors %}
+                                        <div class="text-danger">{{ form.is_solo.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    
-                    {% if form.errors %}
-                        <div class="alert alert-danger">
+                </div>
+                
+                <!-- Exercises Section -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            {% trans "Exercises Performed" %}
+                            <span id="exercise-counter" class="badge bg-secondary ms-2">0</span>
+                        </h5>
+                        
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-outline-primary" id="btn-expand-all">Expand All</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-collapse-all">Collapse All</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Navigation tabs for Pre/Post solo exercises -->
+                        <ul class="nav nav-tabs mb-3" id="exerciseTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="pre-solo-tab" data-bs-toggle="tab" data-bs-target="#pre-solo-exercises" 
+                                        type="button" role="tab" aria-controls="pre-solo-exercises" aria-selected="true">
+                                    Pre-Solo ({{ pre_solo_exercises.count }})
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="post-solo-tab" data-bs-toggle="tab" data-bs-target="#post-solo-exercises" 
+                                        type="button" role="tab" aria-controls="post-solo-exercises" aria-selected="false">
+                                    Post-Solo ({{ post_solo_exercises.count }})
+                                </button>
+                            </li>
+                        </ul>
+                        
+                        <!-- Search box -->
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control" id="exercise-search" placeholder="Search exercises...">
+                        </div>
+                        
+                        <!-- Tab content -->
+                        <div class="tab-content" id="exerciseTabContent">
+                            <!-- Pre-Solo Exercises Tab -->
+                            <div class="tab-pane fade show active" id="pre-solo-exercises" role="tabpanel" aria-labelledby="pre-solo-tab">
+                                <div class="list-group">
+                                    {% for exercise in pre_solo_exercises %}
+                                        <div class="list-group-item list-group-item-action mb-2 exercise-item"
+                                             data-exercise-id="{{ exercise.id }}"
+                                             data-exercise-name="{{ exercise.name }}">
+                                            <div class="d-flex w-100 justify-content-between align-items-center exercise-header">
+                                                <h6 class="mb-1">
+                                                    {% if exercise.number %}{{ exercise.number }} - {% endif %}{{ exercise.name }}
+                                                </h6>
+                                                <div>
+                                                    <span class="badge exercise-status bg-secondary">Not Performed</span>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary ms-2 exercise-toggle">
+                                                        <i class="bi bi-chevron-down"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="exercise-content mt-2" style="display: none;">
+                                                <input type="hidden" name="form-{{ forloop.counter0 }}-exercise" value="{{ exercise.id }}">
+                                                
+                                                <div class="btn-group w-100 mb-3" role="group">
+                                                    <input type="radio" class="btn-check" name="form-{{ forloop.counter0 }}-performance" 
+                                                           id="form-{{ forloop.counter0 }}-not_performed" value="not_performed" checked>
+                                                    <label class="btn btn-outline-secondary" for="form-{{ forloop.counter0 }}-not_performed">
+                                                        Not Performed
+                                                    </label>
+                                                    
+                                                    <input type="radio" class="btn-check" name="form-{{ forloop.counter0 }}-performance" 
+                                                           id="form-{{ forloop.counter0 }}-needs_improvement" value="needs_improvement">
+                                                    <label class="btn btn-outline-warning" for="form-{{ forloop.counter0 }}-needs_improvement">
+                                                        Needs Improvement
+                                                    </label>
+                                                    
+                                                    <input type="radio" class="btn-check" name="form-{{ forloop.counter0 }}-performance" 
+                                                           id="form-{{ forloop.counter0 }}-performed_well" value="performed_well">
+                                                    <label class="btn btn-outline-success" for="form-{{ forloop.counter0 }}-performed_well">
+                                                        Performed Well
+                                                    </label>
+                                                </div>
+                                                
+                                                <div class="notes-container" style="display: none;">
+                                                    <textarea name="form-{{ forloop.counter0 }}-notes" class="form-control" rows="2" 
+                                                              placeholder="Optional notes about this exercise"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <!-- Post-Solo Exercises Tab -->
+                            <div class="tab-pane fade" id="post-solo-exercises" role="tabpanel" aria-labelledby="post-solo-tab">
+                                <div class="list-group">
+                                    {% for exercise in post_solo_exercises %}
+                                        <div class="list-group-item list-group-item-action mb-2 exercise-item"
+                                             data-exercise-id="{{ exercise.id }}"
+                                             data-exercise-name="{{ exercise.name }}">
+                                            <div class="d-flex w-100 justify-content-between align-items-center exercise-header">
+                                                <h6 class="mb-1">
+                                                    {% if exercise.number %}{{ exercise.number }} - {% endif %}{{ exercise.name }}
+                                                </h6>
+                                                <div>
+                                                    <span class="badge exercise-status bg-secondary">Not Performed</span>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary ms-2 exercise-toggle">
+                                                        <i class="bi bi-chevron-down"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="exercise-content mt-2" style="display: none;">
+                                                <input type="hidden" name="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-exercise" value="{{ exercise.id }}">
+                                                
+                                                <div class="btn-group w-100 mb-3" role="group">
+                                                    <input type="radio" class="btn-check" name="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-performance" 
+                                                           id="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-not_performed" value="not_performed" checked>
+                                                    <label class="btn btn-outline-secondary" for="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-not_performed">
+                                                        Not Performed
+                                                    </label>
+                                                    
+                                                    <input type="radio" class="btn-check" name="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-performance" 
+                                                           id="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-needs_improvement" value="needs_improvement">
+                                                    <label class="btn btn-outline-warning" for="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-needs_improvement">
+                                                        Needs Improvement
+                                                    </label>
+                                                    
+                                                    <input type="radio" class="btn-check" name="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-performance" 
+                                                           id="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-performed_well" value="performed_well">
+                                                    <label class="btn btn-outline-success" for="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-performed_well">
+                                                        Performed Well
+                                                    </label>
+                                                </div>
+                                                
+                                                <div class="notes-container" style="display: none;">
+                                                    <textarea name="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-notes" class="form-control" rows="2" 
+                                                              placeholder="Optional notes about this exercise"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Management form fields for formset -->
+                        <input type="hidden" name="form-TOTAL_FORMS" value="{{ pre_solo_exercises.count|add:post_solo_exercises.count }}">
+                        <input type="hidden" name="form-INITIAL_FORMS" value="0">
+                        <input type="hidden" name="form-MIN_NUM_FORMS" value="0">
+                        <input type="hidden" name="form-MAX_NUM_FORMS" value="1000">
+                    </div>
+                </div>
+                
+                <!-- Comments Section -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">{% trans "Comments" %}</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="{{ form.student_comments.id_for_label }}" class="form-label">
+                                {% trans "Student Comments" %}:
+                            </label>
+                            {{ form.student_comments }}
+                            {% if form.student_comments.errors %}
+                                <div class="text-danger">{{ form.student_comments.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Form errors -->
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <p><strong>Please correct the following errors:</strong></p>
+                        <ul>
                             {% for field in form %}
                                 {% for error in field.errors %}
-                                    <p>{{ error }}</p>
+                                    <li>{{ field.label }}: {{ error }}</li>
                                 {% endfor %}
                             {% endfor %}
                             {% for error in form.non_field_errors %}
-                                <p>{{ error }}</p>
+                                <li>{{ error }}</li>
                             {% endfor %}
-                        </div>
-                    {% endif %}
-                    
-                    <div class="d-flex justify-content-between mt-4">
-                        <a href="{% url 'record_list' %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
-                        <button type="submit" class="btn btn-primary">
-                            {% if object %}{% trans "Save Changes" %}{% else %}{% trans "Create Record" %}{% endif %}
-                        </button>
+                        </ul>
                     </div>
-                </form>
-            </div>
+                {% endif %}
+                
+                <!-- Submit buttons -->
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'record_list' %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+                    <button type="submit" class="btn btn-primary">
+                        {% if object %}
+                            {% trans "Save Changes" %}
+                        {% else %}
+                            {% trans "Create Record" %}
+                        {% endif %}
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 {% endblock %}
+
 {% block extra_js %}
-<script nonce="{{ csp_nonce }}">
+<script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Setup exercise selection
-    const exerciseList = document.getElementById('exercise-list');
-    const selectedContainer = document.getElementById('selected-exercises-container');
-    const noExercisesMessage = document.getElementById('no-exercises-message');
-    const selectedCount = document.getElementById('selected-count');
-    const searchInput = document.getElementById('exercise-search');
-    const searchClear = document.getElementById('search-clear');
-    const filterButtons = document.querySelectorAll('[data-filter]');
-    const form = document.getElementById('training-record-form');
-    
-    let selectedExercises = [];
-    
-    // Initialize with existing data if editing
-    {% if existing_performances %}
-    console.log("Editing mode detected, loading existing exercises");
-    const existingPerformances = {{ existing_performances|safe }};
-    
-    // Clear no exercises message since we'll be adding exercises
-    if (noExercisesMessage) {
-        noExercisesMessage.style.display = 'none';
-    }
-    
-    // Loop through existing performances and add them to the UI
-    for (const [exerciseId, data] of Object.entries(existingPerformances)) {
-        // We only want to add exercises that were actually performed (not "not_performed")
-        if (data.performance !== 'not_performed') {
-            // Find the exercise element to get its name
-            const exerciseItem = document.querySelector(`.exercise-item[data-id="${exerciseId}"]`);
-            if (exerciseItem) {
-                const exerciseName = exerciseItem.textContent.trim();
-                console.log(`Adding existing exercise: ${exerciseName} (${exerciseId}) - ${data.performance}`);
-                addExercise(exerciseId, exerciseName, data.performance, data.notes || '');
-            } else {
-                console.warn(`Could not find exercise item with ID ${exerciseId}`);
-            }
-        }
-    }
-    updateSelectedCount();
-    {% else %}
-    console.log("Create mode detected");
-    {% endif %}
-    
-    // Add click handler to exercise items
+    // Counters and elements
+    let selectedExercises = 0;
+    const counter = document.getElementById('exercise-counter');
     const exerciseItems = document.querySelectorAll('.exercise-item');
-    exerciseItems.forEach(item => {
-        item.addEventListener('click', function() {
-            const id = this.dataset.id;
-            const name = this.textContent.trim();
+    const searchInput = document.getElementById('exercise-search');
+    const expandAllBtn = document.getElementById('btn-expand-all');
+    const collapseAllBtn = document.getElementById('btn-collapse-all');
+    
+    // Set up toggle functionality for each exercise
+    document.querySelectorAll('.exercise-toggle').forEach(toggle => {
+        toggle.addEventListener('click', function() {
+            const item = this.closest('.exercise-item');
+            const content = item.querySelector('.exercise-content');
+            const icon = this.querySelector('i');
             
-            // Only add if not already selected
-            if (!selectedExercises.includes(id)) {
-                console.log(`Adding exercise from click: ${name} (${id})`);
-                addExercise(id, name);
-                updateSelectedCount();
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                icon.classList.remove('bi-chevron-down');
+                icon.classList.add('bi-chevron-up');
             } else {
-                console.log(`Exercise ${id} already selected`);
+                content.style.display = 'none';
+                icon.classList.remove('bi-chevron-up');
+                icon.classList.add('bi-chevron-down');
             }
         });
     });
     
-    // Function to add an exercise to the selected list
-    function addExercise(id, name, performance = 'performed_well', notes = '') {
-        // Add to selected array if not already there
-        if (!selectedExercises.includes(id)) {
-            selectedExercises.push(id);
-            console.log(`Added ${id} to selectedExercises array: ${selectedExercises.join(', ')}`);
-        }
-        
-        // Hide the no exercises message if visible
-        if (noExercisesMessage) {
-            noExercisesMessage.style.display = 'none';
-        }
-        
-        // Create the exercise container div
-        const exerciseElement = document.createElement('div');
-        exerciseElement.className = 'selected-exercise';
-        exerciseElement.id = `exercise-container-${id}`;
-        
-        // Create the header
-        const headerDiv = document.createElement('div');
-        headerDiv.className = 'selected-exercise-header';
-        
-        const nameDiv = document.createElement('div');
-        const nameStrong = document.createElement('strong');
-        nameStrong.textContent = name;
-        nameDiv.appendChild(nameStrong);
-        
-        const removeDiv = document.createElement('div');
-        removeDiv.className = 'remove-exercise';
-        removeDiv.dataset.id = id;
-        removeDiv.innerHTML = '<i class="bi bi-x-circle"></i>';
-        
-        headerDiv.appendChild(nameDiv);
-        headerDiv.appendChild(removeDiv);
-        exerciseElement.appendChild(headerDiv);
-        
-        // Create performance options
-        const optionsDiv = document.createElement('div');
-        optionsDiv.className = 'performance-options';
-        
-        const wellOption = document.createElement('div');
-        wellOption.className = 'performance-option';
-        wellOption.dataset.id = id;
-        wellOption.dataset.value = 'performed_well';
-        wellOption.textContent = 'Performed Well';
-        if (performance === 'performed_well') {
-            wellOption.classList.add('selected');
-        }
-        
-        const needsOption = document.createElement('div');
-        needsOption.className = 'performance-option';
-        needsOption.dataset.id = id;
-        needsOption.dataset.value = 'needs_improvement';
-        needsOption.textContent = 'Needs Improvement';
-        if (performance === 'needs_improvement') {
-            needsOption.classList.add('selected');
-        }
-        
-        optionsDiv.appendChild(wellOption);
-        optionsDiv.appendChild(needsOption);
-        exerciseElement.appendChild(optionsDiv);
-        
-        // Create notes container
-        const notesDiv = document.createElement('div');
-        notesDiv.className = 'notes-container';
-        
-        const notesTextarea = document.createElement('textarea');
-        notesTextarea.name = `exercise-${id}-notes`;
-        notesTextarea.rows = 2;
-        notesTextarea.className = 'form-control';
-        notesTextarea.placeholder = 'Add notes about this exercise (optional)';
-        if (notes) {
-            notesTextarea.value = notes;
-        }
-        
-        notesDiv.appendChild(notesTextarea);
-        exerciseElement.appendChild(notesDiv);
-        
-        // Create hidden inputs
-        const perfInput = document.createElement('input');
-        perfInput.type = 'hidden';
-        perfInput.name = `exercise-${id}-performance`;
-        perfInput.value = performance;
-        exerciseElement.appendChild(perfInput);
-        
-        const selectedInput = document.createElement('input');
-        selectedInput.type = 'hidden';
-        selectedInput.name = 'selected-exercises';
-        selectedInput.value = id;
-        exerciseElement.appendChild(selectedInput);
-        
-        // Add to the container
-        selectedContainer.appendChild(exerciseElement);
-        
-        // Add event listeners
-        const removeBtn = exerciseElement.querySelector('.remove-exercise');
-        if (removeBtn) {
-            removeBtn.addEventListener('click', function() {
-                const id = this.dataset.id;
-                console.log(`Removing exercise ${id}`);
-                // Remove from array
-                selectedExercises = selectedExercises.filter(item => item !== id);
-                // Remove element
-                exerciseElement.remove();
-                // Show message if no exercises left
-                if (selectedExercises.length === 0 && noExercisesMessage) {
-                    noExercisesMessage.style.display = 'block';
-                }
-                updateSelectedCount();
-            });
-        }
-        
-        // Performance options
-        const performanceOptions = exerciseElement.querySelectorAll('.performance-option');
-        performanceOptions.forEach(option => {
-            option.addEventListener('click', function() {
-                const id = this.dataset.id;
-                const value = this.dataset.value;
+    // Set up radio button change handlers
+    document.querySelectorAll('input[type="radio"][name$="-performance"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const item = this.closest('.exercise-item');
+            const statusBadge = item.querySelector('.exercise-status');
+            const notesContainer = item.querySelector('.notes-container');
+            
+            // Update status badge
+            if (this.value === 'performed_well') {
+                statusBadge.textContent = 'Performed Well';
+                statusBadge.className = 'badge exercise-status bg-success';
+                item.classList.add('border-success');
+                item.classList.remove('border-warning');
                 
-                // Remove selected class from all options
-                performanceOptions.forEach(opt => opt.classList.remove('selected'));
+                if (notesContainer) notesContainer.style.display = 'block';
+            } 
+            else if (this.value === 'needs_improvement') {
+                statusBadge.textContent = 'Needs Improvement';
+                statusBadge.className = 'badge exercise-status bg-warning';
+                item.classList.add('border-warning');
+                item.classList.remove('border-success');
                 
-                // Add selected class to clicked option
-                this.classList.add('selected');
+                if (notesContainer) notesContainer.style.display = 'block';
+            } 
+            else {
+                statusBadge.textContent = 'Not Performed';
+                statusBadge.className = 'badge exercise-status bg-secondary';
+                item.classList.remove('border-success', 'border-warning');
                 
-                // Update hidden input
-                const performanceInput = exerciseElement.querySelector(`input[name="exercise-${id}-performance"]`);
-                if (performanceInput) {
-                    performanceInput.value = value;
-                    console.log(`Updated performance for ${id} to ${value}`);
-                }
-            });
+                if (notesContainer) notesContainer.style.display = 'none';
+            }
+            
+            // Update counter
+            updateExerciseCounter();
         });
-    }
-    
-    // Function to update the selected count badge
-    function updateSelectedCount() {
-        selectedCount.textContent = selectedExercises.length;
-        console.log(`Updated selected count to ${selectedExercises.length}`);
-    }
+    });
     
     // Search functionality
-    searchInput.addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
-        
-        exerciseItems.forEach(item => {
-            const text = item.textContent.toLowerCase();
-            const matchesSearch = text.includes(searchTerm);
-            const currentFilter = document.querySelector('[data-filter].active').dataset.filter;
-            const matchesFilter = currentFilter === 'all' || item.dataset.category === currentFilter;
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchText = this.value.toLowerCase();
             
-            item.style.display = (matchesSearch && matchesFilter) ? 'block' : 'none';
-        });
-    });
-    
-    // Clear search
-    searchClear.addEventListener('click', function() {
-        searchInput.value = '';
-        // Trigger input event to update display
-        searchInput.dispatchEvent(new Event('input'));
-    });
-    
-    // Filter buttons
-    filterButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // Remove active class from all buttons
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            
-            // Add active class to clicked button
-            this.classList.add('active');
-            
-            const filter = this.dataset.filter;
-            
-            // Filter the exercise list
             exerciseItems.forEach(item => {
-                const matchesFilter = filter === 'all' || item.dataset.category === filter;
-                const matchesSearch = item.textContent.toLowerCase().includes(searchInput.value.toLowerCase());
+                const exerciseName = item.getAttribute('data-exercise-name').toLowerCase();
                 
-                item.style.display = (matchesFilter && matchesSearch) ? 'block' : 'none';
+                if (exerciseName.includes(searchText)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
             });
         });
-    });
+    }
     
-    // Add Bootstrap form classes to all form inputs
-    const formElements = document.querySelectorAll('input:not([type="hidden"]), select, textarea');
-    formElements.forEach(element => {
-        if (!element.classList.contains('form-control') && 
-            !element.classList.contains('form-select') && 
-            !element.classList.contains('form-check-input')) {
-            
-            if (element.tagName === 'SELECT') {
-                element.classList.add('form-select');
-            } else if (element.type === 'checkbox') {
-                element.classList.add('form-check-input');
-            } else {
-                element.classList.add('form-control');
-            }
-        }
-    });
+    // Expand/Collapse All
+    if (expandAllBtn) {
+        expandAllBtn.addEventListener('click', function() {
+            document.querySelectorAll('.exercise-content').forEach(content => {
+                content.style.display = 'block';
+                
+                const toggle = content.closest('.exercise-item').querySelector('.exercise-toggle i');
+                toggle.classList.remove('bi-chevron-down');
+                toggle.classList.add('bi-chevron-up');
+            });
+        });
+    }
     
-    // Form submission - ensure exercises are included correctly
-    form.addEventListener('submit', function(e) {
-        console.log(`Form submission triggered with ${selectedExercises.length} selected exercises`);
+    if (collapseAllBtn) {
+        collapseAllBtn.addEventListener('click', function() {
+            document.querySelectorAll('.exercise-content').forEach(content => {
+                content.style.display = 'none';
+                
+                const toggle = content.closest('.exercise-item').querySelector('.exercise-toggle i');
+                toggle.classList.remove('bi-chevron-up');
+                toggle.classList.add('bi-chevron-down');
+            });
+        });
+    }
+    
+    // Exercise counter update
+    function updateExerciseCounter() {
+        const performedExercises = document.querySelectorAll('input[type="radio"][value="performed_well"]:checked, input[type="radio"][value="needs_improvement"]:checked').length;
         
-        // First check if we have selected exercises
-        if (selectedExercises.length > 0) {
-            // Check if hidden inputs need to be fixed or added
-            const existingInputs = form.querySelectorAll('input[name="selected-exercises"]');
-            
-            // Log the current state for debugging
-            console.log(`Found ${existingInputs.length} existing hidden inputs for selected exercises`);
-            
-            // If the DOM has the wrong number of inputs, we need to fix them
-            if (existingInputs.length !== selectedExercises.length) {
-                console.warn("Form inputs don't match selected exercises, fixing...");
-                
-                // Clear existing inputs and re-add them
-                existingInputs.forEach(input => input.remove());
-                
-                // Create new hidden inputs for each selected exercise directly on the form
-                selectedExercises.forEach(id => {
-                    const exerciseEl = document.getElementById(`exercise-container-${id}`);
-                    if (exerciseEl) {
-                        // Get the performance value from the container
-                        const performanceInput = exerciseEl.querySelector(`input[name="exercise-${id}-performance"]`);
-                        const performanceValue = performanceInput ? performanceInput.value : 'performed_well';
-                        
-                        // Get notes if any
-                        const notesTextarea = exerciseEl.querySelector(`textarea[name="exercise-${id}-notes"]`);
-                        const notesValue = notesTextarea ? notesTextarea.value : '';
-                        
-                        console.log(`Adding hidden inputs for exercise ${id}: ${performanceValue}`);
-                        
-                        // Create and append hidden inputs
-                        const selectedInput = document.createElement('input');
-                        selectedInput.type = 'hidden';
-                        selectedInput.name = 'selected-exercises';
-                        selectedInput.value = id;
-                        form.appendChild(selectedInput);
-                        
-                        // Ensure performance input exists at form level
-                        const existingPerfInput = form.querySelector(`input[name="exercise-${id}-performance"]`);
-                        if (!existingPerfInput) {
-                            const perfInput = document.createElement('input');
-                            perfInput.type = 'hidden';
-                            perfInput.name = `exercise-${id}-performance`;
-                            perfInput.value = performanceValue;
-                            form.appendChild(perfInput);
-                        }
-                        
-                        // Ensure notes input exists at form level
-                        const existingNotesInput = form.querySelector(`input[name="exercise-${id}-notes"]`);
-                        if (!existingNotesInput && notesValue) {
-                            const notesInput = document.createElement('input');
-                            notesInput.type = 'hidden';
-                            notesInput.name = `exercise-${id}-notes`;
-                            notesInput.value = notesValue;
-                            form.appendChild(notesInput);
-                        }
-                    } else {
-                        console.warn(`Could not find exercise element for ID ${id}`);
-                    }
-                });
-                
-                // Final verification
-                const checkInputs = form.querySelectorAll('input[name="selected-exercises"]');
-                console.log(`After fixing, found ${checkInputs.length} hidden inputs for selected exercises`);
-            }
-        } else {
-            console.log("No exercises selected for this record");
+        if (counter) {
+            counter.textContent = performedExercises;
         }
-    });
+    }
+    
+    // Initialize with existing performances
+    {% if existing_performances %}
+        const performances = {{ existing_performances|safe }};
+        
+        for (const [exerciseId, data] of Object.entries(performances)) {
+            // Find the exercise item
+            const item = document.querySelector(`.exercise-item[data-exercise-id="${exerciseId}"]`);
+            if (!item) continue;
+            
+            // Find the correct radio button
+            const radio = item.querySelector(`input[value="${data.performance}"]`);
+            if (radio) {
+                radio.checked = true;
+                
+                // Trigger the change event
+                const event = new Event('change');
+                radio.dispatchEvent(event);
+                
+                // Show the exercise details
+                if (data.performance === 'performed_well' || data.performance === 'needs_improvement') {
+                    const toggle = item.querySelector('.exercise-toggle');
+                    const icon = toggle.querySelector('i');
+                    const content = item.querySelector('.exercise-content');
+                    
+                    content.style.display = 'block';
+                    icon.classList.remove('bi-chevron-down');
+                    icon.classList.add('bi-chevron-up');
+                    
+                    // Set notes if any
+                    if (data.notes) {
+                        const textarea = item.querySelector('textarea');
+                        if (textarea) {
+                            textarea.value = data.notes;
+                        }
+                    }
+                }
+            }
+        }
+    {% endif %}
+    
+    // Initial counter update
+    updateExerciseCounter();
 });
 </script>
 {% endblock %}

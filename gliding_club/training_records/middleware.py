@@ -8,6 +8,7 @@ from django.forms.models import model_to_dict
 from django.core.serializers.json import DjangoJSONEncoder  # Add this import
 import secrets
 from django.utils.functional import SimpleLazyObject
+import base64
 
 class CSPNonceMiddleware:
     """
