@@ -19,13 +19,19 @@ class CSPNonceMiddleware:
         self.get_response = get_response
         
     def __call__(self, request):
-        # Generate a cryptographically secure random nonce
-        # Using base64 encoding for compatibility with CSP requirements
+        # Generate the nonce
         nonce = base64.b64encode(secrets.token_bytes(16)).decode('ascii')
         request.csp_nonce = nonce
         
-        # Process the request and get the response
+        # Get the response
         response = self.get_response(request)
+        
+        # Add the nonce to CSP headers
+        if 'Content-Security-Policy' in response:
+            response['Content-Security-Policy'] = response['Content-Security-Policy'].replace(
+                "'nonce-%(csp_nonce)s'", f"'nonce-{nonce}'"
+            )
+        
         return response
     
 class CustomJSONEncoder(DjangoJSONEncoder):

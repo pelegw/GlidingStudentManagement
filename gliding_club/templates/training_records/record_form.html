@@ -199,7 +199,7 @@
                                                 </div>
                                             </div>
                                             
-                                            <div class="exercise-content mt-2" style="display: none;">
+                                            <div class="exercise-content mt-2 d-none">
                                                 <input type="hidden" name="form-{{ forloop.counter0 }}-exercise" value="{{ exercise.id }}">
                                                 
                                                 <div class="btn-group w-100 mb-3" role="group">
@@ -222,7 +222,7 @@
                                                     </label>
                                                 </div>
                                                 
-                                                <div class="notes-container" style="display: none;">
+                                                <div class="notes-container d-none">
                                                     <textarea name="form-{{ forloop.counter0 }}-notes" class="form-control" rows="2" 
                                                               placeholder="Optional notes about this exercise"></textarea>
                                                 </div>
@@ -251,7 +251,7 @@
                                                 </div>
                                             </div>
                                             
-                                            <div class="exercise-content mt-2" style="display: none;">
+                                            <div class="exercise-content mt-2 d-none">
                                                 <input type="hidden" name="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-exercise" value="{{ exercise.id }}">
                                                 
                                                 <div class="btn-group w-100 mb-3" role="group">
@@ -274,7 +274,7 @@
                                                     </label>
                                                 </div>
                                                 
-                                                <div class="notes-container" style="display: none;">
+                                                <div class="notes-container d-none">
                                                     <textarea name="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-notes" class="form-control" rows="2" 
                                                               placeholder="Optional notes about this exercise"></textarea>
                                                 </div>
@@ -346,7 +346,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
+<script nonce="{{ csp_nonce }}">
 document.addEventListener('DOMContentLoaded', function() {
     // Counters and elements
     let selectedExercises = 0;
@@ -363,12 +363,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const content = item.querySelector('.exercise-content');
             const icon = this.querySelector('i');
             
-            if (content.style.display === 'none') {
-                content.style.display = 'block';
+            if (content.classList.contains('d-none')) {
+                // Show content
+                content.classList.remove('d-none');
                 icon.classList.remove('bi-chevron-down');
                 icon.classList.add('bi-chevron-up');
             } else {
-                content.style.display = 'none';
+                // Hide content
+                content.classList.add('d-none');
                 icon.classList.remove('bi-chevron-up');
                 icon.classList.add('bi-chevron-down');
             }
@@ -385,26 +387,29 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update status badge
             if (this.value === 'performed_well') {
                 statusBadge.textContent = 'Performed Well';
-                statusBadge.className = 'badge exercise-status bg-success';
+                statusBadge.classList.remove('bg-secondary', 'bg-warning');
+                statusBadge.classList.add('bg-success');
                 item.classList.add('border-success');
                 item.classList.remove('border-warning');
                 
-                if (notesContainer) notesContainer.style.display = 'block';
+                if (notesContainer) notesContainer.classList.remove('d-none');
             } 
             else if (this.value === 'needs_improvement') {
                 statusBadge.textContent = 'Needs Improvement';
-                statusBadge.className = 'badge exercise-status bg-warning';
+                statusBadge.classList.remove('bg-secondary', 'bg-success');
+                statusBadge.classList.add('bg-warning');
                 item.classList.add('border-warning');
                 item.classList.remove('border-success');
                 
-                if (notesContainer) notesContainer.style.display = 'block';
+                if (notesContainer) notesContainer.classList.remove('d-none');
             } 
             else {
                 statusBadge.textContent = 'Not Performed';
-                statusBadge.className = 'badge exercise-status bg-secondary';
+                statusBadge.classList.remove('bg-success', 'bg-warning');
+                statusBadge.classList.add('bg-secondary');
                 item.classList.remove('border-success', 'border-warning');
                 
-                if (notesContainer) notesContainer.style.display = 'none';
+                if (notesContainer) notesContainer.classList.add('d-none');
             }
             
             // Update counter
@@ -421,9 +426,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const exerciseName = item.getAttribute('data-exercise-name').toLowerCase();
                 
                 if (exerciseName.includes(searchText)) {
-                    item.style.display = '';
+                    item.classList.remove('d-none');
                 } else {
-                    item.style.display = 'none';
+                    item.classList.add('d-none');
                 }
             });
         });
@@ -433,7 +438,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (expandAllBtn) {
         expandAllBtn.addEventListener('click', function() {
             document.querySelectorAll('.exercise-content').forEach(content => {
-                content.style.display = 'block';
+                content.classList.remove('d-none');
                 
                 const toggle = content.closest('.exercise-item').querySelector('.exercise-toggle i');
                 toggle.classList.remove('bi-chevron-down');
@@ -445,7 +450,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (collapseAllBtn) {
         collapseAllBtn.addEventListener('click', function() {
             document.querySelectorAll('.exercise-content').forEach(content => {
-                content.style.display = 'none';
+                content.classList.add('d-none');
                 
                 const toggle = content.closest('.exercise-item').querySelector('.exercise-toggle i');
                 toggle.classList.remove('bi-chevron-up');
@@ -487,7 +492,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const icon = toggle.querySelector('i');
                     const content = item.querySelector('.exercise-content');
                     
-                    content.style.display = 'block';
+                    content.classList.remove('d-none');
                     icon.classList.remove('bi-chevron-down');
                     icon.classList.add('bi-chevron-up');
                     
