@@ -9,6 +9,40 @@
     {% trans "Training Record" %} - {{ CLUB_NAME }}
 {% endblock %}
 
+{% block extra_css %}
+<style nonce="{{ csp_nonce }}">
+    /* Additional styles for the exercise items */
+    .exercise-quick-item {
+        transition: background-color 0.2s;
+    }
+    
+    .exercise-quick-item:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+    
+    /* Highlight selected exercises */
+    .quick-select-checkbox:checked + label {
+        font-weight: bold;
+        color: #0d6efd;
+    }
+    
+    /* Hide not-performed exercises in detailed mode when filter is active */
+    .hide-not-performed .exercise-item.not-performed {
+        display: none !important;
+    }
+    
+    /* Filter toggle button styling */
+    .filter-badge {
+        cursor: pointer;
+        user-select: none;
+    }
+    
+    .filter-badge.active {
+        background-color: #198754 !important;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <div class="card shadow mb-4">
@@ -140,20 +174,41 @@
                     </div>
                 </div>
                 
-                <!-- Exercises Section -->
+                <!-- Exercises Section with Quick Select Feature -->
                 <div class="card mb-4">
                     <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
+                        <h5 class="mb-0 d-flex align-items-center">
                             {% trans "Exercises Performed" %}
                             <span id="exercise-counter" class="badge bg-secondary ms-2">0</span>
+                            
+                            <!-- New filter toggle that shows in detailed mode -->
+                            <span id="filter-toggle" class="badge bg-light text-dark border ms-3 filter-badge active">
+                                <i class="bi bi-funnel-fill"></i> Show Only Selected
+                            </span>
                         </h5>
                         
                         <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-outline-primary" id="btn-quick-select-mode">Quick Select Mode</button>
+                            <button type="button" class="btn btn-sm btn-outline-primary d-none" id="btn-detailed-mode">Detailed Mode</button>
                             <button type="button" class="btn btn-sm btn-outline-primary" id="btn-expand-all">Expand All</button>
                             <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-collapse-all">Collapse All</button>
                         </div>
                     </div>
                     <div class="card-body">
+                        <!-- Quick select introduction and help text -->
+                        <div id="quick-select-help" class="alert alert-info mb-3 d-none">
+                            <p><strong>Quick Select Mode:</strong> Check only the exercises you performed during this flight. Unselected exercises will automatically be marked as "Not Performed".</p>
+                            <p>For exercises you select, you can provide a detailed assessment in the next step.</p>
+                        </div>
+                        
+                        <!-- Search box -->
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control" id="exercise-search" placeholder="Search exercises...">
+                        </div>
+                        
                         <!-- Navigation tabs for Pre/Post solo exercises -->
                         <ul class="nav nav-tabs mb-3" id="exerciseTabs" role="tablist">
                             <li class="nav-item" role="presentation">
@@ -169,16 +224,75 @@
                                 </button>
                             </li>
                         </ul>
-                        
-                        <!-- Search box -->
-                        <div class="input-group mb-3">
-                            <span class="input-group-text">
-                                <i class="bi bi-search"></i>
-                            </span>
-                            <input type="text" class="form-control" id="exercise-search" placeholder="Search exercises...">
+
+                        <!-- Quick Select Mode UI -->
+                        <div id="quick-select-mode" class="d-none">
+                            <div class="tab-content" id="quickSelectTabContent">
+                                <!-- Pre-Solo Quick Select -->
+                                <div class="tab-pane fade show active" id="quick-pre-solo" role="tabpanel" aria-labelledby="pre-solo-tab">
+                                    <div class="card">
+                                        <div class="card-header bg-light">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h6 class="mb-0">Pre-Solo Exercises</h6>
+                                                <div>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary select-all-btn" data-target="pre-solo">Select All</button>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary deselect-all-btn" data-target="pre-solo">Deselect All</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                {% for exercise in pre_solo_exercises %}
+                                                <div class="col-md-6 col-lg-4 exercise-quick-item" data-exercise-id="{{ exercise.id }}" data-exercise-name="{{ exercise.name }}">
+                                                    <div class="form-check mb-2">
+                                                        <input class="form-check-input quick-select-checkbox" type="checkbox" id="quick-select-{{ exercise.id }}" data-exercise-id="{{ exercise.id }}" data-category="pre-solo">
+                                                        <label class="form-check-label" for="quick-select-{{ exercise.id }}">
+                                                            {% if exercise.number %}{{ exercise.number }} - {% endif %}{{ exercise.name }}
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Post-Solo Quick Select -->
+                                <div class="tab-pane fade" id="quick-post-solo" role="tabpanel" aria-labelledby="post-solo-tab">
+                                    <div class="card">
+                                        <div class="card-header bg-light">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h6 class="mb-0">Post-Solo Exercises</h6>
+                                                <div>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary select-all-btn" data-target="post-solo">Select All</button>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary deselect-all-btn" data-target="post-solo">Deselect All</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                {% for exercise in post_solo_exercises %}
+                                                <div class="col-md-6 col-lg-4 exercise-quick-item" data-exercise-id="{{ exercise.id }}" data-exercise-name="{{ exercise.name }}">
+                                                    <div class="form-check mb-2">
+                                                        <input class="form-check-input quick-select-checkbox" type="checkbox" id="quick-select-{{ exercise.id }}" data-exercise-id="{{ exercise.id }}" data-category="post-solo">
+                                                        <label class="form-check-label" for="quick-select-{{ exercise.id }}">
+                                                            {% if exercise.number %}{{ exercise.number }} - {% endif %}{{ exercise.name }}
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 mt-3">
+                                <button type="button" id="apply-quick-select" class="btn btn-primary">Apply Selection & Continue</button>
+                            </div>
                         </div>
                         
-                        <!-- Tab content -->
+                        <!-- Tab content for detailed mode -->
                         <div class="tab-content" id="exerciseTabContent">
                             <!-- Pre-Solo Exercises Tab -->
                             <div class="tab-pane fade show active" id="pre-solo-exercises" role="tabpanel" aria-labelledby="pre-solo-tab">
@@ -348,13 +462,204 @@
 {% block extra_js %}
 <script nonce="{{ csp_nonce }}">
 document.addEventListener('DOMContentLoaded', function() {
-    // Counters and elements
-    let selectedExercises = 0;
-    const counter = document.getElementById('exercise-counter');
-    const exerciseItems = document.querySelectorAll('.exercise-item');
+    // Mode switching
+    const quickSelectMode = document.getElementById('quick-select-mode');
+    const quickSelectHelp = document.getElementById('quick-select-help');
+    const detailedMode = document.getElementById('exerciseTabContent');
+    const btnQuickMode = document.getElementById('btn-quick-select-mode');
+    const btnDetailedMode = document.getElementById('btn-detailed-mode');
     const searchInput = document.getElementById('exercise-search');
+    const exerciseTabs = document.getElementById('exerciseTabs');
     const expandAllBtn = document.getElementById('btn-expand-all');
     const collapseAllBtn = document.getElementById('btn-collapse-all');
+    const filterToggle = document.getElementById('filter-toggle');
+    
+    // Apply filter container class to exercise tabs parent
+    const exerciseTabsContainer = document.getElementById('exerciseTabContent');
+    exerciseTabsContainer.classList.add('hide-not-performed');
+    
+    // Tab panes
+    const preSoloTab = document.getElementById('pre-solo-tab');
+    const postSoloTab = document.getElementById('post-solo-tab');
+    const quickPreSoloTab = document.getElementById('quick-pre-solo');
+    const quickPostSoloTab = document.getElementById('quick-post-solo');
+    
+    // Filter toggle functionality
+    if (filterToggle) {
+        filterToggle.addEventListener('click', function() {
+            this.classList.toggle('active');
+            exerciseTabsContainer.classList.toggle('hide-not-performed');
+            
+            // Update icon and text based on state
+            if (this.classList.contains('active')) {
+                this.innerHTML = '<i class="bi bi-funnel-fill"></i> Show Only Selected';
+            } else {
+                this.innerHTML = '<i class="bi bi-funnel"></i> Show All';
+            }
+        });
+    }
+    
+    // Mode switching functions
+    btnQuickMode.addEventListener('click', function() {
+        detailedMode.classList.add('d-none');
+        quickSelectMode.classList.remove('d-none');
+        quickSelectHelp.classList.remove('d-none');
+        btnQuickMode.classList.add('d-none');
+        btnDetailedMode.classList.remove('d-none');
+        expandAllBtn.classList.add('d-none');
+        collapseAllBtn.classList.add('d-none');
+        
+        // Update tabs to match the current tab selection
+        if (preSoloTab.classList.contains('active')) {
+            document.getElementById('quick-pre-solo').classList.add('show', 'active');
+            document.getElementById('quick-post-solo').classList.remove('show', 'active');
+        } else {
+            document.getElementById('quick-pre-solo').classList.remove('show', 'active');
+            document.getElementById('quick-post-solo').classList.add('show', 'active');
+        }
+    });
+    
+    btnDetailedMode.addEventListener('click', function() {
+        quickSelectMode.classList.add('d-none');
+        quickSelectHelp.classList.add('d-none');
+        detailedMode.classList.remove('d-none');
+        btnDetailedMode.classList.add('d-none');
+        btnQuickMode.classList.remove('d-none');
+        expandAllBtn.classList.remove('d-none');
+        collapseAllBtn.classList.remove('d-none');
+    });
+    
+    // Tab switching - keep pre/post solo tabs in sync between modes
+    preSoloTab.addEventListener('click', function() {
+        document.getElementById('quick-pre-solo').classList.add('show', 'active');
+        document.getElementById('quick-post-solo').classList.remove('show', 'active');
+    });
+    
+    postSoloTab.addEventListener('click', function() {
+        document.getElementById('quick-pre-solo').classList.remove('show', 'active');
+        document.getElementById('quick-post-solo').classList.add('show', 'active');
+    });
+    
+    // Apply quick selection button
+    document.getElementById('apply-quick-select').addEventListener('click', function() {
+        // First reset all exercises to "not performed"
+        document.querySelectorAll('.exercise-item').forEach(item => {
+            const exerciseId = item.getAttribute('data-exercise-id');
+            const radioNotPerformed = document.querySelector(`input[type="radio"][value="not_performed"][id$="-not_performed"][name$="-performance"]`, item);
+            if (radioNotPerformed) {
+                radioNotPerformed.checked = true;
+            }
+            
+            // Update the status badge
+            const statusBadge = item.querySelector('.exercise-status');
+            if (statusBadge) {
+                statusBadge.textContent = 'Not Performed';
+                statusBadge.classList.remove('bg-success', 'bg-warning');
+                statusBadge.classList.add('bg-secondary');
+            }
+            
+            // Hide notes container
+            const notesContainer = item.querySelector('.notes-container');
+            if (notesContainer) {
+                notesContainer.classList.add('d-none');
+            }
+            
+            // Remove any border styling
+            item.classList.remove('border-success', 'border-warning');
+        });
+        
+        // Then for each checked exercise in quick select, set to "performed_well"
+        document.querySelectorAll('.quick-select-checkbox:checked').forEach(checkbox => {
+            const exerciseId = checkbox.getAttribute('data-exercise-id');
+            const exerciseItem = document.querySelector(`.exercise-item[data-exercise-id="${exerciseId}"]`);
+            
+            if (exerciseItem) {
+                // Find the "performed_well" radio button and check it
+                const radioPerformedWell = exerciseItem.querySelector('input[type="radio"][value="performed_well"]');
+                if (radioPerformedWell) {
+                    radioPerformedWell.checked = true;
+                    
+                    // Show the exercise details
+                    const content = exerciseItem.querySelector('.exercise-content');
+                    if (content) {
+                        content.classList.remove('d-none');
+                    }
+                    
+                    // Update toggle button icon
+                    const toggleIcon = exerciseItem.querySelector('.exercise-toggle i');
+                    if (toggleIcon) {
+                        toggleIcon.classList.remove('bi-chevron-down');
+                        toggleIcon.classList.add('bi-chevron-up');
+                    }
+                    
+                    // Update status badge
+                    const statusBadge = exerciseItem.querySelector('.exercise-status');
+                    if (statusBadge) {
+                        statusBadge.textContent = 'Performed Well';
+                        statusBadge.classList.remove('bg-secondary', 'bg-warning');
+                        statusBadge.classList.add('bg-success');
+                    }
+                    
+                    // Show notes container
+                    const notesContainer = exerciseItem.querySelector('.notes-container');
+                    if (notesContainer) {
+                        notesContainer.classList.remove('d-none');
+                    }
+                    
+                    // Add border styling and remove not-performed class
+                    exerciseItem.classList.add('border-success');
+                    exerciseItem.classList.remove('not-performed');
+                }
+            }
+        });
+        
+        // Switch to detailed mode to allow fine-tuning
+        quickSelectMode.classList.add('d-none');
+        quickSelectHelp.classList.add('d-none');
+        detailedMode.classList.remove('d-none');
+        btnDetailedMode.classList.add('d-none');
+        btnQuickMode.classList.remove('d-none');
+        expandAllBtn.classList.remove('d-none');
+        collapseAllBtn.classList.remove('d-none');
+        
+        // Update exercise counter
+        updateExerciseCounter();
+    });
+    
+    // Quick select category all/none buttons
+    document.querySelectorAll('.select-all-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const target = this.getAttribute('data-target');
+            document.querySelectorAll(`.quick-select-checkbox[data-category="${target}"]`).forEach(checkbox => {
+                checkbox.checked = true;
+            });
+        });
+    });
+    
+    document.querySelectorAll('.deselect-all-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const target = this.getAttribute('data-target');
+            document.querySelectorAll(`.quick-select-checkbox[data-category="${target}"]`).forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        });
+    });
+    
+    // Exercise search functionality for quick select mode
+    searchInput.addEventListener('input', function() {
+        const searchText = this.value.toLowerCase();
+        
+        // Search in both detailed and quick select modes
+        document.querySelectorAll('.exercise-item, .exercise-quick-item').forEach(item => {
+            const exerciseName = item.getAttribute('data-exercise-name').toLowerCase();
+            
+            if (exerciseName.includes(searchText)) {
+                item.classList.remove('d-none');
+            } else {
+                item.classList.add('d-none');
+            }
+        });
+    });
     
     // Set up toggle functionality for each exercise
     document.querySelectorAll('.exercise-toggle').forEach(toggle => {
@@ -390,7 +695,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 statusBadge.classList.remove('bg-secondary', 'bg-warning');
                 statusBadge.classList.add('bg-success');
                 item.classList.add('border-success');
-                item.classList.remove('border-warning');
+                item.classList.remove('border-warning', 'not-performed');
                 
                 if (notesContainer) notesContainer.classList.remove('d-none');
             } 
@@ -399,7 +704,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 statusBadge.classList.remove('bg-secondary', 'bg-success');
                 statusBadge.classList.add('bg-warning');
                 item.classList.add('border-warning');
-                item.classList.remove('border-success');
+                item.classList.remove('border-success', 'not-performed');
                 
                 if (notesContainer) notesContainer.classList.remove('d-none');
             } 
@@ -408,6 +713,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 statusBadge.classList.remove('bg-success', 'bg-warning');
                 statusBadge.classList.add('bg-secondary');
                 item.classList.remove('border-success', 'border-warning');
+                item.classList.add('not-performed');
                 
                 if (notesContainer) notesContainer.classList.add('d-none');
             }
@@ -416,23 +722,6 @@ document.addEventListener('DOMContentLoaded', function() {
             updateExerciseCounter();
         });
     });
-    
-    // Search functionality
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            const searchText = this.value.toLowerCase();
-            
-            exerciseItems.forEach(item => {
-                const exerciseName = item.getAttribute('data-exercise-name').toLowerCase();
-                
-                if (exerciseName.includes(searchText)) {
-                    item.classList.remove('d-none');
-                } else {
-                    item.classList.add('d-none');
-                }
-            });
-        });
-    }
     
     // Expand/Collapse All
     if (expandAllBtn) {
@@ -461,6 +750,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Exercise counter update
     function updateExerciseCounter() {
+        const counter = document.getElementById('exercise-counter');
         const performedExercises = document.querySelectorAll('input[type="radio"][value="performed_well"]:checked, input[type="radio"][value="needs_improvement"]:checked').length;
         
         if (counter) {
@@ -486,7 +776,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const event = new Event('change');
                 radio.dispatchEvent(event);
                 
-                // Show the exercise details
+                // Show the exercise details if performed
                 if (data.performance === 'performed_well' || data.performance === 'needs_improvement') {
                     const toggle = item.querySelector('.exercise-toggle');
                     const icon = toggle.querySelector('i');
@@ -495,6 +785,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     content.classList.remove('d-none');
                     icon.classList.remove('bi-chevron-down');
                     icon.classList.add('bi-chevron-up');
+                    
+                    // Check the corresponding checkbox in quick select mode
+                    const quickCheckbox = document.querySelector(`#quick-select-${exerciseId}`);
+                    if (quickCheckbox) {
+                        quickCheckbox.checked = true;
+                    }
                     
                     // Set notes if any
                     if (data.notes) {
