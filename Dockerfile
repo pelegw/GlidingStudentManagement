@@ -27,6 +27,11 @@ RUN apk add --no-cache \
     fontconfig \
     ttf-dejavu \
     ttf-freefont \
+    font-noto \
+    font-noto-extra \
+    font-noto-emoji \
+    font-noto-cjk \
+    font-noto-symbols \
     && mkdir -p /usr/share/fonts/noto
     
 RUN wget -O /usr/share/fonts/noto/NotoSansHebrew-Regular.ttf \
