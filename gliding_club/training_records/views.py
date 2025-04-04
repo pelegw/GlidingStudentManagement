@@ -947,7 +947,7 @@ def _export_exercise_matrix(student, records, request):
     """Generate an exercise matrix PDF showing performance on each exercise across flights.
     
     This implementation creates separate pages for pre-solo and post-solo exercises,
-    and assigns flights to the appropriate page based on exercise performance.
+    with pagination to limit the number of flights per page.
     """
     try:
         # Get all exercises, but sort properly by converting number to integer first
@@ -1059,18 +1059,30 @@ def _export_exercise_matrix(student, records, request):
         # Sort flights by date (ascending) to ensure consistent order
         flights.sort(key=lambda f: (f['date_raw'] or datetime.min, f['id']))
         
+        # Split flights into pre-solo and post-solo lists
+        pre_solo_flights = [f for f in flights if not f['has_post_solo_exercises']]
+        post_solo_flights = [f for f in flights if f['has_post_solo_exercises']]
+        
+        # Paginate the flights - 25 flights per page
+        FLIGHTS_PER_PAGE = 25
+        pre_solo_pages = [pre_solo_flights[i:i+FLIGHTS_PER_PAGE] for i in range(0, len(pre_solo_flights), FLIGHTS_PER_PAGE)]
+        post_solo_pages = [post_solo_flights[i:i+FLIGHTS_PER_PAGE] for i in range(0, len(post_solo_flights), FLIGHTS_PER_PAGE)]
+        
         # Prepare context for the template
         context = {
-            'flights': flights,
+            'pre_solo_pages': pre_solo_pages,
+            'post_solo_pages': post_solo_pages,
             'pre_solo_exercises': pre_solo_exercises,
             'post_solo_exercises': post_solo_exercises,
             'student_name': student.get_full_name(),
             'student': student,  # Pass the entire student object to access license number
-            'today': timezone.now().strftime("%d/%m/%Y")
+            'today': timezone.now().strftime("%d/%m/%Y"),
+            'has_pre_solo': bool(pre_solo_pages),
+            'has_post_solo': bool(post_solo_pages)
         }
         
         # Render the template
-        html_content = render_to_string('training_records/exercise_matrix.html', context)
+        html_content = render_to_string('training_records/exercise_matrix_paginated.html', context)
         
         # For debugging (optionally enabled)
         debug_html = False
@@ -1105,3 +1117,4 @@ def _export_exercise_matrix(student, records, request):
         logger.error(f"Matrix export error: {str(e)}")
         logger.error(traceback.format_exc())
         raise
+    

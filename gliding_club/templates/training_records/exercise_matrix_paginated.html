@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <title>סדין תרגולים - {{ student_name }}</title>
+    <style>
+        @font-face {
+        font-family: 'DejaVu Sans';
+        src: url('/static/fonts/DejaVuSans.ttf') format('truetype');
+        }
+        @page {
+            size: landscape;
+            margin: 0.5cm;
+        }
+        body {
+            direction: rtl;
+            font-family: 'DejaVu Sans' Arial, sans-serif;
+            font-size: 8pt;
+            text-align: right;
+        }
+        h1 {
+            text-align: center;
+            font-size: 12pt;
+            margin-bottom: 2px;
+        }
+        h2 {
+            text-align: center;
+            font-size: 10pt;
+            margin-top: 2px;
+            margin-bottom: 8px;
+        }
+        h3 {
+            text-align: center;
+            font-size: 11pt;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            color: #003366;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            direction: rtl;
+            page-break-inside: avoid;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 2px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        th {
+            background-color: #e6e6e6;
+            font-weight: bold;
+            font-size: 8pt;
+        }
+        .numbers-row th {
+            height: 20px;
+            min-width: 10px;
+        }
+        .headers-row th {
+            height: 22px;
+        }
+        .info-header {
+            min-width: 35px; /* Slightly reduced from 40px */
+        }
+        .exercise-cell {
+            width: 10px;
+            font-weight: bold;
+            font-size: 8pt;
+        }
+        .exercise-column {
+            width: 12px;
+            max-width: 12px;
+            min-width: 12px;
+        }
+        .success {
+            color: green;
+        }
+        .partial {
+            color: red;
+        }
+        .footer {
+            text-align: center;
+            font-size: 8pt;
+            padding-left: 10px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Vertical text for תרגיל */
+        .vertical-text {
+            transform: rotate(270deg);
+            display: inline-block;
+            white-space: nowrap;
+            margin: 0;
+            height: 140px;
+            width: 8px;
+            text-overflow: ellipsis;
+            transform-origin: top;
+            padding-right: 12px;
+            padding-bottom: 6px;
+        }
+        
+        /* Slight width adjustments for info columns */
+        .col-num {
+            width: 30px;
+            vertical-align: bottom;
+        }
+        .col-date {
+            width: 50px;
+            vertical-align: bottom;
+        }
+        .col-glider {
+            width: 40px;
+            vertical-align: bottom;
+        }
+        .col-duration {
+            width: 40px;
+            vertical-align: bottom;
+        }
+        .col-instructor {
+            width: 55px;
+            vertical-align: bottom;
+        }
+        .col-license {
+            width: 45px;
+            vertical-align: bottom;
+        }
+        
+        /* Color alternating rows for better readability */
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        /* Legend styling */
+        .legend {
+            margin-top: 15px;
+            width: 100%;
+            text-align: center;
+            font-size: 8pt;
+        }
+        .legend-item {
+            display: inline-block;
+            margin: 0 10px;
+        }
+        
+        /* Page break for separate tables */
+        .page-break {
+            page-break-before: always;
+        }
+        
+        /* Student info */
+        .student-license {
+            text-align: center;
+            font-size: 9pt;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        /* Page info */
+        .page-info {
+            text-align: center;
+            font-size: 9pt;
+            margin-top: 0;
+            margin-bottom: 5px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    {% if has_pre_solo %}
+    <!-- Pre-Solo Exercises Pages -->
+    {% for flights_page in pre_solo_pages %}
+        {% if not forloop.first %}
+        <div class="page-break"></div>
+        {% endif %}
+        
+        <h1>סדין תרגולים</h1>
+        <h2>{{ student_name }}</h2>
+        <p class="student-license">מספר רישיון: {{ student.student_license_number|default:"לא צוין" }}</p>
+        <h3>שלב ראשון - מערך הדרכה לסולו</h3>
+        <p class="page-info">עמוד {{ forloop.counter }} מתוך {{ pre_solo_pages|length }}</p>
+        
+        <table>
+            <thead>
+                <!-- Row 1: Exercise Numbers -->
+                <tr class="numbers-row">
+                    <th colspan="6"></th>
+                    {% for exercise in pre_solo_exercises %}
+                        <th class="exercise-column">{{ exercise.number }}</th>
+                    {% endfor %}
+                </tr>
+                
+                <!-- Row 2: All Headers -->
+                <tr class="headers-row">
+                    <th class="info-header col-num">מספר טיסה</th>
+                    <th class="info-header col-date">תאריך</th>
+                    <th class="info-header col-glider">דאון</th>
+                    <th class="info-header col-duration">משך טיסה</th>
+                    <th class="info-header col-instructor">שם המדריך</th>
+                    <th class="info-header col-license">מספר רשיון</th>
+                    {% for exercise in pre_solo_exercises %}
+                        <th class="exercise-column">
+                            <span class="vertical-text">{{ exercise.name }}</span>
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data Rows - only for flights with NO post-solo exercises and not solo flights -->
+                {% for flight in flights_page %}
+                    <tr>
+                        <td class="col-num">{{ flight.number }}</td>
+                        <td class="col-date">{{ flight.date }}</td>
+                        <td class="col-glider">{{ flight.glider }}</td>
+                        <td class="col-duration">{{ flight.duration }}</td>
+                        <td class="col-instructor">{{ flight.instructor_name }}</td>
+                        <td class="col-license">{{ flight.instructor_license }}</td>
+                        {% for result in flight.pre_solo_exercises %}
+                            <td class="exercise-cell">
+                                {% if result == "✓" %}
+                                    <span class="success">✓</span>
+                                {% elif result == "⍻" %}
+                                    <span class="partial">⍻</span>
+                                {% else %}
+                                    <!-- Empty cell for not performed -->
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <!-- Legend -->
+        <div class="legend">
+            <div class="legend-item"><span class="success">✓</span> - מספיק</div>
+            <div class="legend-item"><span class="partial">⍻</span> - בינוני</div>
+        </div>
+        
+        <div class="footer">
+            הופק בתאריך: {{ today }}
+        </div>
+    {% endfor %}
+    {% endif %}
+    
+    {% if has_post_solo %}
+    <!-- Post-Solo Exercises Pages -->
+    {% for flights_page in post_solo_pages %}
+        {% if not forloop.first or has_pre_solo %}
+        <div class="page-break"></div>
+        {% endif %}
+        
+        <h1>סדין תרגולים</h1>
+        <h2>{{ student_name }}</h2>
+        <p class="student-license">מספר רישיון: {{ student.student_license_number|default:"לא צוין" }}</p>
+        <h3>שלבים 2/3 - לאחר טיסת הסולו</h3>
+        <p class="page-info">עמוד {{ forloop.counter }} מתוך {{ post_solo_pages|length }}</p>
+        
+        <table>
+            <thead>
+                <!-- Row 1: Exercise Numbers -->
+                <tr class="numbers-row">
+                    <th colspan="6"></th>
+                    {% for exercise in post_solo_exercises %}
+                        <th class="exercise-column">{{ exercise.number }}</th>
+                    {% endfor %}
+                </tr>
+                
+                <!-- Row 2: All Headers -->
+                <tr class="headers-row">
+                    <th class="info-header col-num">מספר טיסה</th>
+                    <th class="info-header col-date">תאריך</th>
+                    <th class="info-header col-glider">דאון</th>
+                    <th class="info-header col-duration">משך טיסה</th>
+                    <th class="info-header col-instructor">שם המדריך</th>
+                    <th class="info-header col-license">מספר רשיון</th>
+                    {% for exercise in post_solo_exercises %}
+                        <th class="exercise-column">
+                            <span class="vertical-text">{{ exercise.name }}</span>
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data Rows - only for flights with post-solo exercises or solo flights -->
+                {% for flight in flights_page %}
+                    <tr>
+                        <td class="col-num">{{ flight.number }}</td>
+                        <td class="col-date">{{ flight.date }}</td>
+                        <td class="col-glider">{{ flight.glider }}</td>
+                        <td class="col-duration">{{ flight.duration }}</td>
+                        <td class="col-instructor">{{ flight.instructor_name }}</td>
+                        <td class="col-license">{{ flight.instructor_license }}</td>
+                        {% for result in flight.post_solo_exercises %}
+                            <td class="exercise-cell">
+                                {% if result == "✓" %}
+                                    <span class="success">✓</span>
+                                {% elif result == "⍻" %}
+                                    <span class="partial">⍻</span>
+                                {% else %}
+                                    <!-- Empty cell for not performed -->
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <!-- Legend -->
+        <div class="legend">
+            <div class="legend-item"><span class="success">✓</span> - מספיק</div>
+            <div class="legend-item"><span class="partial">⍻</span> - בינוני</div>
+        </div>
+        
+        <div class="footer">
+            הופק בתאריך: {{ today }}
+        </div>
+    {% endfor %}
+    {% endif %}
+</body>
+</html>
