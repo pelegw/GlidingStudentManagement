@@ -950,12 +950,32 @@ def _export_exercise_matrix(student, records, request):
     and assigns flights to the appropriate page based on exercise performance.
     """
     try:
-        # Get all exercises, ordered by category and number
-        pre_solo_exercises = Exercise.objects.filter(category='pre-solo').order_by('number', 'name')
-        post_solo_exercises = Exercise.objects.filter(category='post-solo').order_by('number', 'name')
+        # Get all exercises, but sort properly by converting number to integer first
+        # We need custom sorting to handle exercise numbers correctly (1, 2, 3... 10, 11 instead of 1, 10, 11, 2, 3...)
+        pre_solo_exercises = list(Exercise.objects.filter(category='pre-solo'))
+        post_solo_exercises = list(Exercise.objects.filter(category='post-solo'))
+        
+        # Custom sort function to handle numeric sorting
+        def numeric_sort_key(exercise):
+            # Try to convert number to integer for proper numeric sorting
+            try:
+                if exercise.number and exercise.number.strip():
+                    # Remove any non-numeric prefix
+                    import re
+                    match = re.search(r'(\d+)', exercise.number)
+                    if match:
+                        return int(match.group(1))
+                    return 999  # fallback for non-numeric
+                return 999  # fallback for empty
+            except (ValueError, AttributeError):
+                return 999  # fallback for any error
+        
+        # Sort exercises numerically by their number field
+        pre_solo_exercises.sort(key=numeric_sort_key)
+        post_solo_exercises.sort(key=numeric_sort_key)
         
         # Check if we have data
-        if not records.exists() or (not pre_solo_exercises.exists() and not post_solo_exercises.exists()):
+        if not records.exists() or (not pre_solo_exercises and not post_solo_exercises):
             messages.warning(request, "No training records or exercises found to generate matrix.")
             return redirect('record_list')
         
@@ -1036,19 +1056,10 @@ def _export_exercise_matrix(student, records, request):
             
             flights.append(flight)
         
-        # Ensure exercise numbers are valid (use index+1 if number is empty)
-        for i, ex in enumerate(pre_solo_exercises):
-            if not ex.number:
-                ex.number = str(i + 1)
-                
-        for i, ex in enumerate(post_solo_exercises):
-            if not ex.number:
-                ex.number = str(i + 1)
-        
         # Sort flights by date (ascending) to ensure consistent order
         flights.sort(key=lambda f: (f['date_raw'] or datetime.min, f['id']))
         
-       # Prepare context for the template
+        # Prepare context for the template
         context = {
             'flights': flights,
             'pre_solo_exercises': pre_solo_exercises,

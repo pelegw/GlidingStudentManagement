@@ -175,7 +175,7 @@
             <th class="info-header col-license">מספר רשיון</th>
             {% for exercise in pre_solo_exercises %}
                 <th>
-                    <span class="vertical-text">תרגיל {{ exercise.number }}</span>
+                    <span class="vertical-text">{{ exercise.name }}</span>
                 </th>
             {% endfor %}
         </tr>
@@ -243,7 +243,7 @@
                 <th class="info-header col-license">מספר רשיון</th>
                 {% for exercise in post_solo_exercises %}
                     <th>
-                        <span class="vertical-text">תרגיל {{ exercise.number }}</span>
+                        <span class="vertical-text">{{ exercise.name }}</span>
                     </th>
                 {% endfor %}
             </tr>
