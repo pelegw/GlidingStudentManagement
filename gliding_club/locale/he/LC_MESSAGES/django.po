@@ -547,7 +547,7 @@ msgstr "עריכה"
 #: .\templates\training_records\record_form.html:7
 #: .\templates\training_records\record_form.html:92
 msgid "New"
-msgstr "חדש"
+msgstr "הוספת"
 
 #: .\templates\training_records\record_form.html:9
 #: .\templates\training_records\record_form.html:94

@@ -105,23 +105,25 @@
                         <h5 class="mb-0">{% trans "Flight Information" %}</h5>
                     </div>
                     <div class="card-body">
-                        <!-- Row 1: Instructor, Date, and Flight Duration -->
                         <div class="row mb-3">
                             <div class="col-md-4">
-                                <label for="{{ form.instructor.id_for_label }}" class="form-label">
-                                    {% trans "Instructor" %}:
-                                </label>
+                                <div class="mb-2">
+                                    <label for="{{ form.instructor.id_for_label }}" class="form-label fw-bold d-block">
+                                        {% trans "Instructor" %}
+                                    </label>
+                                </div>
                                 {{ form.instructor }}
-                                <div class="form-text">{% trans "Select the instructor for this training session" %}</div>
                                 {% if form.instructor.errors %}
                                     <div class="text-danger">{{ form.instructor.errors }}</div>
                                 {% endif %}
                             </div>
                             
                             <div class="col-md-4">
-                                <label for="{{ form.date.id_for_label }}" class="form-label">
-                                    {% trans "Date" %}:
-                                </label>
+                                <div class="mb-2">
+                                    <label for="{{ form.date.id_for_label }}" class="form-label fw-bold d-block">
+                                        {% trans "Date" %}
+                                    </label>
+                                </div>
                                 {{ form.date }}
                                 {% if form.date.errors %}
                                     <div class="text-danger">{{ form.date.errors }}</div>
@@ -129,9 +131,27 @@
                             </div>
                             
                             <div class="col-md-4">
-                                <label for="{{ form.duration_display.id_for_label }}" class="form-label">
-                                    {% trans "Flight Duration" %}:
-                                </label>
+                                <div class="mb-2">
+                                    <label for="{{ form.glider.id_for_label }}" class="form-label fw-bold d-block">
+                                        {% trans "Glider" %}
+                                    </label>
+                                </div>
+                                {{ form.glider }}
+                                {% if form.glider.errors %}
+                                    <div class="text-danger">{{ form.glider.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        </div>
+                        
+                        <!-- Row 2: Flight Duration, Tow Height, Field/Location - With title above the field -->
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <div class="mb-2">
+                                    <label for="{{ form.duration_display.id_for_label }}" class="form-label fw-bold d-block">
+                                        {% trans "Flight Duration" %}
+                                    </label>
+                                </div>
                                 <div class="input-group">
                                     {{ form.duration_display }}
                                     <span class="input-group-text">HH:MM</span>
@@ -140,24 +160,13 @@
                                     <div class="text-danger">{{ form.duration_display.errors }}</div>
                                 {% endif %}
                             </div>
-                        </div>
-                        
-                        <!-- Row 2: Glider, Tow Height, and Field/Location -->
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="{{ form.glider.id_for_label }}" class="form-label">
-                                    {% trans "Glider" %}:
-                                </label>
-                                {{ form.glider }}
-                                {% if form.glider.errors %}
-                                    <div class="text-danger">{{ form.glider.errors }}</div>
-                                {% endif %}
-                            </div>
                             
                             <div class="col-md-4">
-                                <label for="{{ form.tow_height.id_for_label }}" class="form-label">
-                                    {% trans "Tow Height" %}:
-                                </label>
+                                <div class="mb-2">
+                                    <label for="{{ form.tow_height.id_for_label }}" class="form-label fw-bold d-block">
+                                        {% trans "Tow Height" %}
+                                    </label>
+                                </div>
                                 <div class="input-group">
                                     {{ form.tow_height }}
                                     <span class="input-group-text">feet</span>
@@ -168,9 +177,11 @@
                             </div>
                             
                             <div class="col-md-4">
-                                <label for="{{ form.field.id_for_label }}" class="form-label">
-                                    {% trans "Field/Location" %}:
-                                </label>
+                                <div class="mb-2">
+                                    <label for="{{ form.field.id_for_label }}" class="form-label fw-bold d-block">
+                                        {% trans "Field/Location" %}
+                                    </label>
+                                </div>
                                 {{ form.field }}
                                 {% if form.field.errors %}
                                     <div class="text-danger">{{ form.field.errors }}</div>
@@ -178,12 +189,14 @@
                             </div>
                         </div>
                         
-                        <!-- Row 3: Training Topic and Solo Flight -->
+                        <!-- Row 3: Training Topic and Solo Flight - Better aligned -->
                         <div class="row mb-3">
                             <div class="col-md-8">
-                                <label for="{{ form.training_topic.id_for_label }}" class="form-label">
-                                    {% trans "Training Topic" %}:
-                                </label>
+                                <div class="mb-2">
+                                    <label for="{{ form.training_topic.id_for_label }}" class="form-label fw-bold d-block">
+                                        {% trans "Training Topic" %}
+                                    </label>
+                                </div>
                                 {{ form.training_topic }}
                                 {% if form.training_topic.errors %}
                                     <div class="text-danger">{{ form.training_topic.errors }}</div>
@@ -191,17 +204,20 @@
                             </div>
                             
                             <div class="col-md-4">
-                                <div class="form-check mt-4">
+                                <div class="mb-2">
+                                </div>
+                                <div class="form-check">
                                     {{ form.is_solo }}
                                     <label class="form-check-label" for="{{ form.is_solo.id_for_label }}">
                                         {% trans "Solo Flight" %}
                                     </label>
-                                    <div class="form-text">{% trans "No instructor present during the flight" %}</div>
+                                    
                                     {% if form.is_solo.errors %}
                                         <div class="text-danger">{{ form.is_solo.errors }}</div>
                                     {% endif %}
                                 </div>
                             </div>
+                        </div>
                         </div>
                     </div>
                 </div>
