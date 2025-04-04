@@ -750,6 +750,8 @@ def export_student_records(request, student_id, format='pdf'):
         
         if format.lower() == 'csv':
             return _export_csv(student, records)
+        elif format.lower() == 'matrix':
+            return _export_exercise_matrix(student, records, request)
         else:  # Default to PDF
             return _export_pdf_weasyprint(student, records, request)
     
@@ -938,5 +940,157 @@ def _export_pdf_weasyprint(student, records, request):
         # Log the error for debugging
         import traceback
         logger.error(f"PDF export error: {str(e)}")
+        logger.error(traceback.format_exc())
+        raise
+
+def _export_exercise_matrix(student, records, request):
+    """Generate an exercise matrix PDF showing performance on each exercise across flights.
+    
+    This implementation creates separate pages for pre-solo and post-solo exercises,
+    and assigns flights to the appropriate page based on exercise performance.
+    """
+    try:
+        # Get all exercises, ordered by category and number
+        pre_solo_exercises = Exercise.objects.filter(category='pre-solo').order_by('number', 'name')
+        post_solo_exercises = Exercise.objects.filter(category='post-solo').order_by('number', 'name')
+        
+        # Check if we have data
+        if not records.exists() or (not pre_solo_exercises.exists() and not post_solo_exercises.exists()):
+            messages.warning(request, "No training records or exercises found to generate matrix.")
+            return redirect('record_list')
+        
+        # Process records to extract exercise performance data - maintain the original ordering
+        flights = []
+        
+        for record in records:
+            # Format duration as minutes
+            if record.flight_duration:
+                minutes = int(record.flight_duration.total_seconds() / 60)
+                duration = f"{minutes} דקות"
+            else:
+                duration = "N/A"
+            
+            # Format date
+            date_str = record.date.strftime("%d/%m/%Y") if record.date else "N/A"
+            
+            # Get instructor info
+            if record.is_solo:
+                instructor_name = "טיסת סולו"
+                instructor_license = ""
+            else:
+                instructor_name = record.instructor.get_full_name() if record.instructor else "לא ידוע"
+                instructor_license = record.instructor.instructor_license_number if record.instructor and hasattr(record.instructor, 'instructor_license_number') else ""
+            
+            # Create flight entry
+            flight = {
+                "id": record.id,  # Keep track of original ID for sorting
+                "number": str(record.get_flight_number()),
+                "date": date_str,
+                "date_raw": record.date,  # Store original date for sorting
+                "glider": f"{record.glider.tail_number}" if record.glider else "N/A",
+                "duration": duration,
+                "instructor_name": instructor_name,
+                "instructor_license": instructor_license,
+                "is_solo": record.is_solo,  # Track if this is a solo flight
+                "pre_solo_exercises": [],
+                "post_solo_exercises": [],
+                "has_post_solo_exercises": False
+            }
+            
+            # Get performances for all exercises
+            performances = {perf.exercise_id: perf.performance 
+                           for perf in ExercisePerformance.objects.filter(training_record=record)}
+            
+            # Map each exercise to a symbol
+            for exercise in pre_solo_exercises:
+                performance = performances.get(exercise.id, 'not_performed')
+                
+                if performance == 'performed_well':
+                    symbol = "✓"  # Success
+                elif performance == 'needs_improvement':
+                    symbol = "⍻"  # Not check mark (U+237B)
+                else:
+                    symbol = ""  # Not performed
+                
+                flight["pre_solo_exercises"].append(symbol)
+            
+            # Track if this flight has post-solo exercises
+            has_post_solo = False
+            
+            for exercise in post_solo_exercises:
+                performance = performances.get(exercise.id, 'not_performed')
+                
+                if performance == 'performed_well':
+                    symbol = "✓"  # Success
+                    has_post_solo = True
+                elif performance == 'needs_improvement':
+                    symbol = "⍻"  # Not check mark (U+237B)
+                    has_post_solo = True
+                else:
+                    symbol = ""  # Not performed
+                
+                flight["post_solo_exercises"].append(symbol)
+            
+            # Flag if this flight has post-solo exercises or is a solo flight
+            flight["has_post_solo_exercises"] = has_post_solo or flight["is_solo"]
+            
+            flights.append(flight)
+        
+        # Ensure exercise numbers are valid (use index+1 if number is empty)
+        for i, ex in enumerate(pre_solo_exercises):
+            if not ex.number:
+                ex.number = str(i + 1)
+                
+        for i, ex in enumerate(post_solo_exercises):
+            if not ex.number:
+                ex.number = str(i + 1)
+        
+        # Sort flights by date (ascending) to ensure consistent order
+        flights.sort(key=lambda f: (f['date_raw'] or datetime.min, f['id']))
+        
+       # Prepare context for the template
+        context = {
+            'flights': flights,
+            'pre_solo_exercises': pre_solo_exercises,
+            'post_solo_exercises': post_solo_exercises,
+            'student_name': student.get_full_name(),
+            'student': student,  # Pass the entire student object to access license number
+            'today': timezone.now().strftime("%d/%m/%Y")
+        }
+        
+        # Render the template
+        html_content = render_to_string('training_records/exercise_matrix.html', context)
+        
+        # For debugging (optionally enabled)
+        debug_html = False
+        if debug_html and settings.DEBUG:
+            with open("temp_matrix.html", "w", encoding="utf-8") as f:
+                f.write(html_content)
+        
+        # Create a temporary file to write the PDF to
+        with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as tmp:
+            # Generate the PDF file
+            HTML(string=html_content, base_url=request.build_absolute_uri('/')).write_pdf(
+                tmp.name,
+                # You can add custom CSS files if needed
+                stylesheets=[
+                    CSS(string="@page { size: landscape; margin: 0.5cm; }")
+                ]
+            )
+        
+        # Read the PDF file into memory and return as a response
+        with open(tmp.name, 'rb') as pdf_file:
+            response = HttpResponse(pdf_file.read(), content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="{student.username}_exercise_matrix.pdf"'
+        
+        # Clean up the temporary file
+        os.unlink(tmp.name)
+        
+        return response
+    
+    except Exception as e:
+        # Log the error for debugging
+        import traceback
+        logger.error(f"Matrix export error: {str(e)}")
         logger.error(traceback.format_exc())
         raise

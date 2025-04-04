@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-04 00:28+0300\n"
+"POT-Creation-Date: 2025-04-04 20:14+0300\n"
 "PO-Revision-Date: 2025-03-22 14:30+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -600,7 +600,8 @@ msgstr "בחירה מהירה"
 msgid ""
 "Check only the exercises you performed during this flight. Unselected "
 "exercises will automatically be marked as 'Not Performed'."
-msgstr "בחר את התררגילים שביצעת במהלך טיסה זו. תרגילים שלא ייבחרו יסומנו כלא-בוצע"
+msgstr ""
+"בחר את התררגילים שביצעת במהלך טיסה זו. תרגילים שלא ייבחרו יסומנו כלא-בוצע"
 
 #: .\templates\training_records\record_form.html:233
 msgid ""
@@ -728,6 +729,28 @@ msgstr "אחרון"
 #: .\templates\training_records\record_list.html:130
 msgid "Create First Record"
 msgstr "יצירת רשומה ראשונה"
+
+#: .\templates\training_records\record_list.html:140
+#, fuzzy
+#| msgid "Training Records"
+msgid "Export Your Training Records"
+msgstr "רשומות הדרכה"
+
+#: .\templates\training_records\record_list.html:143
+msgid "Export your complete training history in your preferred format."
+msgstr "ייצא את תיק החניך בפורמט המועדף"
+
+#: .\templates\training_records\record_list.html:146
+msgid "Export as PDF"
+msgstr "ייצוא לPDF"
+
+#: .\templates\training_records\record_list.html:149
+msgid "Export as CSV"
+msgstr "ייצוא לCSV"
+
+#: .\templates\training_records\record_list.html:152
+msgid "Exercise Matrix"
+msgstr "סדין"
 
 #: .\templates\training_records\sign_record.html:3
 #: .\templates\training_records\sign_record.html:214
