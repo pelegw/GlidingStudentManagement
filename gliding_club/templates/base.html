@@ -71,7 +71,9 @@
                         </li>
                         {% if user.is_student %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'record_create' %}">{% trans "New Record" %}</a>
+                                <a class="nav-link{% if request.resolver_match.url_name == 'student_ground_briefings' %} active{% endif %}" href="{% url 'student_ground_briefings' %}">
+                                    <i class="fas fa-book-reader"></i> {% translate "Ground Briefings" %}
+                                </a>
                             </li>
                         {% endif %}
                     {% endif %}

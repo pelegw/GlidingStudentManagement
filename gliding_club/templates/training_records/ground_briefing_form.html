@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Request Ground Briefing" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>{% translate "Request Ground Briefing" %}</h1>
+    
+    <div class="card">
+        <div class="card-header">
+            <h5>{% translate "Ground Briefing Details" %}</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.topic.id_for_label }}">{% translate "Briefing Topic" %}:</label>
+                            {{ form.topic }}
+                            {% if form.topic.errors %}
+                                <div class="text-danger">
+                                    {{ form.topic.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.instructor.id_for_label }}">{% translate "Instructor" %}:</label>
+                            {{ form.instructor }}
+                            {% if form.instructor.errors %}
+                                <div class="text-danger">
+                                    {{ form.instructor.errors }}
+                                </div>
+                            {% endif %}
+                            {% if form.instructor.help_text %}
+                                <small class="form-text text-muted">{{ form.instructor.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.date.id_for_label }}">{% translate "Date" %}:</label>
+                            {{ form.date }}
+                            {% if form.date.errors %}
+                                <div class="text-danger">
+                                    {{ form.date.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="{{ form.notes.id_for_label }}">{% translate "Notes" %}:</label>
+                    {{ form.notes }}
+                    {% if form.notes.errors %}
+                        <div class="text-danger">
+                            {{ form.notes.errors }}
+                        </div>
+                    {% endif %}
+                    <small class="form-text text-muted">{% translate "Add any questions or specific topics you want to discuss in this briefing." %}</small>
+                </div>
+                
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> {% translate "Submit Request" %}
+                    </button>
+                    <a href="{% url 'ground_briefing_list' %}" class="btn btn-outline-secondary">
+                        {% translate "Cancel" %}
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

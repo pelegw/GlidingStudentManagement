@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Sign Off Ground Briefing" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>{% translate "Sign Off Ground Briefing" %}</h1>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>{% translate "Briefing Details" %}</h5>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <tr>
+                    <th>{% translate "Student" %}:</th>
+                    <td>{{ briefing.student.get_full_name }}</td>
+                </tr>
+                <tr>
+                    <th>{% translate "Briefing Number" %}:</th>
+                    <td>{{ briefing.topic.number }}</td>
+                </tr>
+                <tr>
+                    <th>{% translate "Topic" %}:</th>
+                    <td>{{ briefing.topic.name }}</td>
+                </tr>
+                <tr>
+                    <th>{% translate "Topic Details" %}:</th>
+                    <td>{{ briefing.topic.details }}</td>
+                </tr>
+                <tr>
+                    <th>{% translate "Date" %}:</th>
+                    <td>{{ briefing.date }}</td>
+                </tr>
+                <tr>
+                    <th>{% translate "Student Notes" %}:</th>
+                    <td>{{ briefing.notes|default:"-" }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h5>{% translate "Sign Off" %}</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group mb-3">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="text-danger">
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <p class="mt-3">{% translate "By signing off, you confirm that this ground briefing has been successfully completed." %}</p>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-signature"></i> {% translate "Sign Off" %}
+                </button>
+                <a href="{% url 'instructor_dashboard' %}" class="btn btn-outline-secondary">
+                    {% translate "Cancel" %}
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

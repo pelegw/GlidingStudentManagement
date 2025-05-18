@@ -2,7 +2,10 @@
 from django import forms
 from django.core.validators import MinValueValidator
 from django.utils import timezone
-from .models import TrainingRecord, User, Glider, TrainingTopic,Exercise,ExercisePerformance
+from .models import (
+    TrainingRecord, User, Glider, TrainingTopic, Exercise, 
+    ExercisePerformance, GroundBriefing, GroundBriefingTopic
+)
 import os
 from django.core.exceptions import ValidationError
 from PIL import Image
@@ -339,3 +342,42 @@ class PasswordChangeRequiredForm(forms.Form):
         if password1 and password2 and password1 != password2:
             raise forms.ValidationError("The two password fields didn't match.")
         return password2
+
+class GroundBriefingForm(forms.ModelForm):
+    class Meta:
+        model = GroundBriefing
+        fields = ['topic', 'instructor', 'date', 'notes']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+        }
+        
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Always filter instructors regardless of user parameter
+        self.fields['instructor'].queryset = User.objects.filter(
+            user_type='instructor'
+        ).distinct().order_by('first_name', 'last_name')
+        
+        self.fields['instructor'].required = True
+        self.fields['instructor'].help_text = "Select the instructor who conducted this briefing"
+        
+        # Set default date to today if creating new
+        if not self.instance.pk:
+            self.fields['date'].initial = timezone.now().date()
+        
+        # If we have a valid user, filter topics they've already completed
+        if user and hasattr(user, 'ground_briefings'):
+            completed_topics = user.ground_briefings.values_list('topic', flat=True)
+            self.fields['topic'].queryset = GroundBriefingTopic.objects.exclude(
+                id__in=completed_topics
+            )
+
+class GroundBriefingSignOffForm(forms.ModelForm):
+    class Meta:
+        model = GroundBriefing
+        fields = ['notes']
+        
+    def sign_off(self, instructor):
+        """Sign off this briefing by the given instructor"""
+        self.instance.sign_off(instructor)

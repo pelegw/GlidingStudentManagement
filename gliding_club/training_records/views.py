@@ -12,8 +12,9 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.db.models import Sum
 import os 
-from .models import TrainingRecord, TrainingTopic, Glider, User, Exercise, ExercisePerformance
+from .models import TrainingRecord, TrainingTopic, Glider, User, Exercise, ExercisePerformance,GroundBriefing, GroundBriefingTopic
 from .forms import TrainingRecordForm, SignOffForm, ProfileUpdateForm, PasswordChangeRequiredForm, ExercisePerformanceFormSet
+from .forms import GroundBriefingForm, GroundBriefingSignOffForm
 from django.db import transaction
 import logging
 logger = logging.getLogger(__name__)
@@ -26,6 +27,8 @@ from django.template.loader import render_to_string
 from weasyprint import HTML, CSS
 from django.conf import settings
 import tempfile
+from datetime import datetime
+
 
 class StudentRequiredMixin(UserPassesTestMixin):
     def test_func(self):
@@ -55,7 +58,7 @@ def student_dashboard(request):
         return HttpResponseForbidden("Students only")
     
     # Get student's training records
-    training_records = TrainingRecord.objects.filter(student=request.user).order_by('-date')
+    training_records = TrainingRecord.objects.filter(student=request.user).order_by('-date','-created_at')
     
     # Calculate stats
     total_flights = training_records.count()
@@ -74,6 +77,10 @@ def student_dashboard(request):
         minutes = (total_seconds % 3600) // 60
         total_flight_time = f"{hours}:{minutes:02d}"
     
+    
+
+
+
     context = {
         'training_records': training_records[:10],  # Latest 10 records
         'pending_records': pending_records,
@@ -82,7 +89,7 @@ def student_dashboard(request):
         'signed_off_count': signed_off_count,
         'total_flight_time': total_flight_time,
     }
-    
+
     return render(request, 'training_records/student_dashboard.html', context)
 
 @login_required
@@ -91,7 +98,7 @@ def instructor_dashboard(request):
         return HttpResponseForbidden("Instructors only")
     
     # Get recent training records where this user is the instructor
-    instructor_records = TrainingRecord.objects.filter(instructor=request.user).order_by('-date')
+    instructor_records = TrainingRecord.objects.filter(instructor=request.user).order_by('-date', '-created_at')
     
     # Get unsigned records that need attention
     unsigned_records = instructor_records.filter(signed_off=False).order_by('-date')
@@ -129,6 +136,11 @@ def instructor_dashboard(request):
     # Make recent_students distinct
     recent_students = list(dict.fromkeys(recent_students))
     
+    pending_briefings = GroundBriefing.objects.filter(
+        instructor=request.user,
+        signed_off=False
+    ).select_related('student', 'topic').order_by('date')
+
     context = {
         'instructor_records': instructor_records[:10],  # Latest 10 records
         'unsigned_records': unsigned_records,
@@ -138,8 +150,12 @@ def instructor_dashboard(request):
         'pending_count': unsigned_records.count(),
         'all_students': all_students,
         'recent_students': recent_students,
+        'pending_briefings': pending_briefings,
     }
+
+
     
+
     return render(request, 'training_records/instructor_dashboard.html', context)
 
 # Training Record views
@@ -151,7 +167,7 @@ class TrainingRecordListView(LoginRequiredMixin, ListView):
     paginate_by = 20
     
     def get_queryset(self):
-        queryset = TrainingRecord.objects.all().order_by('-date')
+        queryset = TrainingRecord.objects.all().order_by('-date','-created_at')
         
         # Filter based on user type
         if self.request.user.is_student():
@@ -630,7 +646,7 @@ def student_history(request, student_id):
     student = get_object_or_404(User, pk=student_id, user_type='student')
     
     # Get all training records for this student (regardless of instructor)
-    training_records = TrainingRecord.objects.filter(student=student).order_by('-date')
+    training_records = TrainingRecord.objects.filter(student=student).order_by('-date', '-created_at')
     
     # Calculate statistics
     total_flights = training_records.count()
@@ -838,6 +854,10 @@ def _export_csv(student, records):
 def _export_pdf_weasyprint(student, records, request):
     """Generate a PDF export using WeasyPrint with HTML/CSS templates."""
     try:
+        ground_briefings = GroundBriefing.objects.filter(
+            student=student,
+            signed_off=True  # Only include completed briefings
+        ).select_related('topic', 'instructor').order_by('topic__number')
         # Calculate summary statistics
         total_flights = records.count()
         solo_flights = records.filter(is_solo=True).count()
@@ -900,11 +920,26 @@ def _export_pdf_weasyprint(student, records, request):
                 'pre_solo_exercises': record.exercises.filter(category='pre-solo'),
                 'post_solo_exercises': record.exercises.filter(category='post-solo'),
             })
-        
+
+        # Process ground briefings data for the PDF
+        processed_briefings = []
+        for briefing in ground_briefings:
+            processed_briefings.append({
+                'id': briefing.id,
+                'number': briefing.topic.number,
+                'topic_name': briefing.topic.name,
+                'topic_details': briefing.topic.details,
+                'date': briefing.date.strftime('%Y-%m-%d') if briefing.date else "N/A",
+                'instructor': briefing.instructor.get_full_name() if briefing.instructor else "N/A",
+                'instructor_license': briefing.instructor.instructor_license_number if briefing.instructor else "",
+                'sign_off_date': briefing.sign_off_date.strftime('%Y-%m-%d') if briefing.sign_off_date else "N/A",
+                'notes': briefing.notes or ""
+            })
         # Context for the template
         context = {
             'student': student,
             'records': processed_records,
+            'ground_briefings': processed_briefings,  
             'total_flights': total_flights,
             'solo_flights': solo_flights,
             'signed_off_count': signed_off_count,
@@ -1117,4 +1152,135 @@ def _export_exercise_matrix(student, records, request):
         logger.error(f"Matrix export error: {str(e)}")
         logger.error(traceback.format_exc())
         raise
+
+
+# Add these new views for Ground Briefing management
+class GroundBriefingListView(LoginRequiredMixin, ListView):
+    model = GroundBriefing
+    template_name = 'training_records/ground_briefing_list.html'
+    context_object_name = 'briefings'
     
+    def get_queryset(self):
+        queryset = GroundBriefing.objects.all().select_related('topic', 'instructor', 'student')
+        
+        # Filter based on user type
+        if self.request.user.is_student():
+            queryset = queryset.filter(student=self.request.user)
+        elif self.request.user.is_instructor():
+            # Instructors can see briefings they signed off and pending ones
+            pass  # No filter needed, they can see all
+            
+        return queryset.order_by('topic__number')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_student():
+            # For students, add a form to request new briefings
+            context['form'] = GroundBriefingForm(user=self.request.user)
+        return context
+
+class GroundBriefingCreateView(LoginRequiredMixin, StudentRequiredMixin, CreateView):
+    model = GroundBriefing
+    form_class = GroundBriefingForm
+    template_name = 'training_records/ground_briefing_form.html'
+    success_url = reverse_lazy('ground_briefing_list')
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        # Ensure user is passed to the form
+        kwargs['user'] = self.request.user
+        return kwargs
+    
+    def form_valid(self, form):
+        form.instance.student = self.request.user
+        messages.success(self.request, "Ground briefing request created successfully.")
+        return super().form_valid(form)
+    
+@login_required
+def ground_briefing_sign_off(request, pk):
+    """View to handle signing off on ground briefings"""
+    if not request.user.is_instructor():
+        return HttpResponseForbidden("Instructors only")
+        
+    briefing = get_object_or_404(GroundBriefing, pk=pk)
+    
+    if request.method == 'POST':
+        form = GroundBriefingSignOffForm(request.POST, instance=briefing)
+        if form.is_valid():
+            if form.sign_off(request.user):
+                messages.success(request, "Ground briefing signed off successfully.")
+            else:
+                messages.error(request, "Unable to sign off this briefing.")
+            return redirect('instructor_dashboard')
+    else:
+        form = GroundBriefingSignOffForm(instance=briefing)
+    
+    context = {
+        'form': form,
+        'briefing': briefing
+    }
+    
+    return render(request, 'training_records/ground_briefing_sign_off.html', context)
+
+@login_required
+def student_ground_briefings(request):
+    """Dedicated page for student ground briefings"""
+    if not request.user.is_student():
+        return HttpResponseForbidden("Students only")
+    
+    # Get all the student's ground briefings
+    briefings = GroundBriefing.objects.filter(
+        student=request.user
+    ).select_related('topic', 'instructor').order_by('topic__number')
+    
+    # Get all available topics for reference
+    all_topics = GroundBriefingTopic.objects.all().order_by('number')
+    
+    # Create a lookup of topics that have briefings
+    topic_status_map = {}
+    for briefing in briefings:
+        if briefing.topic_id not in topic_status_map:
+            # If we haven't seen this topic yet, add it
+            topic_status_map[briefing.topic_id] = {
+                'status': 'completed' if briefing.signed_off else 'requested',
+                'briefing': briefing
+            }
+        elif briefing.signed_off and topic_status_map[briefing.topic_id]['status'] != 'completed':
+            # If we have a signed-off version of a topic, prefer that
+            topic_status_map[briefing.topic_id] = {
+                'status': 'completed',
+                'briefing': briefing
+            }
+    
+    # Prepare topics with their status
+    topics_with_status = []
+    for topic in all_topics:
+        status_info = topic_status_map.get(topic.id, {'status': 'not_started', 'briefing': None})
+        topics_with_status.append({
+            'topic': topic,
+            'status': status_info['status'],
+            'briefing': status_info['briefing']
+        })
+    
+    # Calculate completion statistics
+    total_topics = all_topics.count()
+    completed_briefings = briefings.filter(signed_off=True).count()
+    pending_briefings = briefings.filter(signed_off=False).count()
+    remaining_topics = total_topics - (completed_briefings + pending_briefings)
+    
+    # For the new briefing request form
+    form = GroundBriefingForm(user=request.user)
+    
+    context = {
+        'briefings': briefings,
+        'topics_with_status': topics_with_status,
+        'form': form,
+        'stats': {
+            'total': total_topics or 1,  # Prevent division by zero
+            'completed': completed_briefings,
+            'pending': pending_briefings,
+            'remaining': remaining_topics
+        }
+    }
+    
+    return render(request, 'training_records/student_ground_briefings.html', context)

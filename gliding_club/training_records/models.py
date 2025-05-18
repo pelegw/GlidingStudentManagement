@@ -7,6 +7,7 @@ import uuid
 import os
 import posixpath
 
+
 def get_secure_upload_path(instance, filename, subfolder):
     """
     Generate a secure random filename for uploaded files to prevent IDOR attacks.
@@ -241,3 +242,67 @@ class ExercisePerformance(models.Model):
     
     def __str__(self):
         return f"{self.exercise.name} - {self.get_performance_display()}"
+    
+# Add this class with your other models
+class GroundBriefingTopic(models.Model):
+    """Model representing a topic that must be covered in ground briefings"""
+    number = models.PositiveSmallIntegerField(verbose_name='Briefing Number')
+    name = models.CharField(max_length=100, verbose_name='Topic Name')
+    details = models.TextField(blank=True, verbose_name='Topic Details')
+    
+    class Meta:
+        ordering = ['number']
+        verbose_name = 'Ground Briefing Topic'
+        verbose_name_plural = 'Ground Briefing Topics'
+    
+    def __str__(self):
+        return f"{self.number}. {self.name}"
+
+class GroundBriefing(models.Model):
+    """Model representing a ground briefing session with an instructor"""
+    student = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='ground_briefings',
+        verbose_name='Student'
+    )
+    topic = models.ForeignKey(
+        GroundBriefingTopic, 
+        on_delete=models.CASCADE,
+        related_name='briefings',
+        verbose_name='Briefing Topic'
+    )
+    instructor = models.ForeignKey(
+        User, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        related_name='instructor_ground_briefings',
+        verbose_name='Instructor'
+    )
+    date = models.DateField(verbose_name='Date')
+    notes = models.TextField(blank=True, verbose_name='Notes')
+    signed_off = models.BooleanField(default=False, verbose_name='Signed Off')
+    sign_off_date = models.DateField(null=True, blank=True, verbose_name='Sign Off Date')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created At')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Updated At')
+
+    class Meta:
+        ordering = ['topic__number']
+        verbose_name = 'Ground Briefing'
+        verbose_name_plural = 'Ground Briefings'
+        # Ensure a student can't have the same topic briefed multiple times
+        unique_together = ['student', 'topic']
+    
+    def __str__(self):
+        return f"{self.student.get_full_name()} - {self.topic}"
+    
+    def sign_off(self, instructor):
+        """Sign off this briefing by the given instructor"""
+        if not self.signed_off and instructor.is_instructor():
+            self.instructor = instructor
+            self.signed_off = True
+            self.sign_off_date = timezone.now().date()
+            self.save()
+            return True
+        return False

@@ -1,7 +1,7 @@
 # training_records/admin.py
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, Glider, TrainingTopic, TrainingRecord, AuditLog, Exercise
+from .models import User, Glider, TrainingTopic, TrainingRecord, AuditLog, Exercise, GroundBriefingTopic, GroundBriefing
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'email', 'first_name', 'last_name', 'user_type', 'is_active')
@@ -70,3 +70,17 @@ class ExerciseAdmin(admin.ModelAdmin):
     list_filter = ('category', 'is_required')
     search_fields = ('name', 'description', 'number')
     ordering = ('category', 'number', 'name')
+
+@admin.register(GroundBriefingTopic)
+class GroundBriefingTopicAdmin(admin.ModelAdmin):
+    list_display = ('number', 'name')
+    search_fields = ('name', 'details')
+    ordering = ['number']
+
+@admin.register(GroundBriefing)
+class GroundBriefingAdmin(admin.ModelAdmin):
+    list_display = ('student', 'topic', 'date', 'instructor', 'signed_off', 'sign_off_date')
+    list_filter = ('signed_off', 'date', 'topic')
+    search_fields = ('student__username', 'student__first_name', 'instructor__username')
+    raw_id_fields = ('student', 'instructor')
+    date_hierarchy = 'date'

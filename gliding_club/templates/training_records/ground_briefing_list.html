@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Ground Briefings" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>{% translate "Ground Briefings" %}</h1>
+    
+    {% if user.is_student %}
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>{% translate "Request New Ground Briefing" %}</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'ground_briefing_create' %}">
+                            {% csrf_token %}
+                            {% for field in form %}
+                                <div class="form-group mb-3">
+                                    <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+                                    {{ field }}
+                                    {% if field.errors %}
+                                        <div class="text-danger">
+                                            {{ field.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                            <button type="submit" class="btn btn-primary">{% translate "Submit Request" %}</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    
+    <div class="card">
+        <div class="card-header">
+            <h5>{% translate "My Ground Briefings" %}</h5>
+        </div>
+        <div class="card-body">
+            {% if briefings %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>{% translate "Number" %}</th>
+                                <th>{% translate "Topic" %}</th>
+                                <th>{% translate "Details" %}</th>
+                                <th>{% translate "Date" %}</th>
+                                <th>{% translate "Instructor" %}</th>
+                                <th>{% translate "Status" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for briefing in briefings %}
+                                <tr>
+                                    <td>{{ briefing.topic.number }}</td>
+                                    <td>{{ briefing.topic.name }}</td>
+                                    <td style="white-space: normal; max-width: 250px;">{{ briefing.topic.details}}</td>
+                                    <td>{{ briefing.date }}</td>
+                                    <td>{% if briefing.instructor %}{{ briefing.instructor.get_full_name }}{% else %}-{% endif %}</td>
+                                    <td>
+                                        {% if briefing.signed_off %}
+                                            <span class="badge bg-success">
+                                                {% translate "Signed Off" %} ({{ briefing.sign_off_date }})
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-warning">{% translate "Pending" %}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p>{% translate "No ground briefings recorded yet." %}</p>
+                {% if user.is_student %}
+                    <a href="{% url 'ground_briefing_create' %}" class="btn btn-primary">
+                        {% translate "Request Your First Briefing" %}
+                    </a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

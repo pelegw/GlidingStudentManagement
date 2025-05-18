@@ -156,7 +156,13 @@
         table-layout: fixed; /* Force equal column widths */
         border-collapse: collapse;
     }
+    .page-break {
+    page-break-before: always;
+    }
 
+    .briefing-details {
+        margin-bottom: 1.5em;
+    }
     .comments-table th,
     .comments-table td {
         width: 50%; /* Set equal width for both columns */
@@ -276,5 +282,43 @@
         </table>
     </div>
     {% endfor %}
+    {% if ground_briefings %}
+        <div class="page-break"></div>
+        <h2 style="text-align: center;">{% if rtl %}תדריכי קרקע{% else %}Ground Briefings{% endif %}</h2>
+
+        <table class="record-details-table">
+            <thead>
+                <tr>
+                    <th style="width: 40px;">{% if rtl %}מס'{% else %}No.{% endif %}</th>
+                    <th style="width: 80px;">{% if rtl %}נושא{% else %}Topic{% endif %}</th>
+                    <th>{% if rtl %}פירוט{% else %}Details{% endif %}</th>
+                    <th style="width: 80px;">{% if rtl %}תאריך{% else %}Date{% endif %}</th>
+                    <th style="width: 120px;">{% if rtl %}מדריך{% else %}Instructor{% endif %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for briefing in ground_briefings %}
+                <tr>
+                    <td style="text-align: center; vertical-align: top; font-size: 10pt; width: 40px;">{{ briefing.number }}</td>
+                    <td style="vertical-align: top; font-size: 10pt; font-weight: bold; width: 80px;">{{ briefing.topic_name }}</td>
+                    <td style="vertical-align: top; font-size: 10pt;" {% if rtl %}dir="rtl" align="right"{% endif %}>
+                        {{ briefing.topic_details|linebreaks }}
+                        {% if briefing.notes %}
+                            <p><strong>{% if rtl %}הערות:{% else %}Notes:{% endif %}</strong> {{ briefing.notes }}</p>
+                        {% endif %}
+                    </td>
+                    <td style="vertical-align: top; font-size: 10pt;">{{ briefing.date }}</td>
+                    <td style="vertical-align: top; font-size: 10pt;">
+                        {{ briefing.instructor }}
+                        <br>
+                        {% if briefing.instructor_license %}
+                        <small>{% if rtl %}מס' רשיון:{% else %}License:{% endif %} {{ briefing.instructor_license }}</small>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
 </body>
 </html>

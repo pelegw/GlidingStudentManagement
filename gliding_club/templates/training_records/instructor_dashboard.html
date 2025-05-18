@@ -176,4 +176,44 @@
         </div>
     </div>
 </div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>{% translate "Pending Ground Briefing Sign-offs" %}</h5>
+    </div>
+    <div class="card-body">
+        {% if pending_briefings %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>{% translate "Student" %}</th>
+                            <th>{% translate "Briefing #" %}</th>
+                            <th>{% translate "Topic" %}</th>
+                            <th>{% translate "Date" %}</th>
+                            <th>{% translate "Actions" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for briefing in pending_briefings %}
+                            <tr>
+                                <td>{{ briefing.student.get_full_name }}</td>
+                                <td>{{ briefing.topic.number }}</td>
+                                <td>{{ briefing.topic.name }}</td>
+                                <td>{{ briefing.date }}</td>
+                                <td>
+                                    <a href="{% url 'ground_briefing_sign_off' briefing.id %}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-signature"></i> {% translate "Sign Off" %}
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>{% translate "No pending ground briefing sign-offs." %}</p>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

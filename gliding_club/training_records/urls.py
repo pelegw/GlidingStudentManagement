@@ -35,4 +35,9 @@ urlpatterns = [
     path('students/<int:student_id>/history/', views.student_history, name='student_history'),
 
     path('students/<int:student_id>/export/<str:format>/', views.export_student_records, name='export_student_records'),
+
+    path('ground-briefings/', views.GroundBriefingListView.as_view(), name='ground_briefing_list'),
+    path('ground-briefings/create/', views.GroundBriefingCreateView.as_view(), name='ground_briefing_create'),
+    path('ground-briefings/<int:pk>/sign-off/', views.ground_briefing_sign_off, name='ground_briefing_sign_off'),
+    path('ground-briefings/student/', views.student_ground_briefings, name='student_ground_briefings'),
 ]
