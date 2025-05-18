@@ -175,7 +175,7 @@
 </div>
 {% endblock %}
 {% block extra_css %}
-<style>
+<style nonce="{{ csp_nonce }}">
     /* Stats Card Styling */
     .stat-card {
         color: white;

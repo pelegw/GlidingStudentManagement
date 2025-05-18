@@ -1,4 +1,4 @@
-Django==5.1.7
+Django==5.1.9
 pandas==2.2.3
 Pillow==11.1.0
 weasyprint==65.0
