@@ -2,6 +2,31 @@
 {% load i18n %}
 {% block title %}{% trans "Student Dashboard" %} - {{ CLUB_NAME }}{% endblock %}
 {% block content %}
+
+{% if user.license_expiration_date %}
+<div class="alert {% if user.is_license_expired %}alert-danger{% elif user.is_license_expiring_soon %}alert-warning{% endif %} alert-dismissible fade show mb-4" role="alert">
+    <h6 class="alert-heading mb-1">
+        <strong>{% trans "License Status" %}:</strong> 
+        {{ user.license_expiration_date|date:"F j, Y" }}
+        {% if user.is_license_expired %}
+            <span class="badge bg-danger ms-1">{% trans "Expired" %}</span>
+        {% elif user.is_license_expiring_soon %}
+            <span class="badge bg-warning text-dark ms-1">{% trans "Expires Soon" %}</span>
+        {% else %}
+            <span class="badge bg-success ms-1">{% trans "Valid" %}</span>
+        {% endif %}
+    </h6>
+    <p class="mb-0">
+        {% if user.is_license_expired %}
+            {% trans "Your license has expired. Please renew it as soon as possible." %}
+        {% elif user.is_license_expiring_soon %}
+            {% trans "Your license expires soon. Please consider renewing it." %}
+        {% endif %}
+    </p>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans 'Close' %}"></button>
+</div>
+{% endif %}
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h2 class="mb-1">{% trans "Welcome" %}, {{ user.first_name }}!</h2>
@@ -13,6 +38,8 @@
         </a>
     </div>
 </div>
+
+
 <div class="row mb-4">
     <div class="col-md-3 mb-3 mb-md-0">
         <div class="card">

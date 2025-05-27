@@ -22,7 +22,15 @@
                             <div class="text-danger">{{ form.student_license_number.errors }}</div>
                         {% endif %}
                     </div>
-                    
+                    <!-- Add expiration date field for students -->
+                    <div class="mb-3">
+                        <label for="{{ form.license_expiration_date.id_for_label }}" class="form-label">{% trans "Student License Expiration Date" %}:</label>
+                        {{ form.license_expiration_date }}
+                        <div class="form-text">{{ form.license_expiration_date.help_text }}</div>
+                        {% if form.license_expiration_date.errors %}
+                            <div class="text-danger">{{ form.license_expiration_date.errors }}</div>
+                        {% endif %}
+                    </div>
                     <div class="mb-3">
                         <label for="{{ form.student_license_photo.id_for_label }}" class="form-label">{% trans "Student License Photo" %}:</label>
                         {% if user.student_license_photo %}
@@ -62,6 +70,14 @@
                         <input type="text" name="instructor_license_number" id="{{ form.instructor_license_number.id_for_label }}" value="{{ form.instructor_license_number.value|default:'' }}" class="form-control">
                         {% if form.instructor_license_number.errors %}
                             <div class="text-danger">{{ form.instructor_license_number.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.license_expiration_date.id_for_label }}" class="form-label">{% trans "Instructor License Expiration Date" %}:</label>
+                        {{ form.license_expiration_date }}
+                        <div class="form-text">{{ form.license_expiration_date.help_text }}</div>
+                        {% if form.license_expiration_date.errors %}
+                            <div class="text-danger">{{ form.license_expiration_date.errors }}</div>
                         {% endif %}
                     </div>
                     {% endif %}

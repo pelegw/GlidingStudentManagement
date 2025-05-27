@@ -27,7 +27,7 @@ from django.template.loader import render_to_string
 from weasyprint import HTML, CSS
 from django.conf import settings
 import tempfile
-from datetime import datetime
+from datetime import datetime,timedelta,date
 
 
 class StudentRequiredMixin(UserPassesTestMixin):
@@ -502,7 +502,13 @@ def profile_update(request):
             try:
                 with transaction.atomic():
                     # Save the form with transaction to ensure atomicity
-                    form.save()
+                    updated_user = form.save()
+                    
+                    if updated_user.license_expiration_date:
+                        if updated_user.is_license_expired():
+                            messages.warning(request, "Warning: Your license has expired. Please renew it as soon as possible.")
+                        elif updated_user.is_license_expiring_soon():
+                            messages.warning(request, "Notice: Your license expires within 30 days. Consider renewing it soon.")
                     
                     # Clean up old files if they were replaced using Django's storage API
                     if 'student_license_photo' in request.FILES and old_license_name:

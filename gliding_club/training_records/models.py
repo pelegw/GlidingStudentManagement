@@ -6,7 +6,7 @@ from django.utils import timezone
 import uuid
 import os
 import posixpath
-
+from datetime import date, timedelta
 
 def get_secure_upload_path(instance, filename, subfolder):
     """
@@ -51,11 +51,18 @@ class User(AbstractUser):
     )
     user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES)
     
+    license_expiration_date = models.DateField(
+        blank=True, 
+        null=True,
+        help_text="License expiration date"
+    )
+    
     # Fields specific to students with secure file paths
     student_license_number = models.CharField(max_length=30, blank=True)
     student_license_photo = models.ImageField(upload_to=student_license_path, blank=True, null=True)
     student_medical_id_photo = models.ImageField(upload_to=student_medical_path, blank=True, null=True)
     
+
     # Fields specific to instructors
     instructor_license_number = models.CharField(max_length=30, blank=True)
     
@@ -68,6 +75,17 @@ class User(AbstractUser):
     def is_instructor(self):
         return self.user_type == 'instructor'
     
+    def is_license_expired(self):
+        """Check if the license is expired"""
+        if not self.license_expiration_date:
+            return None  # Unknown expiration status
+        return self.license_expiration_date < date.today()
+    
+    def is_license_expiring_soon(self, days=30):
+        """Check if license expires within specified days"""
+        if not self.license_expiration_date:
+            return False
+        return self.license_expiration_date <= date.today() + timedelta(days=days)
     class Meta:
         db_table = 'auth_user'
         

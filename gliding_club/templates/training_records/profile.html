@@ -42,7 +42,20 @@
                                 <span class="text-muted">{% trans "Not provided" %}</span>
                             {% endif %}
                         </p>
-                        
+                        <p><strong>{% trans "License Expiration Date" %}:</strong>
+                            {% if user.license_expiration_date %}
+                                {{ user.license_expiration_date|date:"F j, Y" }}
+                                {% if user.is_license_expired %}
+                                    <span class="badge bg-danger ms-1">{% trans "Expired" %}</span>
+                                {% elif user.is_license_expiring_soon %}
+                                    <span class="badge bg-warning ms-1">{% trans "Expires Soon" %}</span>
+                                {% else %}
+                                    <span class="badge bg-success ms-1">{% trans "Valid" %}</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">{% trans "Not provided" %}</span>
+                            {% endif %}
+                        </p>
                         {% if user.student_license_photo %}
                         <div class="mb-3">
                             <p><strong>{% trans "License Photo" %}:</strong></p>
@@ -73,6 +86,23 @@
                                 <span class="text-muted">{% trans "Not provided" %}</span>
                             {% endif %}
                         </p>
+                         <p><strong>{% trans "License Expiration Date" %}:</strong>
+                            {% if user.license_expiration_date %}
+                                {{ user.license_expiration_date|date:"F j, Y" }}
+                                {% if user.is_license_expired %}
+                                    <span class="badge bg-danger ms-1">{% trans "Expired" %}</span>
+                                {% elif user.is_license_expiring_soon %}
+                                    <span class="badge bg-warning ms-1">{% trans "Expires Soon" %}</span>
+                                {% else %}
+                                    <span class="badge bg-success ms-1">{% trans "Valid" %}</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">{% trans "Not provided" %}</span>
+                            {% endif %}
+                        </p>
+                        {% if user.instructor_license_photo %}
+                        <div class="mb-3">
+                        {% endif %}
                     </div>
                     {% endif %}
                 </div>

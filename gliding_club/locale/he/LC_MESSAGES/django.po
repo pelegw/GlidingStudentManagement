@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-27 19:54+0300\n"
+"POT-Creation-Date: 2025-05-27 22:17+0300\n"
 "PO-Revision-Date: 2025-03-22 14:30+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,12 +45,12 @@ msgstr "פרופיל"
 #: .\templates\training_records\change_password.html:59
 #: .\templates\training_records\first_login.html:3
 #: .\templates\training_records\first_login.html:39
-#: .\templates\training_records\profile.html:82
+#: .\templates\training_records\profile.html:112
 msgid "Change Password"
 msgstr "שינוי סיסמה"
 
 #: .\templates\base.html:122
-#: .\templates\training_records\student_dashboard.html:168
+#: .\templates\training_records\student_dashboard.html:195
 msgid "Logout"
 msgstr "התנתקות"
 
@@ -82,7 +82,7 @@ msgstr "אישור סיסמה חדשה"
 #: .\templates\training_records\change_password.html:58
 #: .\templates\training_records\ground_briefing_form.html:76
 #: .\templates\training_records\ground_briefing_sign_off.html:68
-#: .\templates\training_records\profile_update.html:78
+#: .\templates\training_records\profile_update.html:94
 #: .\templates\training_records\record_form.html:506
 #: .\templates\training_records\sign_record.html:213
 msgid "Cancel"
@@ -126,8 +126,8 @@ msgstr "נושא הדרכה"
 #: .\templates\training_records\record_detail.html:58
 #: .\templates\training_records\record_form.html:112
 #: .\templates\training_records\record_list.html:65
-#: .\templates\training_records\student_dashboard.html:69
-#: .\templates\training_records\student_dashboard.html:130
+#: .\templates\training_records\student_dashboard.html:96
+#: .\templates\training_records\student_dashboard.html:157
 #: .\templates\training_records\student_ground_briefings.html:59
 #: .\templates\training_records\student_ground_briefings.html:139
 #: .\templates\training_records\student_history.html:93
@@ -138,14 +138,14 @@ msgstr "מדריך"
 #: .\templates\training_records\ground_briefing_form.html:49
 #: .\templates\training_records\ground_briefing_list.html:52
 #: .\templates\training_records\ground_briefing_sign_off.html:33
-#: .\templates\training_records\instructor_dashboard.html:64
-#: .\templates\training_records\instructor_dashboard.html:117
-#: .\templates\training_records\instructor_dashboard.html:193
+#: .\templates\training_records\instructor_dashboard.html:86
+#: .\templates\training_records\instructor_dashboard.html:139
+#: .\templates\training_records\instructor_dashboard.html:215
 #: .\templates\training_records\record_detail.html:59
 #: .\templates\training_records\record_form.html:124
 #: .\templates\training_records\record_list.html:61
 #: .\templates\training_records\sign_record.html:71
-#: .\templates\training_records\student_dashboard.html:67
+#: .\templates\training_records\student_dashboard.html:94
 #: .\templates\training_records\student_ground_briefings.html:76
 #: .\templates\training_records\student_ground_briefings.html:138
 #: .\templates\training_records\student_history.html:92
@@ -189,11 +189,11 @@ msgstr "מספר טיסה"
 
 #: .\templates\training_records\ground_briefing_list.html:50
 #: .\templates\training_records\ground_briefing_sign_off.html:25
-#: .\templates\training_records\instructor_dashboard.html:66
-#: .\templates\training_records\instructor_dashboard.html:119
-#: .\templates\training_records\instructor_dashboard.html:192
+#: .\templates\training_records\instructor_dashboard.html:88
+#: .\templates\training_records\instructor_dashboard.html:141
+#: .\templates\training_records\instructor_dashboard.html:214
 #: .\templates\training_records\record_list.html:66
-#: .\templates\training_records\student_dashboard.html:68
+#: .\templates\training_records\student_dashboard.html:95
 #: .\templates\training_records\student_ground_briefings.html:136
 #: .\templates\training_records\student_ground_briefings.html:184
 #: .\templates\training_records\student_history.html:94
@@ -207,9 +207,9 @@ msgid "Details"
 msgstr "פרטי הרשומה"
 
 #: .\templates\training_records\ground_briefing_list.html:54
-#: .\templates\training_records\instructor_dashboard.html:121
+#: .\templates\training_records\instructor_dashboard.html:143
 #: .\templates\training_records\record_list.html:70
-#: .\templates\training_records\student_dashboard.html:70
+#: .\templates\training_records\student_dashboard.html:97
 #: .\templates\training_records\student_ground_briefings.html:140
 #: .\templates\training_records\student_ground_briefings.html:185
 #: .\templates\training_records\student_history.html:96
@@ -218,10 +218,10 @@ msgid "Status"
 msgstr "סטטוס"
 
 #: .\templates\training_records\ground_briefing_list.html:68
-#: .\templates\training_records\instructor_dashboard.html:134
+#: .\templates\training_records\instructor_dashboard.html:156
 #: .\templates\training_records\record_list.html:94
-#: .\templates\training_records\student_dashboard.html:45
-#: .\templates\training_records\student_dashboard.html:87
+#: .\templates\training_records\student_dashboard.html:72
+#: .\templates\training_records\student_dashboard.html:114
 #: .\templates\training_records\student_ground_briefings.html:154
 #: .\templates\training_records\student_history.html:68
 #: .\templates\training_records\student_history.html:113
@@ -230,10 +230,10 @@ msgid "Signed Off"
 msgstr "אושר"
 
 #: .\templates\training_records\ground_briefing_list.html:71
-#: .\templates\training_records\instructor_dashboard.html:44
-#: .\templates\training_records\instructor_dashboard.html:136
+#: .\templates\training_records\instructor_dashboard.html:66
+#: .\templates\training_records\instructor_dashboard.html:158
 #: .\templates\training_records\record_list.html:96
-#: .\templates\training_records\student_dashboard.html:89
+#: .\templates\training_records\student_dashboard.html:116
 #: .\templates\training_records\student_ground_briefings.html:157
 #: .\templates\training_records\student_history.html:115
 #: .\templates\training_records\student_lookup.html:107
@@ -258,9 +258,9 @@ msgid "Briefing Details"
 msgstr "פרטי הדרכה"
 
 #: .\templates\training_records\ground_briefing_sign_off.html:17
-#: .\templates\training_records\instructor_dashboard.html:65
-#: .\templates\training_records\instructor_dashboard.html:118
-#: .\templates\training_records\instructor_dashboard.html:190
+#: .\templates\training_records\instructor_dashboard.html:87
+#: .\templates\training_records\instructor_dashboard.html:140
+#: .\templates\training_records\instructor_dashboard.html:212
 #: .\templates\training_records\profile.html:25
 #: .\templates\training_records\record_detail.html:57
 #: .\templates\training_records\record_list.html:63
@@ -282,8 +282,8 @@ msgstr "חניכים"
 
 #: .\templates\training_records\ground_briefing_sign_off.html:46
 #: .\templates\training_records\ground_briefing_sign_off.html:65
-#: .\templates\training_records\instructor_dashboard.html:84
-#: .\templates\training_records\instructor_dashboard.html:206
+#: .\templates\training_records\instructor_dashboard.html:106
+#: .\templates\training_records\instructor_dashboard.html:228
 #: .\templates\training_records\sign_record.html:187
 msgid "Sign Off"
 msgstr "אישור"
@@ -292,58 +292,100 @@ msgstr "אישור"
 msgid ""
 "By signing off, you confirm that this ground briefing has been successfully "
 "completed."
-msgstr "באישור תדריך הקרקע, הינך מאשר שהתדריך בוצע בהצלחה והחניך הבין את החומר."
+msgstr ""
+"באישור תדריך הקרקע, הינך מאשר שהתדריך בוצע בהצלחה והחניך הבין את החומר."
 
 #: .\templates\training_records\instructor_dashboard.html:3
 msgid "Instructor Dashboard"
 msgstr "לוח בקרה למדריך"
 
 #: .\templates\training_records\instructor_dashboard.html:8
-#: .\templates\training_records\student_dashboard.html:7
+#: .\templates\training_records\student_dashboard.html:9
+
+msgid "License Status"
+msgstr "מצב רישיון"
+
+#: .\templates\training_records\instructor_dashboard.html:11
+#: .\templates\training_records\profile.html:49
+#: .\templates\training_records\profile.html:93
+#: .\templates\training_records\student_dashboard.html:12
+msgid "Expired"
+msgstr "פג תוקף"
+
+#: .\templates\training_records\instructor_dashboard.html:13
+#: .\templates\training_records\profile.html:51
+#: .\templates\training_records\profile.html:95
+#: .\templates\training_records\student_dashboard.html:14
+msgid "Expires Soon"
+msgstr "תאריך תום תוקף קרוב"
+
+#: .\templates\training_records\instructor_dashboard.html:15
+#: .\templates\training_records\profile.html:53
+#: .\templates\training_records\profile.html:97
+#: .\templates\training_records\student_dashboard.html:16
+msgid "Valid"
+msgstr "בתוקף"
+
+#: .\templates\training_records\instructor_dashboard.html:20
+msgid "Your license has expired. Please renew it immediately."
+msgstr "תוקף הרשיון שלך פג. אנא חדש את הרשיון בהקדם."
+
+#: .\templates\training_records\instructor_dashboard.html:22
+#: .\templates\training_records\student_dashboard.html:23
+msgid "Your license expires soon. Please consider renewing it."
+msgstr "תוקף הרשיון שלך עומד לפוג. מומלץ להתחיל חידוש רשיון בהקדם."
+
+#: .\templates\training_records\instructor_dashboard.html:25
+#: .\templates\training_records\student_dashboard.html:26
+msgid "Close"
+msgstr "סגור"
+
+#: .\templates\training_records\instructor_dashboard.html:30
+#: .\templates\training_records\student_dashboard.html:32
 msgid "Welcome"
 msgstr "ברוכים הבאים"
 
-#: .\templates\training_records\instructor_dashboard.html:9
+#: .\templates\training_records\instructor_dashboard.html:31
 msgid "Your Instructor Dashboard"
 msgstr "לוח הבקרה שלך כמדריך"
 
-#: .\templates\training_records\instructor_dashboard.html:17
-#: .\templates\training_records\student_dashboard.html:21
+#: .\templates\training_records\instructor_dashboard.html:39
+#: .\templates\training_records\student_dashboard.html:48
 #: .\templates\training_records\student_history.html:23
 msgid "Total Flights"
 msgstr "סך כל הטיסות"
 
-#: .\templates\training_records\instructor_dashboard.html:19
+#: .\templates\training_records\instructor_dashboard.html:41
 msgid "instructional flights"
 msgstr "טיסות הדרכה"
 
-#: .\templates\training_records\instructor_dashboard.html:26
+#: .\templates\training_records\instructor_dashboard.html:48
 #: .\templates\training_records\student_history.html:53
 msgid "Flight Time"
 msgstr "זמן טיסה"
 
-#: .\templates\training_records\instructor_dashboard.html:28
+#: .\templates\training_records\instructor_dashboard.html:50
 msgid "hours:minutes:seconds"
 msgstr "שעות:דקות:שניות"
 
-#: .\templates\training_records\instructor_dashboard.html:35
+#: .\templates\training_records\instructor_dashboard.html:57
 msgid "Students"
 msgstr "חניכים"
 
-#: .\templates\training_records\instructor_dashboard.html:37
+#: .\templates\training_records\instructor_dashboard.html:59
 msgid "students instructed"
 msgstr "חניכים שהודרכו"
 
-#: .\templates\training_records\instructor_dashboard.html:46
+#: .\templates\training_records\instructor_dashboard.html:68
 msgid "awaiting sign-off"
 msgstr "ממתין לאישור"
 
-#: .\templates\training_records\instructor_dashboard.html:56
-#: .\templates\training_records\instructor_dashboard.html:171
+#: .\templates\training_records\instructor_dashboard.html:78
+#: .\templates\training_records\instructor_dashboard.html:193
 msgid "Records Awaiting Sign-Off"
 msgstr "רשומות ממתינות לאישור"
 
-#: .\templates\training_records\instructor_dashboard.html:67
+#: .\templates\training_records\instructor_dashboard.html:89
 #: .\templates\training_records\record_detail.html:67
 #: .\templates\training_records\record_form.html:136
 #: .\templates\training_records\record_list.html:67
@@ -351,93 +393,93 @@ msgstr "רשומות ממתינות לאישור"
 msgid "Glider"
 msgstr "דאון"
 
-#: .\templates\training_records\instructor_dashboard.html:68
-#: .\templates\training_records\instructor_dashboard.html:120
+#: .\templates\training_records\instructor_dashboard.html:90
+#: .\templates\training_records\instructor_dashboard.html:142
 #: .\templates\training_records\record_list.html:68
 #: .\templates\training_records\student_history.html:95
 msgid "Duration"
 msgstr "משך"
 
-#: .\templates\training_records\instructor_dashboard.html:69
+#: .\templates\training_records\instructor_dashboard.html:91
 #: .\templates\training_records\record_list.html:69
 msgid "Exercises"
 msgstr "תרגילים"
 
-#: .\templates\training_records\instructor_dashboard.html:70
-#: .\templates\training_records\instructor_dashboard.html:122
-#: .\templates\training_records\instructor_dashboard.html:194
-#: .\templates\training_records\student_dashboard.html:71
+#: .\templates\training_records\instructor_dashboard.html:92
+#: .\templates\training_records\instructor_dashboard.html:144
+#: .\templates\training_records\instructor_dashboard.html:216
+#: .\templates\training_records\student_dashboard.html:98
 #: .\templates\training_records\student_history.html:97
 #: .\templates\training_records\student_lookup.html:85
 msgid "Actions"
 msgstr "פעולות"
 
-#: .\templates\training_records\instructor_dashboard.html:83
-#: .\templates\training_records\instructor_dashboard.html:140
+#: .\templates\training_records\instructor_dashboard.html:105
+#: .\templates\training_records\instructor_dashboard.html:162
 #: .\templates\training_records\record_list.html:100
-#: .\templates\training_records\student_dashboard.html:93
-#: .\templates\training_records\student_dashboard.html:136
+#: .\templates\training_records\student_dashboard.html:120
+#: .\templates\training_records\student_dashboard.html:163
 #: .\templates\training_records\student_history.html:119
 #: .\templates\training_records\student_lookup.html:111
 msgid "View"
 msgstr "צפייה"
 
-#: .\templates\training_records\instructor_dashboard.html:93
+#: .\templates\training_records\instructor_dashboard.html:115
 msgid "View All Pending Records"
 msgstr "צפייה בכל הרשומות הממתינות"
 
-#: .\templates\training_records\instructor_dashboard.html:97
+#: .\templates\training_records\instructor_dashboard.html:119
 msgid "No records awaiting sign-off. Good job!"
 msgstr "אין רשומות ממתינות לאישור. עבודה טובה!"
 
-#: .\templates\training_records\instructor_dashboard.html:108
-#: .\templates\training_records\student_dashboard.html:55
+#: .\templates\training_records\instructor_dashboard.html:130
+#: .\templates\training_records\student_dashboard.html:82
 #: .\templates\training_records\student_lookup.html:72
 msgid "Recent Training Records"
 msgstr "רשומות הדרכה אחרונות"
 
-#: .\templates\training_records\instructor_dashboard.html:109
-#: .\templates\training_records\student_dashboard.html:58
+#: .\templates\training_records\instructor_dashboard.html:131
+#: .\templates\training_records\student_dashboard.html:85
 msgid "View All"
 msgstr "צפייה בהכל"
 
-#: .\templates\training_records\instructor_dashboard.html:142
+#: .\templates\training_records\instructor_dashboard.html:164
 #: .\templates\training_records\record_list.html:106
 #: .\templates\training_records\student_history.html:121
 msgid "Sign"
 msgstr "אישור"
 
-#: .\templates\training_records\instructor_dashboard.html:151
+#: .\templates\training_records\instructor_dashboard.html:173
 #: .\templates\training_records\record_list.html:197
 #: .\templates\training_records\student_lookup.html:123
 msgid "No training records found."
 msgstr "לא נמצאו רשומות הדרכה."
 
-#: .\templates\training_records\instructor_dashboard.html:159
+#: .\templates\training_records\instructor_dashboard.html:181
 msgid "Quick Links"
 msgstr "קישורים מהירים"
 
-#: .\templates\training_records\instructor_dashboard.html:164
-#: .\templates\training_records\profile.html:100
+#: .\templates\training_records\instructor_dashboard.html:186
+#: .\templates\training_records\profile.html:130
 msgid "View All Training Records"
 msgstr "צפייה בכל רשומות ההדרכה"
 
-#: .\templates\training_records\instructor_dashboard.html:167
+#: .\templates\training_records\instructor_dashboard.html:189
 #: .\templates\training_records\profile.html:3
 #: .\templates\training_records\profile.html:9
-#: .\templates\training_records\student_dashboard.html:163
+#: .\templates\training_records\student_dashboard.html:190
 msgid "Your Profile"
 msgstr "הפרופיל שלך"
 
-#: .\templates\training_records\instructor_dashboard.html:182
+#: .\templates\training_records\instructor_dashboard.html:204
 msgid "Pending Ground Briefing Sign-offs"
 msgstr "תדריכי קרקע ממתינים לאישור"
 
-#: .\templates\training_records\instructor_dashboard.html:191
+#: .\templates\training_records\instructor_dashboard.html:213
 msgid "Briefing #"
 msgstr "תדריך מספר"
 
-#: .\templates\training_records\instructor_dashboard.html:215
+#: .\templates\training_records\instructor_dashboard.html:237
 msgid "No pending ground briefing sign-offs."
 msgstr "אין תדריכים קרקע הממתינים לאישור"
 
@@ -452,7 +494,7 @@ msgid "Password"
 msgstr "סיסמה"
 
 #: .\templates\training_records\profile.html:12
-#: .\templates\training_records\profile_update.html:79
+#: .\templates\training_records\profile_update.html:95
 msgid "Update Profile"
 msgstr "עדכון פרופיל"
 
@@ -494,52 +536,59 @@ msgid "License Number"
 msgstr "מספר רישיון"
 
 #: .\templates\training_records\profile.html:42
-#: .\templates\training_records\profile.html:73
+#: .\templates\training_records\profile.html:56
+#: .\templates\training_records\profile.html:86
+#: .\templates\training_records\profile.html:100
 #: .\templates\training_records\student_history.html:155
 msgid "Not provided"
 msgstr "לא סופק"
 
-#: .\templates\training_records\profile.html:48
-#: .\templates\training_records\profile.html:52
+#: .\templates\training_records\profile.html:45
+#: .\templates\training_records\profile.html:89
+msgid "License Expiration Date"
+msgstr "תאריך תפוגת רשיון "
+
+#: .\templates\training_records\profile.html:61
+#: .\templates\training_records\profile.html:65
 #: .\templates\training_records\student_history.html:160
 #: .\templates\training_records\student_history.html:162
 msgid "License Photo"
 msgstr "תמונת רישיון"
 
-#: .\templates\training_records\profile.html:49
+#: .\templates\training_records\profile.html:62
 msgid "Student License"
 msgstr "רישיון חניך"
 
-#: .\templates\training_records\profile.html:52
-#: .\templates\training_records\profile.html:61
+#: .\templates\training_records\profile.html:65
+#: .\templates\training_records\profile.html:74
 #: .\templates\training_records\student_history.html:162
 msgid "Not uploaded"
 msgstr "לא הועלה"
 
-#: .\templates\training_records\profile.html:57
-#: .\templates\training_records\profile.html:61
-#: .\templates\training_records\profile_update.html:42
+#: .\templates\training_records\profile.html:70
+#: .\templates\training_records\profile.html:74
+#: .\templates\training_records\profile_update.html:50
 msgid "Medical ID Photo"
 msgstr "תמונת תעודה רפואית"
 
-#: .\templates\training_records\profile.html:58
+#: .\templates\training_records\profile.html:71
 msgid "Medical ID"
 msgstr "תעודה רפואית"
 
-#: .\templates\training_records\profile.html:68
-#: .\templates\training_records\profile_update.html:59
+#: .\templates\training_records\profile.html:81
+#: .\templates\training_records\profile_update.html:67
 msgid "Instructor Information"
 msgstr "מידע מדריך"
 
-#: .\templates\training_records\profile.html:69
+#: .\templates\training_records\profile.html:82
 msgid "Instructor License"
 msgstr "רישיון מדריך"
 
-#: .\templates\training_records\profile.html:85
+#: .\templates\training_records\profile.html:115
 msgid "Back to Dashboard"
 msgstr "חזרה ללוח הבקרה"
 
-#: .\templates\training_records\profile.html:94
+#: .\templates\training_records\profile.html:124
 msgid "Training Summary"
 msgstr "תיק חניך מלא"
 
@@ -553,28 +602,36 @@ msgid "Student License Number"
 msgstr "מספר רישיון חניך"
 
 #: .\templates\training_records\profile_update.html:27
+msgid "Student License Expiration Date"
+msgstr "תאריך תפוגת רשיון חניך"
+
+#: .\templates\training_records\profile_update.html:35
 msgid "Student License Photo"
 msgstr "תמונת רישיון חניך"
 
-#: .\templates\training_records\profile_update.html:30
+#: .\templates\training_records\profile_update.html:38
 msgid "Current License Photo"
 msgstr "תמונת רישיון נוכחית"
 
-#: .\templates\training_records\profile_update.html:31
+#: .\templates\training_records\profile_update.html:39
 msgid "Current license photo"
 msgstr "תמונת רישיון נוכחית"
 
-#: .\templates\training_records\profile_update.html:45
+#: .\templates\training_records\profile_update.html:53
 msgid "Current Medical ID Photo"
 msgstr "תמונת אישור רפואי נוכחית"
 
-#: .\templates\training_records\profile_update.html:46
+#: .\templates\training_records\profile_update.html:54
 msgid "Current medical ID photo"
 msgstr "תמונת אישור רפואי נוכחית"
 
-#: .\templates\training_records\profile_update.html:61
+#: .\templates\training_records\profile_update.html:69
 msgid "Instructor License Number"
 msgstr "מספר רישיון מדריך"
+
+#: .\templates\training_records\profile_update.html:76
+msgid "Instructor License Expiration Date"
+msgstr "תאריך תפוגת רישיון מדריך"
 
 #: .\templates\training_records\record_detail.html:3
 msgid "Training Record Details"
@@ -695,7 +752,7 @@ msgstr "לא סופקו הערות מדריך."
 #: .\templates\training_records\record_form.html:5
 #: .\templates\training_records\record_form.html:90
 #: .\templates\training_records\record_list.html:103
-#: .\templates\training_records\student_dashboard.html:95
+#: .\templates\training_records\student_dashboard.html:122
 msgid "Edit"
 msgstr "עריכה"
 
@@ -822,8 +879,8 @@ msgid "Flight Number"
 msgstr "מספר טיסה"
 
 #: .\templates\training_records\record_list.html:85
-#: .\templates\training_records\student_dashboard.html:82
-#: .\templates\training_records\student_dashboard.html:132
+#: .\templates\training_records\student_dashboard.html:109
+#: .\templates\training_records\student_dashboard.html:159
 #: .\templates\training_records\student_history.html:106
 #: .\templates\training_records\student_lookup.html:99
 msgid "Solo"
@@ -930,45 +987,49 @@ msgstr "לאחר אישור, לא ניתן לשנות רשומה זו."
 msgid "Student Dashboard"
 msgstr "לוח בקרה לחניך"
 
-#: .\templates\training_records\student_dashboard.html:8
+#: .\templates\training_records\student_dashboard.html:21
+msgid "Your license has expired. Please renew it as soon as possible."
+msgstr ""
+
+#: .\templates\training_records\student_dashboard.html:33
 msgid "Here's your pilot training progress and recent activity"
 msgstr "הנה התקדמות הדרכת הטיסה והפעילות האחרונה שלך"
 
-#: .\templates\training_records\student_dashboard.html:12
-#: .\templates\training_records\student_dashboard.html:157
+#: .\templates\training_records\student_dashboard.html:37
+#: .\templates\training_records\student_dashboard.html:184
 msgid "New Training Record"
 msgstr "רשומת הדרכה חדשה"
 
-#: .\templates\training_records\student_dashboard.html:29
+#: .\templates\training_records\student_dashboard.html:56
 #: .\templates\training_records\student_history.html:38
 msgid "Solo Flights"
 msgstr "טיסות סולו"
 
-#: .\templates\training_records\student_dashboard.html:37
+#: .\templates\training_records\student_dashboard.html:64
 msgid "Flight Hours"
 msgstr "שעות טיסה"
 
-#: .\templates\training_records\student_dashboard.html:105
+#: .\templates\training_records\student_dashboard.html:132
 msgid "No training records yet."
 msgstr "עדיין אין רשומות הדרכה."
 
-#: .\templates\training_records\student_dashboard.html:107
+#: .\templates\training_records\student_dashboard.html:134
 msgid "Create Your First Record"
 msgstr "צור את הרשומה הראשונה שלך"
 
-#: .\templates\training_records\student_dashboard.html:118
+#: .\templates\training_records\student_dashboard.html:145
 msgid "Pending Approvals"
 msgstr "אישורים ממתינים"
 
-#: .\templates\training_records\student_dashboard.html:143
+#: .\templates\training_records\student_dashboard.html:170
 msgid "All your records are signed off!"
 msgstr "כל הרשומות שלך אושרו!"
 
-#: .\templates\training_records\student_dashboard.html:151
+#: .\templates\training_records\student_dashboard.html:178
 msgid "Quick Actions"
 msgstr "פעולות מהירות"
 
-#: .\templates\training_records\student_dashboard.html:160
+#: .\templates\training_records\student_dashboard.html:187
 msgid "All Training Records"
 msgstr "כל רשומות ההדרכה"
 

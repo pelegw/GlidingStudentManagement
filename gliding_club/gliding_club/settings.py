@@ -8,10 +8,11 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'your-secret-key-here'  # Replace with a proper secret key in production
+SECRET_KEY = os.environ.get('SECRET_KEY', 'fallback-key-for-development-only')
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = 'True'  # Set to False in production
+DEBUG = False  # Set to False in production
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,*').split(',')
 # Login URL
@@ -53,20 +54,41 @@ MIDDLEWARE = [
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-        },
-        'file': {
-            'class': 'logging.FileHandler',
-            'filename': 'django_auth.log',
+            'formatter': 'verbose',
         },
     },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
     'loggers': {
-        'django.security.authentication': {
-            'handlers': ['console', 'file'],
+        'django': {
+            'handlers': ['console'],
             'level': 'INFO',
-            'propagate': True,
+            'propagate': False,
+        },
+        'django.security': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'training_records': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
         },
     },
 }
@@ -104,9 +126,10 @@ DATABASES = {
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'mysecretpassword'),
         'HOST': os.environ.get('DATABASE_HOST', 'db'),
         'PORT': os.environ.get('DATABASE_PORT', '5432'),
-        'CONN_MAX_AGE': 60,  # Keep connections alive for 60 seconds
+        'CONN_MAX_AGE': 300,  # Keep connections alive for 60 seconds
         'OPTIONS': {
             'connect_timeout': 10,
+            'sslmode': 'prefer',  # Add SSL preference
         }
     }
 }

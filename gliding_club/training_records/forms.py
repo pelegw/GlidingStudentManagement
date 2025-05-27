@@ -245,9 +245,11 @@ class ProfileUpdateForm(forms.ModelForm):
         model = User
         fields = [
             'student_license_number', 'student_license_photo', 'student_medical_id_photo',
-            'instructor_license_number'
+            'instructor_license_number','license_expiration_date'
         ]
-    
+        widgets = {
+            'license_expiration_date': forms.DateInput(attrs={'type': 'date'}),
+        }
     def __init__(self, *args, **kwargs):
         user = kwargs.get('instance')
         super().__init__(*args, **kwargs)
@@ -255,16 +257,19 @@ class ProfileUpdateForm(forms.ModelForm):
         # Add help text
         self.fields['student_license_photo'].help_text = "Upload an image of your student license (JPEG, PNG formats only, max 5MB)"
         self.fields['student_medical_id_photo'].help_text = "Upload an image of your medical ID (JPEG, PNG formats only, max 5MB)"
-        
+        self.fields['license_expiration_date'].help_text = "Enter your license expiration date"
+
         # Show only relevant fields based on user type
         if user and user.is_instructor():
             # Hide student-specific fields for instructors
             self.fields['student_license_number'].widget = forms.HiddenInput()
             self.fields['student_license_photo'].widget = forms.HiddenInput()
             self.fields['student_medical_id_photo'].widget = forms.HiddenInput()
+            self.fields['license_expiration_date'].label = "Instructor License Expiration Date"
         elif user and user.is_student():
             # Hide instructor-specific fields for students
             self.fields['instructor_license_number'].widget = forms.HiddenInput()
+            self.fields['license_expiration_date'].label = "Student License Expiration Date"
     
     def validate_image_file(self, file_obj):
         """
@@ -308,6 +313,16 @@ class ProfileUpdateForm(forms.ModelForm):
             
         except Exception as e:
             raise ValidationError(f"Invalid image file: {str(e)}")
+        
+    def clean_license_expiration_date(self):
+        """Validate expiration date"""
+        expiration_date = self.cleaned_data.get('license_expiration_date')
+        if expiration_date:
+            from datetime import date
+            if expiration_date < date.today():
+                # Allow expired dates but show a warning in the view
+                pass
+        return expiration_date
     
     def clean_student_license_photo(self):
         """Validate student license photo upload"""
