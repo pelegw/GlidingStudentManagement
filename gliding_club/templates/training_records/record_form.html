@@ -370,7 +370,13 @@
                                                     <label class="btn btn-outline-secondary" for="form-{{ forloop.counter0 }}-not_performed">
                                                         {% trans "Not Performed" %}
                                                     </label>
-                                                    
+
+                                                    <input type="radio" class="btn-check" name="form-{{ forloop.counter0 }}-performance" 
+                                                           id="form-{{ forloop.counter0 }}-performed_badly" value="performed_badly">
+                                                    <label class="btn btn-outline-danger" for="form-{{ forloop.counter0 }}-performed_badly">
+                                                        {% trans "Performed Badly" %}
+                                                    </label>
+
                                                     <input type="radio" class="btn-check" name="form-{{ forloop.counter0 }}-performance" 
                                                            id="form-{{ forloop.counter0 }}-needs_improvement" value="needs_improvement">
                                                     <label class="btn btn-outline-warning" for="form-{{ forloop.counter0 }}-needs_improvement">
@@ -384,10 +390,10 @@
                                                     </label>
                                                 </div>
                                                 
-                                                <div class="notes-container d-none">
+                                               <!-- <div class="notes-container d-none">
                                                     <textarea name="form-{{ forloop.counter0 }}-notes" class="form-control" rows="2" 
                                                               placeholder="{% trans 'Optional notes about this exercise' %}"></textarea>
-                                                </div>
+                                                </div> -->
                                             </div>
                                         </div>
                                     {% endfor %}
@@ -422,7 +428,12 @@
                                                     <label class="btn btn-outline-secondary" for="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-not_performed">
                                                         {% trans "Not Performed" %}
                                                     </label>
-                                                    
+
+                                                    <input type="radio" class="btn-check" name="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-performance" 
+                                                           id="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-performed_badly" value="performed_badly">
+                                                    <label class="btn btn-outline-danger" for="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-performed_badly">
+                                                        {% trans "Performed Badly" %}
+                                                    </label>
                                                     <input type="radio" class="btn-check" name="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-performance" 
                                                            id="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-needs_improvement" value="needs_improvement">
                                                     <label class="btn btn-outline-warning" for="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-needs_improvement">
@@ -436,10 +447,10 @@
                                                     </label>
                                                 </div>
                                                 
-                                                <div class="notes-container d-none">
+                                               <!-- <div class="notes-container d-none">
                                                     <textarea name="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-notes" class="form-control" rows="2" 
                                                               placeholder="{% trans 'Optional notes about this exercise' %}"></textarea>
-                                                </div>
+                                                </div> -->
                                             </div>
                                         </div>
                                     {% endfor %}
@@ -607,10 +618,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Hide notes container
-            const notesContainer = item.querySelector('.notes-container');
-            if (notesContainer) {
-                notesContainer.classList.add('d-none');
-            }
+            //const notesContainer = item.querySelector('.notes-container');
+            //if (notesContainer) {
+            //    notesContainer.classList.add('d-none');
+            //}
             
             // Remove any border styling and add not-performed class
             item.classList.remove('border-success', 'border-warning');
@@ -663,10 +674,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     
                     // Show notes container
-                    const notesContainer = exerciseItem.querySelector('.notes-container');
-                    if (notesContainer) {
-                        notesContainer.classList.remove('d-none');
-                    }
+                    //const notesContainer = exerciseItem.querySelector('.notes-container');
+                    //if (notesContainer) {
+                    //    notesContainer.classList.remove('d-none');
+                   // }
                     
                     // Add border styling and remove not-performed class
                     exerciseItem.classList.add('border-success');
@@ -749,7 +760,7 @@ document.addEventListener('DOMContentLoaded', function() {
         radio.addEventListener('change', function() {
             const item = this.closest('.exercise-item');
             const statusBadge = item.querySelector('.exercise-status');
-            const notesContainer = item.querySelector('.notes-container');
+            //const notesContainer = item.querySelector('.notes-container');
             
             // Update status badge
             if (this.value === 'performed_well') {
@@ -759,7 +770,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 item.classList.add('border-success');
                 item.classList.remove('border-warning', 'not-performed');
                 
-                if (notesContainer) notesContainer.classList.remove('d-none');
+                //if (notesContainer) notesContainer.classList.remove('d-none');
             } 
             else if (this.value === 'needs_improvement') {
                 statusBadge.textContent = 'Needs Improvement';
@@ -768,8 +779,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 item.classList.add('border-warning');
                 item.classList.remove('border-success', 'not-performed');
                 
-                if (notesContainer) notesContainer.classList.remove('d-none');
-            } 
+                //if (notesContainer) notesContainer.classList.remove('d-none');
+            }
+            else if (this.value === 'performed_badly') {
+                statusBadge.textContent = 'Performed Badly';
+                statusBadge.classList.remove('bg-secondary', 'bg-success', 'bg-warning');
+                statusBadge.classList.add('bg-danger');
+                item.classList.add('border-danger');
+                item.classList.remove('border-success', 'border-warning', 'not-performed');
+            }  
             else {
                 statusBadge.textContent = 'Not Performed';
                 statusBadge.classList.remove('bg-success', 'bg-warning');
@@ -777,7 +795,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 item.classList.remove('border-success', 'border-warning');
                 item.classList.add('not-performed');
                 
-                if (notesContainer) notesContainer.classList.add('d-none');
+                //if (notesContainer) notesContainer.classList.add('d-none');
             }
             
             // Update counter
@@ -813,8 +831,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Exercise counter update
     function updateExerciseCounter() {
         const counter = document.getElementById('exercise-counter');
-        const performedExercises = document.querySelectorAll('input[type="radio"][value="performed_well"]:checked, input[type="radio"][value="needs_improvement"]:checked').length;
-        
+        const performedExercises = document.querySelectorAll('input[type="radio"][value="performed_well"]:checked, input[type="radio"][value="needs_improvement"]:checked, input[type="radio"][value="performed_badly"]:checked').length;        
         if (counter) {
             counter.textContent = performedExercises;
         }
@@ -846,7 +863,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 // Show the exercise details if performed
-                if (data.performance === 'performed_well' || data.performance === 'needs_improvement') {
+                if (data.performance === 'performed_well' || data.performance === 'needs_improvement' || data.performance === 'performed_badly') {
                     const toggle = item.querySelector('.exercise-toggle');
                     const icon = toggle.querySelector('i');
                     const content = item.querySelector('.exercise-content');
@@ -865,12 +882,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     
                     // Set notes if any
-                    if (data.notes) {
-                        const textarea = item.querySelector('textarea');
-                        if (textarea) {
-                            textarea.value = data.notes;
-                        }
-                    }
+                    //if (data.notes) {
+                    //    const textarea = item.querySelector('textarea');
+                    //    if (textarea) {
+                    //        textarea.value = data.notes;
+                    //    }
+                    //}
                 }
             }
         }

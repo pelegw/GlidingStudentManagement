@@ -67,6 +67,9 @@
             color: green;
         }
         .partial {
+            color: orangered;
+        }
+        .bad {
             color: red;
         }
         .footer {
@@ -196,6 +199,8 @@
                                 <span class="success">✓</span>
                             {% elif result == "⍻" %}
                                 <span class="partial">⍻</span>
+                            {% elif result == "✗" %}
+                                <span class="partial">⍻</span>
                             {% else %}
                                 <!-- Empty cell for not performed -->
                             {% endif %}
@@ -208,8 +213,9 @@
     
     <!-- Legend -->
     <div class="legend">
-        <div class="legend-item"><span class="success">✓</span> - מספיק</div>
+        <div class="legend-item"><span class="success">✓</span> - טוב</div>
         <div class="legend-item"><span class="partial">⍻</span> - בינוני</div>
+        <div class="legend-item"><span class="bad">✗</span> - גרוע</div>
     </div>
     
     <div class="footer">
@@ -264,6 +270,8 @@
                                     <span class="success">✓</span>
                                 {% elif result == "⍻" %}
                                     <span class="partial">⍻</span>
+                                {% elif result == "✗" %}
+                                    <span class="bad">✗</span>
                                 {% else %}
                                     <!-- Empty cell for not performed -->
                                 {% endif %}
@@ -276,8 +284,9 @@
         
         <!-- Legend -->
         <div class="legend">
-            <div class="legend-item"><span class="success">✓</span> - מספיק</div>
+            <div class="legend-item"><span class="success">✓</span> - טוב</div>
             <div class="legend-item"><span class="partial">⍻</span> - בינוני</div>
+            <div class="legend-item"><span class="bad">✗</span> - גרוע</div>
         </div>
         
         <div class="footer">

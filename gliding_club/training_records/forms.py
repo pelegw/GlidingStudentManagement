@@ -21,7 +21,7 @@ class ExercisePerformanceForm(forms.ModelForm):
         widgets = {
             'exercise': forms.HiddenInput(),
             'performance': forms.RadioSelect(),
-            'notes': forms.Textarea(attrs={'rows': 1, 'placeholder': 'Optional notes'})
+            #'notes': forms.Textarea(attrs={'rows': 1, 'placeholder': 'Optional notes'}) #removed notes field for now, not seeing any use for it
         }
 
 

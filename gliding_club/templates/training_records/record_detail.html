@@ -23,7 +23,12 @@
         border: 1px solid #ffecb5;
         color: #664d03;
     }
-    
+
+    .exercise-performed-badly {
+        background-color: #f5a699;
+        border: 1px solid #ffecb5;
+        color: red;
+    }
     .exercise-notes {
         font-size: 0.85rem;
         font-style: italic;
@@ -82,15 +87,17 @@
                                             </div>
                                             <div class="ms-auto">
                                                 {% if performance.performance == 'performed_well' %}
-                                                    <span class="exercise-badge exercise-performed">Performed Well</span>
+                                                    <span class="exercise-badge exercise-performed">{% trans "Performed Well" %}</span>
                                                 {% elif performance.performance == 'needs_improvement' %}
-                                                    <span class="exercise-badge exercise-needs-improvement">Needs Improvement</span>
+                                                    <span class="exercise-badge exercise-needs-improvement">{% trans "Needs Improvement" %}</span>
+                                                {% elif performance.performance == 'performed_badly' %}
+                                                    <span class="exercise-badge exercise-performed-badly">{%trans "Performed Badly" %} </span>
                                                 {% endif %}
                                             </div>
                                         </div>
-                                        {% if performance.notes %}
+                                        <!-- {% if performance.notes %}
                                             <div class="exercise-notes">{{ performance.notes }}</div>
-                                        {% endif %}
+                                        {% endif %} -->
                                     </div>
                                 {% empty %}
                                     <div class="list-group-item text-muted">{% trans "No pre-solo exercises" %}</div>
@@ -109,15 +116,18 @@
                                             </div>
                                             <div class="ms-auto">
                                                 {% if performance.performance == 'performed_well' %}
-                                                    <span class="exercise-badge exercise-performed">Performed Well</span>
+                                                    <span class="exercise-badge exercise-performed">{% trans "Performed Well" %}</span>
                                                 {% elif performance.performance == 'needs_improvement' %}
-                                                    <span class="exercise-badge exercise-needs-improvement">Needs Improvement</span>
+                                                    <span class="exercise-badge exercise-needs-improvement">{% trans "Needs Improvement" %}</span>
+                                                {% elif performance.performance == 'performed_badly' %}
+                                                    <span class="exercise-badge exercise-performed-badly">{%trans "Performed Badly" %} </span>
                                                 {% endif %}
+                                                
                                             </div>
                                         </div>
-                                        {% if performance.notes %}
+                                       <!-- {% if performance.notes %}
                                             <div class="exercise-notes">{{ performance.notes }}</div>
-                                        {% endif %}
+                                        {% endif %} -->
                                     </div>
                                 {% empty %}
                                     <div class="list-group-item text-muted">{% trans "No post-solo exercises" %}</div>

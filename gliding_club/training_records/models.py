@@ -225,11 +225,12 @@ class Exercise(models.Model):
     
 class ExercisePerformance(models.Model):
     """Model to track individual exercise performance in a training session"""
-    PERFORMANCE_CHOICES = (
-        ('not_performed', 'Not Performed'),
-        ('needs_improvement', 'Needs Improvement'),
+    PERFORMANCE_CHOICES = [
         ('performed_well', 'Performed Well'),
-    )
+        ('needs_improvement', 'Needs Improvement'), 
+        ('performed_badly', 'Performed Badly'), 
+        ('not_performed', 'Not Performed'),
+    ]
     
     training_record = models.ForeignKey('TrainingRecord', on_delete=models.CASCADE, related_name='exercise_performances')
     exercise = models.ForeignKey('Exercise', on_delete=models.CASCADE, related_name='performances')

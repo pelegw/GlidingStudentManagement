@@ -225,12 +225,12 @@ class TrainingRecordDetailView(LoginRequiredMixin, DetailView):
         # Get exercise performances grouped by category - only include performed ones
         context['pre_solo_performances'] = self.object.exercise_performances.filter(
             exercise__category='pre-solo',
-            performance__in=['performed_well', 'needs_improvement']
+            performance__in=['performed_well', 'needs_improvement', 'performed_badly']
         ).select_related('exercise').order_by('exercise__number', 'exercise__name')
         
         context['post_solo_performances'] = self.object.exercise_performances.filter(
             exercise__category='post-solo',
-            performance__in=['performed_well', 'needs_improvement']
+            performance__in=['performed_well', 'needs_improvement', 'performed_badly']
         ).select_related('exercise').order_by('exercise__number', 'exercise__name')
 
         return context
@@ -290,7 +290,7 @@ class TrainingRecordCreateView(LoginRequiredMixin, CreateView):
                             training_record=self.object,
                             exercise=exercise,
                             performance=performance,
-                            notes=notes
+                            notes=''
                         )
                     except (Exercise.DoesNotExist, ValueError) as e:
                         # Log an error but continue processing
@@ -411,7 +411,7 @@ class TrainingRecordUpdateView(LoginRequiredMixin, UpdateView):
                 prefix = f'form-{i}'
                 exercise_id = self.request.POST.get(f'{prefix}-exercise')
                 performance = self.request.POST.get(f'{prefix}-performance')
-                notes = self.request.POST.get(f'{prefix}-notes', '')
+                #notes = self.request.POST.get(f'{prefix}-notes', '')
                 
                 if i < 5:  # First 5 for debugging
                     print(f"Form data {i}: Exercise={exercise_id}, Performance={performance}")
@@ -428,7 +428,7 @@ class TrainingRecordUpdateView(LoginRequiredMixin, UpdateView):
                             exercise=exercise,
                             defaults={
                                 'performance': performance,
-                                'notes': notes
+                                'notes': ''
                             }
                         )
                         
@@ -1064,6 +1064,8 @@ def _export_exercise_matrix(student, records, request):
                     symbol = "✓"  # Success
                 elif performance == 'needs_improvement':
                     symbol = "⍻"  # Not check mark (U+237B)
+                elif performance == 'performed_badly':
+                      symbol = "✗"  # Red X mark
                 else:
                     symbol = ""  # Not performed
                 
@@ -1081,6 +1083,9 @@ def _export_exercise_matrix(student, records, request):
                 elif performance == 'needs_improvement':
                     symbol = "⍻"  # Not check mark (U+237B)
                     has_post_solo = True
+                elif performance == 'performed_badly':
+                      symbol = "✗"  # Red X mark
+                      has_post_solo = True
                 else:
                     symbol = ""  # Not performed
                 

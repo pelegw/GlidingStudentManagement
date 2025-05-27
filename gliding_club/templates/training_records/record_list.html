@@ -2,6 +2,35 @@
 {% load i18n %}
 {% block title %}{% trans "Training Records" %} - {{ CLUB_NAME }}{% endblock %}
 {% block content %}
+{% block extra_css %}
+<style nonce="{{ csp_nonce }}">
+.record-row:hover {
+    background-color: #f8f9fa;
+}
+
+.record-row {
+    cursor: pointer;
+}
+
+.comments-row {
+    border-top: none !important;
+    transition: all 0.3s ease;
+}
+
+.comments-row td {
+    border-top: none !important;
+    padding-top: 0 !important;
+}
+
+.expand-btn {
+    transition: all 0.2s ease;
+}
+
+.expand-icon {
+    transition: transform 0.2s ease;
+}
+</style>
+{% endblock %}
 <div class="row mb-4">
     <div class="col-md-8">
         <h2>{% trans "Training Records" %}</h2>
@@ -30,7 +59,9 @@
                         <tr>
                             <th>{% trans "Flight Number" %}</th>
                             <th>{% trans "Date" %}</th>
-                            <th>{% trans "Student" %}</th>
+                            {% if not user.is_student %}
+                                <th>{% trans "Student" %}</th>
+                            {% endif %}
                             <th>{% trans "Instructor" %}</th>
                             <th>{% trans "Topic" %}</th>
                             <th>{% trans "Glider" %}</th>
@@ -45,7 +76,9 @@
                             <tr>
                                 <td>{{ record.get_flight_number }}</td>
                                 <td>{{ record.date }}</td>
-                                <td>{{ record.student.get_full_name }}</td>
+                                {% if not user.is_student %}
+                                    <td>{{ record.student.get_full_name }}</td>
+                                {% endif %}
                                 <td>
                                     {{ record.instructor.get_full_name }}
                                     {% if record.is_solo %}
@@ -73,6 +106,44 @@
                                             <a href="{% url 'sign_record' record.pk %}" class="btn btn-sm btn-success">{% trans "Sign" %}</a>
                                         {% endif %}
                                     {% endif %}
+                                    <button type="button" class="btn btn-sm btn-outline-secondary expand-btn" data-record-id="{{ record.pk }}">
+                                      <i class="bi bi-chevron-down expand-icon"></i>
+                                   </button>
+                                </td>
+                            </tr>
+                            <!-- Expandable comments row -->
+                            <tr class="comments-row d-none" id="comments-{{ record.pk }}">
+                                <td colspan="{% if not user.is_student %}10{% else %}9{% endif %}" class="bg-light">
+                                    <div class="p-3">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h6 class="text-muted mb-2">
+                                                    <i class="bi bi-person-fill {% if LANGUAGE_CODE == 'he' %}ms-1{% else %}me-1{% endif %}"></i>
+                                                    {% trans "Student Comments" %}
+                                                </h6>
+                                                <div class="border rounded p-2 bg-white">
+                                                    {% if record.student_comments %}
+                                                        <p class="mb-0">{{ record.student_comments|linebreaks }}</p>
+                                                    {% else %}
+                                                        <p class="mb-0 text-muted fst-italic">{% trans "No student comments" %}</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6 class="text-muted mb-2">
+                                                    <i class="bi bi-person-badge {% if LANGUAGE_CODE == 'he' %}ms-1{% else %}me-1{% endif %}"></i>
+                                                    {% trans "Instructor Comments" %}
+                                                </h6>
+                                                <div class="border rounded p-2 bg-white">
+                                                    {% if record.instructor_comments %}
+                                                        <p class="mb-0">{{ record.instructor_comments|linebreaks }}</p>
+                                                    {% else %}
+                                                        <p class="mb-0 text-muted fst-italic">{% trans "No instructor comments" %}</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -155,4 +226,54 @@
     </div>
 </div>
 {% endif %}
+{% endblock %}
+
+
+{% block extra_js %}
+<script nonce="{{ csp_nonce }}">
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle expand/collapse functionality
+    document.querySelectorAll('.expand-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const recordId = this.dataset.recordId;
+            const commentsRow = document.getElementById('comments-' + recordId);
+            const icon = this.querySelector('.expand-icon');
+            
+            if (commentsRow.classList.contains('d-none')) {
+                // Expand
+                commentsRow.classList.remove('d-none');
+                icon.classList.remove('bi-chevron-down');
+                icon.classList.add('bi-chevron-up');
+                this.classList.remove('btn-outline-secondary');
+                this.classList.add('btn-secondary');
+            } else {
+                // Collapse
+                commentsRow.classList.add('d-none');
+                icon.classList.remove('bi-chevron-up');
+                icon.classList.add('bi-chevron-down');
+                this.classList.remove('btn-secondary');
+                this.classList.add('btn-outline-secondary');
+            }
+        });
+    });
+    
+    // Optional: Make entire row clickable (except action buttons)
+    document.querySelectorAll('tr').forEach(function(row) {
+        if (row.classList.contains('comments-row')) return; // Skip comment rows
+        
+        row.addEventListener('click', function(e) {
+            // Don't trigger if clicking on buttons or links
+            if (e.target.closest('a, button')) {
+                return;
+            }
+            
+            // Find the expand button in this row
+            const expandBtn = this.querySelector('.expand-btn');
+            if (expandBtn) {
+                expandBtn.click();
+            }
+        });
+    });
+});
+</script>
 {% endblock %}
