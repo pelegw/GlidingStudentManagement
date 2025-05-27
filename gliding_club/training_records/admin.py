@@ -1,5 +1,5 @@
 # training_records/admin.py
-from django.contrib import admin
+from django.contrib import admin,messages
 from django.contrib.auth.admin import UserAdmin
 from django.db import transaction
 from .models import (
