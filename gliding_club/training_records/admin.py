@@ -51,40 +51,38 @@ class TrainingRecordAdmin(admin.ModelAdmin):
     actions = ['delete_all_student_data']
 
     def delete_all_student_data(self, request, queryset):
-    """Delete all student training data - SIMPLE VERSION"""
-    
-    # Check if user is superuser
-    if not request.user.is_superuser:
-        messages.error(request, "Only superusers can perform this action.")
-        return
-    
-    try:
-        # Get counts first
-        training_count = TrainingRecord.objects.count()
-        briefing_count = GroundBriefing.objects.count() 
-        exercise_count = ExercisePerformance.objects.count()
-        
-        # Check if there's anything to delete
-        total_count = training_count + briefing_count + exercise_count
-        if total_count == 0:
-            messages.info(request, "No student data found to delete.")
+        # Check if user is superuser
+        if not request.user.is_superuser:
+            messages.error(request, "Only superusers can perform this action.")
             return
         
-        # Delete everything
-        ExercisePerformance.objects.all().delete()
-        GroundBriefing.objects.all().delete()
-        TrainingRecord.objects.all().delete()
+        try:
+            # Get counts first
+            training_count = TrainingRecord.objects.count()
+            briefing_count = GroundBriefing.objects.count() 
+            exercise_count = ExercisePerformance.objects.count()
+            
+            # Check if there's anything to delete
+            total_count = training_count + briefing_count + exercise_count
+            if total_count == 0:
+                messages.info(request, "No student data found to delete.")
+                return
+            
+            # Delete everything
+            ExercisePerformance.objects.all().delete()
+            GroundBriefing.objects.all().delete()
+            TrainingRecord.objects.all().delete()
+            
+            # Success message
+            messages.success(
+                request, 
+                f"Successfully deleted {training_count} training records, "
+                f"{briefing_count} ground briefings, and "
+                f"{exercise_count} exercise performances."
+            )
         
-        # Success message
-        messages.success(
-            request, 
-            f"Successfully deleted {training_count} training records, "
-            f"{briefing_count} ground briefings, and "
-            f"{exercise_count} exercise performances."
-        )
-        
-    except Exception as e:
-        messages.error(request, f"Error deleting data: {e}")
+        except Exception as e:
+            messages.error(request, f"Error deleting data: {e}")
 
     def save_model(self, request, obj, form, change):
         """Override save_model to capture the user making the change"""
