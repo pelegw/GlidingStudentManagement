@@ -2,6 +2,8 @@
 
 A comprehensive web-based management system for gliding clubs to track student training records, ground briefings, and licensing information. Built with Django and designed to support both English and Hebrew languages with full RTL support.
 
+This project was mostly "vibe-coded" with the majority of code (all HTML code) generate by Claude Sonnet 3.7 
+
 ## 🛩️ Features
 
 ### Core Functionality
