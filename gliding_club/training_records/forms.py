@@ -47,7 +47,7 @@ class TrainingRecordForm(forms.ModelForm):
         fields = [
             'instructor', 'training_topic', 'glider',
             'date', 'field', 'tow_height',
-            'student_comments'
+            'student_comments','is_solo'
         ]
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),

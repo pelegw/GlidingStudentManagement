@@ -3,6 +3,7 @@
 <html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_CODE == 'he' %}rtl{% else %}ltr{% endif %}">
 
 <head>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% trans "Training Records" %} - {{ CLUB_NAME }}{% endblock %}</title>
@@ -16,6 +17,8 @@
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/static/css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="/static/css/mobile.css">
     {% block extra_css %}{% endblock %}
     
     <!-- Additional fixes for RTL layout -->

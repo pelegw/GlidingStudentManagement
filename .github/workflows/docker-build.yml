@@ -1,7 +1,9 @@
 name: Build and Push Docker Image
 permissions:
   contents: read
-  
+  packages: write
+  actions: read
+
 on:
   push:
     branches: [ main ]  # Change this to your main branch name
