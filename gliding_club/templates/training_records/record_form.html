@@ -194,7 +194,7 @@
                             <div class="col-md-8">
                                 <div class="mb-2">
                                     <label for="{{ form.training_topic.id_for_label }}" class="form-label fw-bold d-block">
-                                        {% trans "Training Topic" %}
+                                        {% trans "Main Training Topic" %}
                                     </label>
                                 </div>
                                 {{ form.training_topic }}
@@ -374,7 +374,7 @@
                                                     <input type="radio" class="btn-check" name="form-{{ forloop.counter0 }}-performance" 
                                                            id="form-{{ forloop.counter0 }}-performed_badly" value="performed_badly">
                                                     <label class="btn btn-outline-danger" for="form-{{ forloop.counter0 }}-performed_badly">
-                                                        {% trans "Performed Badly" %}
+                                                        {% trans "Performed Insufficently" %}
                                                     </label>
 
                                                     <input type="radio" class="btn-check" name="form-{{ forloop.counter0 }}-performance" 
@@ -432,7 +432,7 @@
                                                     <input type="radio" class="btn-check" name="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-performance" 
                                                            id="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-performed_badly" value="performed_badly">
                                                     <label class="btn btn-outline-danger" for="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-performed_badly">
-                                                        {% trans "Performed Badly" %}
+                                                        {% trans "Performed Insufficently" %}
                                                     </label>
                                                     <input type="radio" class="btn-check" name="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-performance" 
                                                            id="form-{{ forloop.counter0|add:pre_solo_exercises.count }}-needs_improvement" value="needs_improvement">
@@ -782,7 +782,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 //if (notesContainer) notesContainer.classList.remove('d-none');
             }
             else if (this.value === 'performed_badly') {
-                statusBadge.textContent = 'Performed Badly';
+                statusBadge.textContent = 'Performed Insufficently';
                 statusBadge.classList.remove('bg-secondary', 'bg-success', 'bg-warning');
                 statusBadge.classList.add('bg-danger');
                 item.classList.add('border-danger');

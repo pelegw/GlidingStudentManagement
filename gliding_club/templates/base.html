@@ -49,6 +49,48 @@
         html[dir="rtl"] .d-flex:not(.justify-content-between):not(.align-items-center) {
             flex-direction: row-reverse;
         }
+
+        /* Custom 5-column layout for statistics cards */
+    @media (min-width: 768px) {
+        .col-md-2-4 {
+            flex: 0 0 auto;
+            width: 20%; /* 100% / 5 = 20% */
+        }
+    }
+    
+    /* Ensure all statistic cards have equal height */
+    .stats-row .card {
+        transition: transform 0.2s ease-in-out;
+    }
+    
+    .stats-row .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    /* Consistent text sizing for stats */
+    .stats-row .card-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    
+    .stats-row .display-6 {
+        font-size: 2rem;
+        font-weight: 700;
+    }
+    
+    .stats-row .small {
+        font-size: 0.75rem;
+        opacity: 0.9;
+    }
+    
+    /* Mobile responsive adjustments */
+    @media (max-width: 767px) {
+        .stats-row .col-sm-6:nth-child(5) {
+            width: 100%;
+        }
+    }
+    
     </style>
 </head>
 
@@ -72,6 +114,15 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'record_list' %}">{% trans "Training Records" %}</a>
                         </li>
+                        {% if user.is_instructor %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'instructor_flight_history' %}">
+                                    <i class="bi bi-calendar-range {% if LANGUAGE_CODE == 'he' %}ms-1{% else %}me-1{% endif %}"></i>
+                                    {% trans "Flight History" %}
+                                </a>
+                            </li>
+                        {% endif %}
+
                         {% if user.is_student %}
                             <li class="nav-item">
                                 <a class="nav-link{% if request.resolver_match.url_name == 'student_ground_briefings' %} active{% endif %}" href="{% url 'student_ground_briefings' %}">

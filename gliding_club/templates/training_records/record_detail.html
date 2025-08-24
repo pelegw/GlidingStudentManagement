@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load record_tags %}
 {% block title %}{% trans "Training Record Details" %} - {{ CLUB_NAME }}{% endblock %}
 
 {% block extra_css %}
@@ -63,7 +64,7 @@
                         {% endif %}
                     </div>
                     <div class="col-md-6">
-                        <p><strong>{% trans "Training Topic" %}:</strong> {{ record.training_topic.name }}</p>
+                        <p><strong>{% trans "Main Training Topic" %}:</strong> {{ record.training_topic.name }}</p>
                         <p><strong>{% trans "Glider" %}:</strong> {{ record.glider.tail_number }} ({{ record.glider.model }})</p>
                         <p><strong>{% trans "Field/Location" %}:</strong> {{ record.field }}</p>
                         {% if record.tow_height %}
@@ -91,7 +92,7 @@
                                                 {% elif performance.performance == 'needs_improvement' %}
                                                     <span class="exercise-badge exercise-needs-improvement">{% trans "Needs Improvement" %}</span>
                                                 {% elif performance.performance == 'performed_badly' %}
-                                                    <span class="exercise-badge exercise-performed-badly">{%trans "Performed Badly" %} </span>
+                                                    <span class="exercise-badge exercise-performed-badly">{%trans "Performed Insufficently" %} </span>
                                                 {% endif %}
                                             </div>
                                         </div>
@@ -120,7 +121,7 @@
                                                 {% elif performance.performance == 'needs_improvement' %}
                                                     <span class="exercise-badge exercise-needs-improvement">{% trans "Needs Improvement" %}</span>
                                                 {% elif performance.performance == 'performed_badly' %}
-                                                    <span class="exercise-badge exercise-performed-badly">{%trans "Performed Badly" %} </span>
+                                                    <span class="exercise-badge exercise-performed-badly">{%trans "Performed Insufficently" %} </span>
                                                 {% endif %}
                                                 
                                             </div>
@@ -157,6 +158,55 @@
                         {% else %}
                             <em>{% trans "No instructor comments provided." %}</em>
                         {% endif %}
+                    </div>
+                </div>
+                {% if record.signed_off %}
+                    <div class="alert alert-info mt-3">
+                        <strong>{% trans "Signed off by" %}:</strong> {{ record.signed_by.get_full_name|default:record.instructor.get_full_name }} 
+                        <small class="text-muted">({{ record.sign_off_timestamp|date:"M d, Y H:i" }})</small>
+                        
+                        {% if user.is_instructor and record|is_modifiable_by:user %}
+                            <br>
+                            {% with days_remaining=record|days_until_deadline %}
+                                {% if days_remaining %}
+                                    <small class="text-warning">
+                                        <i class="bi bi-clock"></i> 
+                                        {% trans "Modifications allowed for" %} {{ days_remaining }} {% trans "more day(s)" %}
+                                    </small>
+                                {% endif %}
+                            {% endwith %}
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                <!-- Update action buttons section -->
+                <div class="card-footer bg-light">
+                    <div class="d-flex gap-2">
+                        {% if record|is_modifiable_by:user %}
+                            <a href="{% url 'sign_record' record.pk %}" class="btn btn-warning">
+                                <i class="bi bi-pencil-square"></i> 
+                                {% if record.signed_off %}
+                                    {% trans "Modify Record" %}
+                                {% else %}
+                                    {% trans "Sign Off" %}
+                                {% endif %}
+                            </a>
+                        {% elif not record.signed_off and user.is_instructor and record.instructor == user %}
+                            <a href="{% url 'sign_record' record.pk %}" class="btn btn-success">
+                                <i class="bi bi-pen"></i> {% trans "Sign Off" %}
+                            </a>
+                        {% endif %}
+                        
+                        <!-- Other existing buttons -->
+                        {% if not record.signed_off and user == record.student %}
+                            <a href="{% url 'record_update' record.pk %}" class="btn btn-primary">
+                                <i class="bi bi-pencil"></i> {% trans "Edit" %}
+                            </a>
+                        {% endif %}
+                        
+                        <a href="{% url 'record_list' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> {% trans "Back to Records" %}
+                        </a>
                     </div>
                 </div>
             </div>

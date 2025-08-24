@@ -203,6 +203,45 @@ class TrainingRecord(models.Model):
             if record.id == self.id:
                 return i + 1  # 1-based indexing
         return None
+    
+    def is_modifiable_by_instructor(self, user):
+        """
+        Check if an instructor can still modify this record.
+        Returns True if:
+        - Record is not signed off, OR
+        - Record was signed off less than 7 days ago by the current instructor
+        """
+        if not self.signed_off:
+            return True
+        
+        if not user.is_instructor():
+            return False
+        
+        # Check if the current user signed off this record
+        if hasattr(self, 'signed_by') and self.signed_by != user:
+            return False
+        
+        # Check if it's been less than 7 days since sign-off
+        if self.sign_off_timestamp:
+            seven_days_ago = timezone.now() - timedelta(days=7)
+            return self.sign_off_timestamp > seven_days_ago
+        
+        return False
+    
+    def get_modification_deadline(self):
+        """Get the deadline for modifications after sign-off"""
+        if self.sign_off_timestamp:
+            return self.sign_off_timestamp + timedelta(days=7)
+        return None
+    
+    def days_until_modification_deadline(self):
+        """Get number of days remaining for modifications"""
+        deadline = self.get_modification_deadline()
+        if deadline:
+            remaining = deadline - timezone.now()
+            return max(0, remaining.days)
+        return None
+
 
 class AuditLog(models.Model):
     """Audit logging for all changes to training records"""

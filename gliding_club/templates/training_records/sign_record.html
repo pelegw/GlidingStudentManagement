@@ -43,9 +43,20 @@
     <div class="col-lg-10 col-md-12">
         <div class="card shadow">
             <div class="card-header bg-success text-white">
-                <h4 class="mb-0">{% trans "Sign Off Training Record" %}</h4>
+                <h4 class="mb-0">
+                    {% if is_modification %}
+                        <i class="bi bi-pencil-square"></i> {% trans "Modify Signed Record" %}
+                    {% else %}
+                        <i class="bi bi-pen"></i> {% trans "Sign Off Training Record" %}
+                    {% endif %}
+                </h4>
             </div>
             <div class="card-body">
+                {% if modification_warning %}
+                    <div class="alert alert-warning" role="alert">
+                        {{ modification_warning }}
+                    </div>
+                {% endif %}
                 <div class="alert alert-info">
                     <p><strong>{% trans "Important" %}:</strong> {% trans "Signing off on a training record confirms that:" %}</p>
                     <ul>
@@ -53,7 +64,10 @@
                         <li>{% trans "The information recorded is accurate" %}</li>
                         <li>{% trans "The student has completed this training element satisfactorily" %}</li>
                     </ul>
-                    <p>{% trans "Once signed off, this record cannot be modified." %}</p>
+                    {% if not is_modification %}
+                    <p>{% trans "Once signed off, modifications are only allowed for 7 days." %}</p>
+                    {% endif %}
+                    
                 </div>
 
                 <form method="post">

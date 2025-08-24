@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Instructor Flight History - {{ instructor.get_full_name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #003366;
+            padding-bottom: 15px;
+        }
+        
+        .header h1 {
+            font-size: 18pt;
+            color: #003366;
+            margin: 0 0 10px 0;
+        }
+        
+        .header p {
+            margin: 5px 0;
+            color: #666;
+        }
+        
+        .summary {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .summary-item {
+            text-align: center;
+        }
+        
+        .summary-item .value {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #003366;
+            display: block;
+        }
+        
+        .summary-item .label {
+            font-size: 10pt;
+            color: #666;
+            text-transform: uppercase;
+        }
+        
+        .flights-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .flights-table th,
+        .flights-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+        
+        .flights-table th {
+            background-color: #003366;
+            color: white;
+            font-weight: bold;
+            font-size: 10pt;
+        }
+        
+        .flights-table td {
+            font-size: 9pt;
+        }
+        
+        .flights-table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .solo-badge {
+            background-color: #17a2b8;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 8pt;
+            font-weight: bold;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 9pt;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+        
+        @media print {
+            body { margin: 0; }
+            .page-break { page-break-before: always; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Flight History Report</h1>
+        <p><strong>Instructor:</strong> {{ instructor.get_full_name }} <strong>License:</strong> {{ instructor.instructor_license_number }}</p>
+        <p><strong>Period:</strong> {{ start_date }} to {{ end_date }}</p>
+        <p><strong>Generated:</strong> {{ current_date }}</p>
+    </div>
+    
+    <div class="summary">
+        <div class="summary-grid">
+            <div class="summary-item">
+                <span class="value">{{ total_flights }}</span>
+                <span class="label">Total Flights</span>
+            </div>
+            <div class="summary-item">
+                <span class="value">{{ total_flight_time }}</span>
+                <span class="label">Flight Time</span>
+            </div>
+        </div>
+    </div>
+    
+    <table class="flights-table">
+        <thead>
+            <tr>
+                <th style="width: 12%;">Date</th>
+                <th style="width: 28%;">Student</th>
+                <th style="width: 15%;">Student License</th>
+                <th style="width: 12%;">Duration</th>
+                <th style="width: 33%;">Glider</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for flight in flights %}
+                <tr>
+                    <td>{{ flight.date }}</td>
+                    <td>{{ flight.student_name }}</td>
+                    <td>{{ flight.student_license }}</td>
+                    <td>{{ flight.duration }}</td>
+                    <td>{{ flight.glider }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="footer">
+        <p>This report contains {{ flights|length }} flight records for {{ instructor.get_full_name }}</p>
+        <p>Generated on {{ current_date }} by Gliding Club Management System</p>
+    </div>
+</body>
+</html>

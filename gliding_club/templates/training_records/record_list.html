@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load record_tags %}
 {% block title %}{% trans "Training Records" %} - {{ CLUB_NAME }}{% endblock %}
 {% block content %}
 {% block extra_css %}
@@ -92,23 +93,28 @@
                                 <td>
                                     {% if record.signed_off %}
                                         <span class="badge bg-success">{% trans "Signed Off" %}</span>
+                                        {% if user.is_instructor and record|is_modifiable_by:user %}
+                                            <br><small class="text-warning">{% trans "Modifiable" %}</small>
+                                        {% endif %}
                                     {% else %}
                                         <span class="badge bg-warning">{% trans "Pending" %}</span>
                                     {% endif %}
                                 </td>
                                 <td>
                                     <a href="{% url 'record_detail' record.pk %}" class="btn btn-sm btn-info">{% trans "View" %}</a>
-                                    {% if not record.signed_off %}
-                                        {% if user == record.instructor or user == record.student %}
-                                            <a href="{% url 'record_update' record.pk %}" class="btn btn-sm btn-primary">{% trans "Edit" %}</a>
+                                        {% if not record.signed_off %}
+                                            {% if user == record.instructor or user == record.student %}
+                                                <a href="{% url 'record_update' record.pk %}" class="btn btn-sm btn-primary">{% trans "Edit" %}</a>
+                                            {% endif %}
+                                            {% if user == record.instructor %}
+                                                <a href="{% url 'sign_record' record.pk %}" class="btn btn-sm btn-success">{% trans "Sign" %}</a>
+                                            {% endif %}
+                                        {% elif record|is_modifiable_by:user %}
+                                            <a href="{% url 'sign_record' record.pk %}" class="btn btn-sm btn-warning">{% trans "Modify" %}</a>
                                         {% endif %}
-                                        {% if user == record.instructor %}
-                                            <a href="{% url 'sign_record' record.pk %}" class="btn btn-sm btn-success">{% trans "Sign" %}</a>
-                                        {% endif %}
-                                    {% endif %}
-                                    <button type="button" class="btn btn-sm btn-outline-secondary expand-btn" data-record-id="{{ record.pk }}">
-                                      <i class="bi bi-chevron-down expand-icon"></i>
-                                   </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary expand-btn" data-record-id="{{ record.pk }}">
+                                        <i class="bi bi-chevron-down expand-icon"></i>
+                                    </button>
                                 </td>
                             </tr>
                             <!-- Expandable comments row -->

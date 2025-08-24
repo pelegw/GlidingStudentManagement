@@ -32,40 +32,50 @@
     </div>
 </div>
 
-<div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card bg-primary text-white">
-            <div class="card-body text-center">
-                <h5 class="card-title">{% trans "Total Flights" %}</h5>
-                <h2 class="display-4">{{ total_flights }}</h2>
-                <p>{% trans "instructional flights" %}</p>
+<!-- Stats -->
+<div class="row mb-4 g-3">
+    <div class="col-lg col-md-6 col-sm-6">
+        <div class="card bg-primary text-white h-100">
+            <div class="card-body text-center d-flex flex-column justify-content-center">
+                <h6 class="card-title text-truncate">{% trans "Instructional Flights" %}</h6>
+                <h3 class="mb-1">{{ total_instructional_flights }}</h3>
+                <small class="opacity-75">{% trans "with instructor on board" %}</small>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card bg-success text-white">
-            <div class="card-body text-center">
-                <h5 class="card-title">{% trans "Flight Time" %}</h5>
-                <h2 class="display-5">{{ total_flight_time }}</h2>
-                <p>{% trans "hours:minutes:seconds" %}</p>
+    <div class="col-lg col-md-6 col-sm-6">
+        <div class="card bg-success text-white h-100">
+            <div class="card-body text-center d-flex flex-column justify-content-center">
+                <h6 class="card-title text-truncate">{% trans "Flight Time" %}</h6>
+                <h3 class="mb-1">{{ total_flight_time }}</h3>
+                <small class="opacity-75">{% trans "hours:minutes" %}</small>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card bg-info text-white">
-            <div class="card-body text-center">
-                <h5 class="card-title">{% trans "Students" %}</h5>
-                <h2 class="display-4">{{ students_count }}</h2>
-                <p>{% trans "students instructed" %}</p>
+    <div class="col-lg col-md-6 col-sm-6">
+        <div class="card bg-info text-white h-100">
+            <div class="card-body text-center d-flex flex-column justify-content-center">
+                <h6 class="card-title text-truncate">{% trans "Solo Flights" %}</h6>
+                <h3 class="mb-1">{{ total_supervised_solo_flights }}</h3>
+                <small class="opacity-75">{% trans "supervised solo" %}</small>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card bg-warning text-dark">
-            <div class="card-body text-center">
-                <h5 class="card-title">{% trans "Pending" %}</h5>
-                <h2 class="display-4">{{ pending_count }}</h2>
-                <p>{% trans "awaiting sign-off" %}</p>
+    <div class="col-lg col-md-6 col-sm-6">
+        <div class="card bg-secondary text-white h-100">
+            <div class="card-body text-center d-flex flex-column justify-content-center">
+                <h6 class="card-title text-truncate">{% trans "Students" %}</h6>
+                <h3 class="mb-1">{{ students_count }}</h3>
+                <small class="opacity-75">{% trans "students instructed" %}</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg col-md-6 col-sm-6">
+        <div class="card bg-warning text-dark h-100">
+            <div class="card-body text-center d-flex flex-column justify-content-center">
+                <h6 class="card-title text-truncate">{% trans "Pending" %}</h6>
+                <h3 class="mb-1">{{ pending_count }}</h3>
+                <small class="opacity-75">{% trans "awaiting sign-off" %}</small>
             </div>
         </div>
     </div>
@@ -184,6 +194,9 @@
                 <div class="list-group">
                     <a href="{% url 'record_list' %}" class="list-group-item list-group-item-action">
                         <i class="bi bi-list-check {% if LANGUAGE_CODE == 'he' %}ms-2{% else %}me-2{% endif %}"></i> {% trans "View All Training Records" %}
+                    </a>
+                    <a href="{% url 'instructor_flight_history' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-calendar-range {% if LANGUAGE_CODE == 'he' %}ms-2{% else %}me-2{% endif %}"></i> {% trans "My Flight History" %}
                     </a>
                     <a href="{% url 'profile' %}" class="list-group-item list-group-item-action">
                         <i class="bi bi-person {% if LANGUAGE_CODE == 'he' %}ms-2{% else %}me-2{% endif %}"></i> {% trans "Your Profile" %}
