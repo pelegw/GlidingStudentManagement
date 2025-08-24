@@ -355,7 +355,7 @@ def _export_instructor_flights(flights, instructor, start_date, end_date, format
         logger = logging.getLogger(__name__)
         logger.error(f"Export error: {str(e)}")
         
-        return HttpResponse(f"Export failed: {str(e)}", content_type='text/plain', status=500)
+        return HttpResponse(f"Export failed", content_type='text/plain', status=500)
 
 
 # Update training_records/views/instructor.py
@@ -455,6 +455,6 @@ def _export_instructor_flights_pdf(flights, instructor, start_date, end_date):
         
     except Exception as e:
         # Return a proper error response
-        response = HttpResponse(f"Error generating PDF: {str(e)}", 
+        response = HttpResponse(f"Error generating PDF", 
                               content_type='text/plain', status=500)
         return response
