@@ -146,9 +146,6 @@ AUTH_PASSWORD_VALIDATORS = [
         }
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
@@ -231,9 +228,18 @@ AUTHENTICATION_BACKENDS = [
     'training_records.auth_backends.CaseInsensitiveModelBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
-AXES_FAILURE_LIMIT = 5  # Number of login attempts before lockout
+AXES_FAILURE_LIMIT = 10  # Number of login attempts before lockout
 AXES_LOCKOUT_PERIOD = 30  # Lockout period in minutes
 AXES_COOLOFF_TIME = 1  # Cooloff period in hours
-AXES_LOCK_OUT_BY_USER_OR_IP = False
-AXES_LOCK_OUT_BY_COMBINATION_USER_AND_IP = False
-AXES_ONLY_USER_FAILURES = True # Lock out based on username only
+AXES_LOCKOUT_PARAMETERS = [
+    ['username'],  # Lock by username only (ignores IP)
+]
+
+AXES_PROXY_COUNT = 1
+AXES_META_PRECEDENCE_ORDER = [
+    'HTTP_CF_CONNECTING_IP',    # Cloudflare real IP
+    'HTTP_X_FORWARDED_FOR',     # Standard proxy header
+    'HTTP_X_REAL_IP',           # Nginx real IP
+    'REMOTE_ADDR',              # Direct connection
+]
+AXES_RESET_ON_SUCCESS = True
