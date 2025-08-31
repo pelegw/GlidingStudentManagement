@@ -234,3 +234,6 @@ AUTHENTICATION_BACKENDS = [
 AXES_FAILURE_LIMIT = 5  # Number of login attempts before lockout
 AXES_LOCKOUT_PERIOD = 30  # Lockout period in minutes
 AXES_COOLOFF_TIME = 1  # Cooloff period in hours
+AXES_LOCK_OUT_BY_USER_OR_IP = False
+AXES_LOCK_OUT_BY_COMBINATION_USER_AND_IP = False
+AXES_ONLY_USER_FAILURES = True # Lock out based on username only

@@ -117,7 +117,7 @@
                         {% if user.is_instructor %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'instructor_flight_history' %}">
-                                    <i class="bi bi-calendar-range {% if LANGUAGE_CODE == 'he' %}ms-1{% else %}me-1{% endif %}"></i>
+                                    <i class="nav-link {% if LANGUAGE_CODE == 'he' %}ms-1{% else %}me-1{% endif %}"></i>
                                     {% trans "Flight History" %}
                                 </a>
                             </li>
