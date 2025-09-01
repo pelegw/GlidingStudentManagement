@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-25 00:11+0300\n"
+"POT-Creation-Date: 2025-09-01 16:25+0300\n"
 "PO-Revision-Date: 2025-03-22 14:30+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -59,9 +59,9 @@ msgstr "שינוי סיסמה"
 msgid "Logout"
 msgstr "התנתקות"
 
-#: .\templates\base.html:184 .\templates\training_records\login.html:3
-#: .\templates\training_records\login.html:9
-#: .\templates\training_records\login.html:23
+#: .\templates\base.html:184 .\templates\training_records\login.html:6
+#: .\templates\training_records\login.html:13
+#: .\templates\training_records\login.html:28
 msgid "Login"
 msgstr "התחברות"
 
@@ -121,7 +121,7 @@ msgid "Ground Briefing Details"
 msgstr "פרטי הדרכה"
 
 #: .\templates\training_records\ground_briefing_form.html:20
-#: .\templates\training_records\student_ground_briefings.html:48
+#: .\templates\training_records\student_ground_briefings.html:185
 msgid "Briefing Topic"
 msgstr "נושא הדרכה"
 
@@ -133,8 +133,8 @@ msgstr "נושא הדרכה"
 #: .\templates\training_records\record_list.html:66
 #: .\templates\training_records\student_dashboard.html:96
 #: .\templates\training_records\student_dashboard.html:157
-#: .\templates\training_records\student_ground_briefings.html:59
-#: .\templates\training_records\student_ground_briefings.html:139
+#: .\templates\training_records\student_ground_briefings.html:198
+#: .\templates\training_records\student_ground_briefings.html:287
 #: .\templates\training_records\student_history.html:93
 #: .\templates\training_records\student_lookup.html:82
 msgid "Instructor"
@@ -152,15 +152,15 @@ msgstr "מדריך"
 #: .\templates\training_records\record_list.html:62
 #: .\templates\training_records\sign_record.html:85
 #: .\templates\training_records\student_dashboard.html:94
-#: .\templates\training_records\student_ground_briefings.html:76
-#: .\templates\training_records\student_ground_briefings.html:138
+#: .\templates\training_records\student_ground_briefings.html:214
+#: .\templates\training_records\student_ground_briefings.html:286
 #: .\templates\training_records\student_history.html:92
 #: .\templates\training_records\student_lookup.html:80
 msgid "Date"
 msgstr "תאריך"
 
 #: .\templates\training_records\ground_briefing_form.html:61
-#: .\templates\training_records\student_ground_briefings.html:87
+#: .\templates\training_records\student_ground_briefings.html:231
 msgid "Notes"
 msgstr "הערות"
 
@@ -171,27 +171,25 @@ msgstr "הוסף שאלות או נושאים שאתה רוצה לעבור על�
 
 #: .\templates\training_records\ground_briefing_form.html:73
 #: .\templates\training_records\ground_briefing_list.html:31
-#: .\templates\training_records\student_ground_briefings.html:100
+#: .\templates\training_records\student_ground_briefings.html:248
 msgid "Submit Request"
 msgstr "הגש בקשה"
 
 #: .\templates\training_records\ground_briefing_list.html:15
-#: .\templates\training_records\student_ground_briefings.html:40
+#: .\templates\training_records\student_ground_briefings.html:175
 msgid "Request New Ground Briefing"
 msgstr "בקש תדריך קרקע"
 
 #: .\templates\training_records\ground_briefing_list.html:41
 #: .\templates\training_records\student_ground_briefings.html:4
-#: .\templates\training_records\student_ground_briefings.html:8
-#: .\templates\training_records\student_ground_briefings.html:127
+#: .\templates\training_records\student_ground_briefings.html:143
+#: .\templates\training_records\student_ground_briefings.html:275
 msgid "My Ground Briefings"
 msgstr "תדריכי קרקע"
 
 #: .\templates\training_records\ground_briefing_list.html:49
-#: .\templates\training_records\student_ground_briefings.html:135
-#: .\templates\training_records\student_ground_briefings.html:183
 msgid "Number"
-msgstr "מספר טיסה"
+msgstr "מספר תדריך"
 
 #: .\templates\training_records\ground_briefing_list.html:50
 #: .\templates\training_records\ground_briefing_sign_off.html:25
@@ -200,24 +198,24 @@ msgstr "מספר טיסה"
 #: .\templates\training_records\instructor_dashboard.html:227
 #: .\templates\training_records\record_list.html:67
 #: .\templates\training_records\student_dashboard.html:95
-#: .\templates\training_records\student_ground_briefings.html:136
-#: .\templates\training_records\student_ground_briefings.html:184
+#: .\templates\training_records\student_ground_briefings.html:284
+#: .\templates\training_records\student_ground_briefings.html:332
 #: .\templates\training_records\student_history.html:94
 #: .\templates\training_records\student_lookup.html:83
 msgid "Topic"
 msgstr "נושא"
 
 #: .\templates\training_records\ground_briefing_list.html:51
-#: .\templates\training_records\student_ground_briefings.html:137
+#: .\templates\training_records\student_ground_briefings.html:285
 msgid "Details"
-msgstr "פרטי הרשומה"
+msgstr "תוכן"
 
 #: .\templates\training_records\ground_briefing_list.html:54
 #: .\templates\training_records\instructor_dashboard.html:153
 #: .\templates\training_records\record_list.html:71
 #: .\templates\training_records\student_dashboard.html:97
-#: .\templates\training_records\student_ground_briefings.html:140
-#: .\templates\training_records\student_ground_briefings.html:185
+#: .\templates\training_records\student_ground_briefings.html:288
+#: .\templates\training_records\student_ground_briefings.html:333
 #: .\templates\training_records\student_history.html:96
 #: .\templates\training_records\student_lookup.html:84
 msgid "Status"
@@ -228,7 +226,7 @@ msgstr "סטטוס"
 #: .\templates\training_records\record_list.html:95
 #: .\templates\training_records\student_dashboard.html:72
 #: .\templates\training_records\student_dashboard.html:114
-#: .\templates\training_records\student_ground_briefings.html:154
+#: .\templates\training_records\student_ground_briefings.html:302
 #: .\templates\training_records\student_history.html:68
 #: .\templates\training_records\student_history.html:113
 #: .\templates\training_records\student_lookup.html:105
@@ -240,7 +238,7 @@ msgstr "אושר"
 #: .\templates\training_records\instructor_dashboard.html:168
 #: .\templates\training_records\record_list.html:100
 #: .\templates\training_records\student_dashboard.html:116
-#: .\templates\training_records\student_ground_briefings.html:157
+#: .\templates\training_records\student_ground_briefings.html:305
 #: .\templates\training_records\student_history.html:115
 #: .\templates\training_records\student_lookup.html:107
 msgid "Pending"
@@ -277,8 +275,10 @@ msgid "Student"
 msgstr "חניך"
 
 #: .\templates\training_records\ground_briefing_sign_off.html:21
+#: .\templates\training_records\student_ground_briefings.html:283
+#: .\templates\training_records\student_ground_briefings.html:331
 msgid "Briefing Number"
-msgstr "מספר רישיון"
+msgstr "מספר תדריך"
 
 #: .\templates\training_records\ground_briefing_sign_off.html:29
 msgid "Topic Details"
@@ -579,7 +579,6 @@ msgid "Export Flight History"
 msgstr "ייצוא היסטוריית טיסות"
 
 #: .\templates\training_records\instructor_flight_history.html:129
-
 msgid "Export all"
 msgstr "ייצא הכל"
 
@@ -642,15 +641,33 @@ msgstr "נסה לשנות את תאריכים הסינון"
 msgid "Reset Filters"
 msgstr "אפס מסננים"
 
-#: .\templates\training_records\login.html:15
+#: .\templates\training_records\login.html:20
 #: .\templates\training_records\profile.html:20
 #: .\templates\training_records\student_history.html:146
 msgid "Username"
 msgstr "שם משתמש"
 
-#: .\templates\training_records\login.html:19
+#: .\templates\training_records\login.html:24
 msgid "Password"
 msgstr "סיסמה"
+
+#: .\templates\training_records\login.html:35
+msgid "Or login with"
+msgstr ""
+
+#: .\templates\training_records\login.html:44
+msgid "Login with Google"
+msgstr ""
+
+#: .\templates\training_records\login.html:48
+msgid "Login with Microsoft"
+msgstr ""
+
+#: .\templates\training_records\login.html:56
+msgid ""
+"Note: Social login is only available for existing accounts. Contact your "
+"administrator if you don't have an account yet."
+msgstr ""
 
 #: .\templates\training_records\profile.html:12
 #: .\templates\training_records\profile_update.html:95
@@ -848,7 +865,7 @@ msgstr "תרגילים טרום-סולו"
 #: .\templates\training_records\record_form.html:389
 #: .\templates\training_records\record_form.html:446
 msgid "Performed Well"
-msgstr "מספיק"
+msgstr "טוב"
 
 #: .\templates\training_records\record_detail.html:93
 #: .\templates\training_records\record_detail.html:122
@@ -1201,47 +1218,47 @@ msgstr "פעולות מהירות"
 msgid "All Training Records"
 msgstr "כל רשומות ההדרכה"
 
-#: .\templates\training_records\student_ground_briefings.html:15
+#: .\templates\training_records\student_ground_briefings.html:150
 msgid "Briefing Progress"
 msgstr "התקדמות תדריכים"
 
-#: .\templates\training_records\student_ground_briefings.html:19
+#: .\templates\training_records\student_ground_briefings.html:154
 msgid "Completed:"
 msgstr ":תרגילים שהושלמו"
 
-#: .\templates\training_records\student_ground_briefings.html:23
+#: .\templates\training_records\student_ground_briefings.html:158
 msgid "Pending:"
 msgstr ":ממתין"
 
-#: .\templates\training_records\student_ground_briefings.html:28
+#: .\templates\training_records\student_ground_briefings.html:163
 msgid "Remaining:"
 msgstr "נותרו:"
 
-#: .\templates\training_records\student_ground_briefings.html:111
+#: .\templates\training_records\student_ground_briefings.html:259
 msgid "Ground Briefing Status"
 msgstr "מצב תדריכי קרקע"
 
-#: .\templates\training_records\student_ground_briefings.html:116
+#: .\templates\training_records\student_ground_briefings.html:264
 msgid "You have completed or requested all required ground briefings!"
 msgstr "סיימת את כלל תדריכי הקרקע!"
 
-#: .\templates\training_records\student_ground_briefings.html:167
+#: .\templates\training_records\student_ground_briefings.html:315
 msgid "You haven't requested any ground briefings yet."
 msgstr "טרם ביקשת לבצע תדריך קרקע"
 
-#: .\templates\training_records\student_ground_briefings.html:176
+#: .\templates\training_records\student_ground_briefings.html:324
 msgid "Required Briefing Topics"
 msgstr "תדריכי קרקע לביצוע"
 
-#: .\templates\training_records\student_ground_briefings.html:195
+#: .\templates\training_records\student_ground_briefings.html:343
 msgid "Completed"
 msgstr "תרגילים שהושלמו"
 
-#: .\templates\training_records\student_ground_briefings.html:197
+#: .\templates\training_records\student_ground_briefings.html:345
 msgid "Requested"
 msgstr "הוגשה בקשה"
 
-#: .\templates\training_records\student_ground_briefings.html:199
+#: .\templates\training_records\student_ground_briefings.html:347
 msgid "Not Started"
 msgstr "לא סופק"
 
