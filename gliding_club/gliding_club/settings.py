@@ -269,7 +269,9 @@ SOCIALACCOUNT_LOGIN_ON_GET = True  # Allow login via GET request
 SOCIALACCOUNT_STORE_TOKENS = False  # Don't store tokens (as requested)
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
-
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
