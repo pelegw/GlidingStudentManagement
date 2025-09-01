@@ -1,6 +1,10 @@
+<!-- Update templates/training_records/login.html -->
 {% extends 'base.html' %}
 {% load i18n %}
+{% load socialaccount %}
+
 {% block title %}{% trans "Login" %} - {{ CLUB_NAME }}{% endblock %}
+
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-lg-5 col-md-7 col-sm-9">
@@ -9,6 +13,7 @@
                 <h4 class="mb-0">{% trans "Login" %}</h4>
             </div>
             <div class="card-body">
+                <!-- Regular Login Form -->
                 <form method="post">
                     {% csrf_token %}
                     <div class="mb-3">
@@ -23,6 +28,34 @@
                         <button type="submit" class="btn btn-primary">{% trans "Login" %}</button>
                     </div>
                 </form>
+                
+                <!-- Social Login Divider -->
+                <div class="text-center my-3">
+                    <hr>
+                    <small class="text-muted bg-white px-2">{% trans "Or login with" %}</small>
+                </div>
+                
+                <!-- Social Login Buttons -->
+                <div class="d-grid gap-2">
+                    {% get_providers as socialaccount_providers %}
+                    {% for provider in socialaccount_providers %}
+                        {% if provider.id == "google" %}
+                            <a href="{% provider_login_url 'google' %}" class="btn btn-outline-danger">
+                                <i class="bi bi-google me-2"></i>{% trans "Login with Google" %}
+                            </a>
+                        {% elif provider.id == "microsoft" %}
+                            <a href="{% provider_login_url 'microsoft' %}" class="btn btn-outline-primary">
+                                <i class="bi bi-microsoft me-2"></i>{% trans "Login with Microsoft" %}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <div class="mt-3">
+                    <small class="text-muted">
+                        {% trans "Note: Social login is only available for existing accounts. Contact your administrator if you don't have an account yet." %}
+                    </small>
+                </div>
             </div>
         </div>
     </div>

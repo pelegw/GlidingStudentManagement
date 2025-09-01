@@ -1,0 +1,162 @@
+<!-- Create templates/training_records/legal/terms_of_service.html -->
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}Terms of Service - {{ CLUB_NAME }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h1 class="mb-0">Terms of Service</h1>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted"><strong>Last updated:</strong> {{ "now"|date:"F d, Y" }}</p>
+                    
+                    <h2>1. Acceptance of Terms</h2>
+                    <p>
+                        By accessing and using the {{ CLUB_NAME }} flight training management system, 
+                        you accept and agree to be bound by these Terms of Service.
+                    </p>
+                    
+                    <h2>2. Description of Service</h2>
+                    <p>
+                        Our service provides a digital platform for managing gliding and flight training records, 
+                        including:
+                    </p>
+                    <ul>
+                        <li>Flight logging and progress tracking</li>
+                        <li>Instructor assignments and feedback</li>
+                        <li>Training milestone management</li>
+                        <li>Flight scheduling coordination</li>
+                        <li>Safety and compliance record keeping</li>
+                    </ul>
+                    
+                    <h2>3. User Accounts</h2>
+                    <h3>3.1 Account Creation</h3>
+                    <ul>
+                        <li>Accounts are created by authorized club administrators only</li>
+                        <li>You may link your existing account to social login providers (Google, Facebook)</li>
+                        <li>You are responsible for maintaining the confidentiality of your login credentials</li>
+                    </ul>
+                    
+                    <h3>3.2 Account Responsibilities</h3>
+                    <ul>
+                        <li>Provide accurate and complete information</li>
+                        <li>Update your information as needed</li>
+                        <li>Report any unauthorized use of your account immediately</li>
+                        <li>Use the service only for its intended purpose</li>
+                    </ul>
+                    
+                    <h2>4. Acceptable Use</h2>
+                    <p>You agree NOT to:</p>
+                    <ul>
+                        <li>Use the service for any unlawful purpose</li>
+                        <li>Attempt to gain unauthorized access to other accounts or systems</li>
+                        <li>Share your login credentials with others</li>
+                        <li>Modify, copy, or create derivative works of the service</li>
+                        <li>Use automated tools to access the service</li>
+                        <li>Submit false or misleading flight information</li>
+                    </ul>
+                    
+                    <h2>5. Flight Training and Safety</h2>
+                    <h3>5.1 Record Accuracy</h3>
+                    <ul>
+                        <li>All flight records must be accurate and truthful</li>
+                        <li>Falsifying flight records is grounds for immediate account termination</li>
+                        <li>Records may be audited for compliance with aviation regulations</li>
+                    </ul>
+                    
+                    <h3>5.2 Safety Compliance</h3>
+                    <ul>
+                        <li>You must comply with all applicable aviation safety regulations</li>
+                        <li>The system is a tool for record-keeping, not a substitute for proper training</li>
+                        <li>Always follow your instructor's guidance and club safety policies</li>
+                    </ul>
+                    
+                    <h2>6. Privacy and Data</h2>
+                    <p>
+                        Your privacy is important to us. Please review our 
+                        <a href="{% url 'privacy_policy' %}">Privacy Policy</a> to understand how we collect, 
+                        use, and protect your information.
+                    </p>
+                    
+                    <h2>7. Social Login Services</h2>
+                    <p>
+                        When using social login (Google, Facebook):
+                    </p>
+                    <ul>
+                        <li>You must have an existing account in our system</li>
+                        <li>Social login is for convenience only - no new accounts are created</li>
+                        <li>We only access basic profile information (name, email)</li>
+                        <li>You can disconnect social accounts at any time</li>
+                    </ul>
+                    
+                    <h2>8. Intellectual Property</h2>
+                    <ul>
+                        <li>The service and its content are owned by {{ CLUB_NAME }}</li>
+                        <li>You retain ownership of your flight data and personal information</li>
+                        <li>You grant us permission to use your data for providing the service</li>
+                    </ul>
+                    
+                    <h2>9. Service Availability</h2>
+                    <ul>
+                        <li>We strive for 99% uptime but cannot guarantee uninterrupted service</li>
+                        <li>Scheduled maintenance will be announced in advance when possible</li>
+                        <li>We are not liable for service interruptions beyond our control</li>
+                    </ul>
+                    
+                    <h2>10. Limitation of Liability</h2>
+                    <p>
+                        {{ CLUB_NAME }} is not liable for:
+                    </p>
+                    <ul>
+                        <li>Flight training decisions or safety incidents</li>
+                        <li>Data loss due to user error or system failures</li>
+                        <li>Indirect, incidental, or consequential damages</li>
+                        <li>Actions taken based on information in the system</li>
+                    </ul>
+                    
+                    <h2>11. Account Termination</h2>
+                    <p>We may terminate accounts for:</p>
+                    <ul>
+                        <li>Violation of these terms</li>
+                        <li>Inactivity for extended periods</li>
+                        <li>Safety violations or misconduct</li>
+                        <li>End of club membership</li>
+                    </ul>
+                    
+                    <h2>12. Changes to Terms</h2>
+                    <p>
+                        We may update these terms from time to time. 
+                        Continued use of the service constitutes acceptance of updated terms.
+                    </p>
+                    
+                    <h2>13. Governing Law</h2>
+                    <p>
+                        These terms are governed by the laws of [Your Jurisdiction] 
+                        and aviation regulations applicable to flight training.
+                    </p>
+                    
+                    <h2>14. Contact Information</h2>
+                    <p>
+                        For questions about these terms, please contact:
+                    </p>
+                    <div class="alert alert-info">
+                        <strong>{{ CLUB_NAME }}</strong><br>
+                        Email: <a href="mailto:support@wasserman.me">support@wasserman.me</a><br>
+                        <!-- Add your physical address here -->
+                    </div>
+                    
+                    <hr>
+                    <p class="text-muted small">
+                        These terms are effective as of {{ "now"|date:"F d, Y" }} and apply to all users of {{ CLUB_NAME }}.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
