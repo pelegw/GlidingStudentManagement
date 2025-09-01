@@ -363,7 +363,34 @@ class GroundBriefingForm(forms.ModelForm):
         model = GroundBriefing
         fields = ['topic', 'instructor', 'date', 'notes']
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date'}),
+            'topic': forms.Select(attrs={
+                'class': 'form-select',
+                'placeholder': 'Select briefing topic'
+            }),
+            'instructor': forms.Select(attrs={
+                'class': 'form-select',
+                'placeholder': 'Select instructor'
+            }),
+            'date': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date',
+                'placeholder': 'Select date'
+            }),
+            'notes': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Add any notes or questions about this briefing...'
+            }),
+        }
+        labels = {
+            'topic': 'Briefing Topic',
+            'instructor': 'Instructor',
+            'date': 'Date',
+            'notes': 'Notes',
+        }
+        help_texts = {
+            'instructor': 'Select the instructor who conducted this briefing',
+            'notes': 'Optional: Add any notes or questions about this briefing',
         }
         
     def __init__(self, *args, user=None, **kwargs):
