@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load time_filters %}
 {% block title %}{% trans "Student Dashboard" %} - {{ CLUB_NAME }}{% endblock %}
 {% block content %}
 
@@ -40,40 +41,91 @@
 </div>
 
 
-<div class="row mb-4">
-    <div class="col-md-3 mb-3 mb-md-0">
-        <div class="card">
-            <div class="stat-card blue">
-                <div class="stat-value">{{ total_flights }}</div>
-                <div class="stat-label">{% trans "Total Flights" %}</div>
+<div class="container mt-4">
+    <h1>{% translate "Student Dashboard" %}</h1>
+    
+<!-- All Time Statistics Section -->
+<div class="mb-4">
+    <h4 class="mb-3 text-primary border-bottom pb-2">
+        {% trans "All Time Statistics" %}
+    </h4>
+    <div class="row stats-row g-3">
+        <div class="col-lg col-md-6 col-sm-6">
+            <div class="card stat-card blue h-100">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <h6 class="card-title text-truncate">{% trans "Total Flights" %}</h6>
+                    <div class="stat-value">{{ total_flights|default:0 }}</div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-3 mb-3 mb-md-0">
-        <div class="card">
-            <div class="stat-card teal">
-                <div class="stat-value">{{ solo_flights_count }}</div>
-                <div class="stat-label">{% trans "Solo Flights" %}</div>
+        <div class="col-lg col-md-6 col-sm-6">
+            <div class="card stat-card green h-100">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <h6 class="card-title text-truncate">{% trans "Solo Flights" %}</h6>
+                    <div class="stat-value">{{ solo_flights|default:0 }}</div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-3 mb-3 mb-md-0">
-        <div class="card">
-            <div class="stat-card green">
-                <div class="stat-value">{{ total_flight_time }}</div>
-                <div class="stat-label">{% trans "Flight Hours" %}</div>
+        <div class="col-lg col-md-6 col-sm-6">
+            <div class="card stat-card teal h-100">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <h6 class="card-title text-truncate">{% trans "Flight Hours" %}</h6>
+                    <div class="stat-value">{{ total_flight_hours|default:"0:00" }}</div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-3 mb-3 mb-md-0">
-        <div class="card">
-            <div class="stat-card dark">
-                <div class="stat-value">{{ signed_off_count }}</div>
-                <div class="stat-label">{% trans "Signed Off" %}</div>
+        <div class="col-lg col-md-6 col-sm-6">
+            <div class="card stat-card dark h-100">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <h6 class="card-title text-truncate">{% trans "Solo Hours" %}</h6>
+                    <div class="stat-value">{{ solo_flight_hours|default:"0:00" }}</div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Last 90 Days Section -->
+<div class="mb-4">
+    <h4 class="mb-3 text-secondary border-bottom pb-2">
+        {% trans "Last 90 Days" %}
+    </h4>
+    <div class="row stats-row g-3">
+        <div class="col-lg col-md-6 col-sm-6">
+            <div class="card stat-card blue h-100" style="opacity: 0.8;">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <h6 class="card-title text-truncate">{% trans "Flights" %}</h6>
+                    <div class="stat-value">{{ recent_flights|default:0 }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg col-md-6 col-sm-6">
+            <div class="card stat-card green h-100" style="opacity: 0.8;">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <h6 class="card-title text-truncate">{% trans "Solo Flights" %}</h6>
+                    <div class="stat-value">{{ recent_solo_flights|default:0 }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg col-md-6 col-sm-6">
+            <div class="card stat-card teal h-100" style="opacity: 0.8;">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <h6 class="card-title text-truncate">{% trans "Flight Hours" %}</h6>
+                    <div class="stat-value">{{ recent_flight_hours|default:"0:00" }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg col-md-6 col-sm-6">
+            <div class="card stat-card dark h-100" style="opacity: 0.8;">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <h6 class="card-title text-truncate">{% trans "Solo Hours" %}</h6>
+                    <div class="stat-value">{{ recent_solo_flight_hours|default:"0:00" }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-lg-8 mb-4">
         <div class="card">
