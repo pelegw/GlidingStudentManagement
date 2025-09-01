@@ -1,0 +1,139 @@
+<!-- Create templates/training_records/legal/privacy_policy.html -->
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}Privacy Policy - {{ CLUB_NAME }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h1 class="mb-0">Privacy Policy</h1>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted"><strong>Last updated:</strong> {{ "now"|date:"F d, Y" }}</p>
+                    
+                    <h2>1. Information We Collect</h2>
+                    <p>
+                        {{ CLUB_NAME }} ("we," "us," or "our") operates a flight training management system. 
+                        This privacy policy explains how we collect, use, and protect your information when you use our service.
+                    </p>
+                    
+                    <h3>1.1 Information You Provide</h3>
+                    <ul>
+                        <li><strong>Account Information:</strong> Username, email address, full name</li>
+                        <li><strong>Flight Records:</strong> Flight hours, dates, instructor notes, training progress</li>
+                        <li><strong>Personal Details:</strong> License numbers, medical certificate information</li>
+                    </ul>
+                    
+                    <h3>1.2 Social Login Information</h3>
+                    <p>
+                        When you log in using Google or Facebook, we only collect:
+                    </p>
+                    <ul>
+                        <li>Your email address (to match with existing accounts)</li>
+                        <li>Your name and profile information</li>
+                        <li>We do NOT store your social media access tokens</li>
+                        <li>We do NOT access your social media posts or contacts</li>
+                    </ul>
+                    
+                    <h2>2. How We Use Your Information</h2>
+                    <ul>
+                        <li><strong>Flight Training Management:</strong> Track your progress, schedule flights, maintain records</li>
+                        <li><strong>Safety and Compliance:</strong> Maintain required aviation training records</li>
+                        <li><strong>Communication:</strong> Send important updates about your training</li>
+                        <li><strong>Account Security:</strong> Verify your identity and protect your account</li>
+                    </ul>
+                    
+                    <h2>3. Information Sharing</h2>
+                    <p>We do NOT sell, trade, or share your personal information with third parties, except:</p>
+                    <ul>
+                        <li><strong>Aviation Authorities:</strong> When required by law for safety compliance</li>
+                        <li><strong>Instructors:</strong> Your assigned flight instructors can view your training records</li>
+                        <li><strong>Club Management:</strong> Authorized club officials for operational purposes</li>
+                        <li><strong>Legal Requirements:</strong> When required by law or to protect safety</li>
+                    </ul>
+                    
+                    <h2>4. Data Security</h2>
+                    <p>We implement industry-standard security measures:</p>
+                    <ul>
+                        <li>Encrypted data transmission (HTTPS/SSL)</li>
+                        <li>Secure database storage</li>
+                        <li>Regular security updates</li>
+                        <li>Access controls and user authentication</li>
+                        <li>Regular backups with encryption</li>
+                    </ul>
+                    
+                    <h2>5. Your Rights</h2>
+                    <p>You have the right to:</p>
+                    <ul>
+                        <li><strong>Access:</strong> Request a copy of your personal data</li>
+                        <li><strong>Correction:</strong> Update or correct your information</li>
+                        <li><strong>Deletion:</strong> Request deletion of your account and data</li>
+                        <li><strong>Portability:</strong> Request your data in a portable format</li>
+                    </ul>
+                    
+                    <h2>6. Data Retention</h2>
+                    <p>
+                        Flight training records are retained for a minimum of 7 years as required by aviation regulations.
+                        Account information is retained while your account is active, or as required by law.
+                    </p>
+                    
+                    <h2>7. Cookies and Tracking</h2>
+                    <p>We use essential cookies for:</p>
+                    <ul>
+                        <li>User authentication and session management</li>
+                        <li>Security and fraud prevention</li>
+                        <li>System functionality</li>
+                    </ul>
+                    <p>We do NOT use tracking cookies for advertising or analytics.</p>
+                    
+                    <h2>8. Third-Party Services</h2>
+                    <p>We use the following third-party services:</p>
+                    <ul>
+                        <li><strong>Google OAuth:</strong> For optional social login (governed by Google's Privacy Policy)</li>
+                        <li><strong>Facebook Login:</strong> For optional social login (governed by Meta's Privacy Policy)</li>
+                        <li><strong>Cloud Hosting:</strong> Secure cloud infrastructure for data storage</li>
+                    </ul>
+                    
+                    <h2>9. Children's Privacy</h2>
+                    <p>
+                        Our service is not intended for users under 16 years of age. 
+                        Flight training typically requires participants to be at least 16 years old.
+                    </p>
+                    
+                    <h2>10. Changes to Privacy Policy</h2>
+                    <p>
+                        We may update this privacy policy from time to time. 
+                        We will notify users of any material changes via email or system notification.
+                    </p>
+                    
+                    <h2>11. Contact Information</h2>
+                    <p>
+                        For privacy-related questions or requests, please contact:
+                    </p>
+                    <div class="alert alert-info">
+                        <strong>Privacy Officer</strong><br>
+                        {{ CLUB_NAME }}<br>
+                        Email: <a href="mailto:privacy@wasserman.me">privacy@wasserman.me</a><br>
+                        <!-- Add your physical address here if required -->
+                    </div>
+                    
+                    <h2>12. Data Deletion Requests</h2>
+                    <p>
+                        To request deletion of your data from social login providers, 
+                        <a href="{% url 'data_deletion' %}" class="btn btn-outline-primary btn-sm">click here</a>.
+                    </p>
+                    
+                    <hr>
+                    <p class="text-muted small">
+                        This privacy policy is effective as of {{ "now"|date:"F d, Y" }} and applies to all users of {{ CLUB_NAME }}.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

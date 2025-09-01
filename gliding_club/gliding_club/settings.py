@@ -27,14 +27,23 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+    'django.contrib.sites',
     # Third-party apps
     'csp',  # Content Security Policy
     'axes',        # Login attempt security
     
+     # allauth apps
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',  # support only google and facebook for now
+    'allauth.socialaccount.providers.microsoft',
+    # Add more providers as needed
+
     # Local apps
     'training_records',
 ]
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -43,6 +52,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'training_records.middleware.CSPNonceMiddleware',
@@ -210,11 +220,13 @@ if not CSRF_TRUSTED_ORIGINS:
     CSRF_TRUSTED_ORIGINS = ['https://studentlog.wasserman.me']
 # Content Security Policy
 # Content Security Policy with nonce support
+# Update CSP settings (around line 219-226)
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_STYLE_SRC = ("'self'", "'nonce-%(csp_nonce)s'", "cdn.jsdelivr.net", "fonts.googleapis.com")
 CSP_SCRIPT_SRC = ("'self'", "'nonce-%(csp_nonce)s'", "cdn.jsdelivr.net")
 CSP_FONT_SRC = ("'self'", "fonts.gstatic.com", "cdn.jsdelivr.net")
-CSP_IMG_SRC = ("'self'", "data:")
+CSP_IMG_SRC = ("'self'", "data:", "*.googleusercontent.com", "*.live.com", "*.microsoft.com")
+CSP_CONNECT_SRC = ("'self'", "*.google.com", "*.googleapis.com", "*.microsoftonline.com", "*.live.com")
 
 # Enable nonces for scripts and styles (important!)
 CSP_INCLUDE_NONCE_IN = ['script-src', 'style-src']
@@ -227,9 +239,9 @@ AUTHENTICATION_BACKENDS = [
     'axes.backends.AxesBackend',
     'training_records.auth_backends.CaseInsensitiveModelBackend',
     'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 AXES_FAILURE_LIMIT = 10  # Number of login attempts before lockout
-AXES_LOCKOUT_PERIOD = 30  # Lockout period in minutes
 AXES_COOLOFF_TIME = 1  # Cooloff period in hours
 AXES_LOCKOUT_PARAMETERS = [
     ['username'],  # Lock by username only (ignores IP)
@@ -243,3 +255,54 @@ AXES_META_PRECEDENCE_ORDER = [
     'REMOTE_ADDR',              # Direct connection
 ]
 AXES_RESET_ON_SUCCESS = True
+
+
+#AllAuth Configs
+ACCOUNT_LOGIN_METHODS = {'email', 'username'}  # Modern replacement
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_SESSION_REMEMBER = True
+SOCIALACCOUNT_AUTO_SIGNUP = False  # Prevent automatic account creation
+ACCOUNT_ADAPTER = 'training_records.adapters.NoNewUsersAdapter'  # Custom adapter
+SOCIALACCOUNT_ADAPTER = 'training_records.adapters.ExistingUsersOnlySocialAdapter'
+SOCIALACCOUNT_LOGIN_ON_GET = True  # Allow login via GET request
+SOCIALACCOUNT_STORE_TOKENS = False  # Don't store tokens (as requested)
+LOGIN_REDIRECT_URL = 'dashboard'
+LOGOUT_REDIRECT_URL = 'login'
+
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': os.environ.get('GOOGLE_OAUTH2_CLIENT_ID'),
+            'secret': os.environ.get('GOOGLE_OAUTH2_SECRET'),
+            'key': ''
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'OAUTH_PKCE_ENABLED': True,
+    },
+    'microsoft': {
+    'APP': {
+        'client_id': os.environ.get('MICROSOFT_CLIENT_ID'),
+        'secret': os.environ.get('MICROSOFT_CLIENT_SECRET'),
+        'key': ''
+    },
+    'SCOPE': [
+        'openid',
+        'email',
+        'profile',
+        'User.Read',
+    ],
+    'AUTH_PARAMS': {
+        'prompt': 'select_account',
+        'response_type': 'code',
+    },
+    'TENANT': os.environ.get('MICROSOFT_TENANT', 'common'),  # Add tenant
+},
+}

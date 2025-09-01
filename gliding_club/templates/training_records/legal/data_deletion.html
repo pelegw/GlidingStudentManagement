@@ -1,0 +1,81 @@
+<!-- Create templates/training_records/legal/data_deletion.html -->
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}Data Deletion Request - {{ CLUB_NAME }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h1 class="mb-0">Data Deletion Request</h1>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        This page handles data deletion requests for users who logged in via Facebook.
+                    </div>
+                    
+                    <h2>Request Data Deletion</h2>
+                    <p>
+                        If you would like to delete your data associated with social login, 
+                        please follow these steps:
+                    </p>
+                    
+                    <ol>
+                        <li><strong>Contact our support team</strong> at 
+                            <a href="mailto:privacy@wasserman.me">privacy@wasserman.me</a>
+                        </li>
+                        <li><strong>Include the following information:</strong>
+                            <ul>
+                                <li>Your name</li>
+                                <li>Email address used for social login</li>
+                                <li>Social platform used (Google/Facebook)</li>
+                                <li>Reason for deletion request</li>
+                            </ul>
+                        </li>
+                        <li><strong>We will process your request within 30 days</strong></li>
+                    </ol>
+                    
+                    <h3>What Data Will Be Deleted</h3>
+                    <ul>
+                        <li>Your social login connection</li>
+                        <li>Associated profile information from social platforms</li>
+                        <li>Your user account (if requested)</li>
+                    </ul>
+                    
+                    <h3>What Data Will Be Retained</h3>
+                    <div class="alert alert-warning">
+                        <strong>Important:</strong> Flight training records are required to be retained 
+                        for 7 years under aviation regulations and cannot be deleted unless legally required.
+                    </div>
+                    
+                    <h3>Alternative Options</h3>
+                    <p>Instead of full deletion, you can:</p>
+                    <ul>
+                        <li><strong>Disconnect social login:</strong> Remove the link between your account and social platforms</li>
+                        <li><strong>Deactivate account:</strong> Keep records but disable login access</li>
+                        <li><strong>Update preferences:</strong> Modify what information is shared</li>
+                    </ul>
+                    
+                    <div class="mt-4">
+                        <a href="mailto:privacy@wasserman.me?subject=Data%20Deletion%20Request" class="btn btn-warning">
+                            <i class="bi bi-envelope me-2"></i>Request Data Deletion
+                        </a>
+                        <a href="{% url 'privacy_policy' %}" class="btn btn-outline-secondary ms-2">
+                            <i class="bi bi-shield-check me-2"></i>Privacy Policy
+                        </a>
+                    </div>
+                    
+                    <hr>
+                    <p class="text-muted small">
+                        This process complies with GDPR, CCPA, and Meta's data deletion requirements.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

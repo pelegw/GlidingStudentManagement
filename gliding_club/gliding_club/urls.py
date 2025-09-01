@@ -9,6 +9,7 @@ urlpatterns = [
     # Add the i18n patterns for language selection
     path('i18n/', include('django.conf.urls.i18n')),
     path('admin/', admin.site.urls),
+    path('accounts/', include('allauth.urls')),
     path('', RedirectView.as_view(pattern_name='dashboard'), name='home'),
     path('training/', include('training_records.urls')),
 ]
