@@ -4,3 +4,4 @@ docker-compose*.yml
 **/media/
 **/nginx/
 
+gliding_club/requirements2.txt
