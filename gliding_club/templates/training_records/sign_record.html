@@ -19,7 +19,22 @@
         border-bottom: 1px solid #eee;
         padding-bottom: 8px;
     }
+    /* Exercise cards styling */
+    .card.border-start {
+        transition: box-shadow 0.2s ease;
+        height: 100%;
+    }
     
+    .card.border-start:hover {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        line-height: 1.3;
+    }
+
     /* Improve form layout and alignment */
     .form-group {
         margin-bottom: 1rem;
@@ -34,6 +49,45 @@
     /* Add bottom margin between rows */
     .mb-4 {
         margin-bottom: 1.5rem;
+    }
+
+    /* Icon colors */
+    .text-primary .bi {
+        color: #0d6efd !important;
+    }
+    
+    .text-success .bi {
+        color: #198754 !important;
+    }
+    
+    /* Compact exercise cards */
+    .card-body.p-3 {
+        padding: 1rem !important;
+    }
+    .btn-group .btn {
+        margin-left: 0;
+    }
+    
+    .btn-group .btn:first-child {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    
+    .btn-group .btn:last-child {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        border-left: 0;
+    }
+    
+    .btn-group .btn:hover {
+        z-index: 1;
+    }
+    
+    /* Make alert info box more visible */
+    .alert-info {
+        background-color: #e7f3ff;
+        border-color: #b8daff;
+        color: #004085;
     }
 </style>
 {% endblock %}
@@ -62,7 +116,6 @@
                     <ul>
                         <li>{% trans "You supervised this training session" %}</li>
                         <li>{% trans "The information recorded is accurate" %}</li>
-                        <li>{% trans "The student has completed this training element satisfactorily" %}</li>
                     </ul>
                     {% if not is_modification %}
                     <p>{% trans "Once signed off, modifications are only allowed for 7 days." %}</p>
@@ -196,19 +249,101 @@
                         </div>
                     </div>
                     
+                     <!-- Exercise Performance Review Section -->
+                    {% if pre_solo_performances or post_solo_performances %}
+                    <div class="form-card">
+                        <h4 class="form-section-title">
+                            <i class="bi bi-list-check me-2"></i>{% trans "Exercise Performance Review" %}
+                        </h4>
+                        <p class="text-muted mb-4">{% trans "Review and verify the exercises performed by the student during this flight." %}</p>
+                        
+                        <!-- Pre-Solo Exercises -->
+                        {% if pre_solo_performances %}
+                        <div class="mb-4">
+                            <h5 class="text-primary mb-3">
+                                <i class="bi bi-mortarboard me-2"></i>{% trans "Pre-Solo Exercises" %}
+                            </h5>
+                            <div class="row">
+                                {% for performance in pre_solo_performances %}
+                                <div class="col-lg-4 col-md-6 mb-3">
+                                    <div class="card border-start border-primary border-3">
+                                        <div class="card-body p-3">
+                                            <h6 class="card-title mb-2 text-primary">
+                                                {% if performance.exercise.number %}{{ performance.exercise.number }} - {% endif %}
+                                                {{ performance.exercise.name }}
+                                            </h6>
+                                            
+                                            <!-- Performance Level Dropdown -->
+                                            <div class="form-group">
+                                                <label class="form-label small fw-bold">{% trans "Performance Level" %}:</label>
+                                                <select name="exercise_{{ performance.exercise.id }}_performance" class="form-select form-select-sm">
+                                                    {% for choice_value, choice_label in performance_choices %}
+                                                        <option value="{{ choice_value }}" {% if performance.performance == choice_value %}selected{% endif %}>
+                                                            {{ choice_label }}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Post-Solo Exercises -->
+                        {% if post_solo_performances %}
+                        <div class="mb-4">
+                            <h5 class="text-success mb-3">
+                                <i class="bi bi-award me-2"></i>{% trans "Post-Solo Exercises" %}
+                            </h5>
+                            <div class="row">
+                                {% for performance in post_solo_performances %}
+                                <div class="col-lg-4 col-md-6 mb-3">
+                                    <div class="card border-start border-success border-3">
+                                        <div class="card-body p-3">
+                                            <h6 class="card-title mb-2 text-success">
+                                                {% if performance.exercise.number %}{{ performance.exercise.number }} - {% endif %}
+                                                {{ performance.exercise.name }}
+                                            </h6>
+                                            
+                                            <!-- Performance Level Dropdown -->
+                                            <div class="form-group">
+                                                <label class="form-label small fw-bold">{% trans "Performance Level" %}:</label>
+                                                <select name="exercise_{{ performance.exercise.id }}_performance" class="form-select form-select-sm">
+                                                    {% for choice_value, choice_label in performance_choices %}
+                                                        <option value="{{ choice_value }}" {% if performance.performance == choice_value %}selected{% endif %}>
+                                                            {{ choice_label }}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <!-- No Exercises Recorded -->
+                    <div class="form-card">
+                        <h4 class="form-section-title">
+                            <i class="bi bi-info-circle me-2"></i>{% trans "Exercise Information" %}
+                        </h4>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            {% trans "No specific exercises were recorded for this training session. This might be a general flight or familiarization session." %}
+                        </div>
+                    </div>
+                    {% endif %}
+
                     <!-- Sign-off confirmation -->
                     <div class="form-card">
                         <h4 class="form-section-title">{% trans "Sign Off" %}</h4>
-                        
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input type="checkbox" name="confirm_sign_off" id="id_confirm_sign_off" class="form-check-input" required>
-                                <label for="id_confirm_sign_off" class="form-check-label">
-                                    {{ form.confirm_sign_off.label }}
-                                </label>
-                            </div>
-                        </div>
-                        
+
                         {% if form.errors %}
                             <div class="alert alert-danger">
                                 {% for field in form %}
@@ -224,8 +359,36 @@
                     </div>
                     
                     <div class="d-flex justify-content-between mt-4">
-                        <a href="{% url 'record_detail' record.pk %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
-                        <button type="submit" class="btn btn-success">{% trans "Sign Off Record" %}</button>
+                        <a href="{% url 'record_detail' record.pk %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>{% trans "Cancel" %}
+                        </a>
+                        
+                        <div class="btn-group">
+                            {% if not is_modification %}
+                                <!-- For unsigned records: two options -->
+                                <button type="submit" name="action" value="save_only" class="btn btn-warning">
+                                    <i class="bi bi-floppy me-2"></i>{% trans "Save Changes Only" %}
+                                </button>
+                                <button type="submit" name="action" value="sign_off" class="btn btn-success">
+                                    <i class="bi bi-pen me-2"></i>{% trans "Save & Sign Off" %}
+                                </button>
+                            {% else %}
+                                <!-- For already signed records: just update -->
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-check-circle me-2"></i>{% trans "Update Record" %}
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Add explanation text above buttons -->
+                    <div class="alert alert-info mt-3 mb-3">
+                        {% if not is_modification %}
+                            <p class="mb-1"><strong>{% trans "Save Changes Only" %}:</strong> {% trans "Update the record details and exercise assessments without signing off. The record will remain unsigned so the student can make further changes if needed." %}</p>
+                            <p class="mb-0"><strong>{% trans "Save & Sign Off" %}:</strong> {% trans "Update the record and mark it as complete. Once signed off, only instructors can modify the record within 7 days." %}</p>
+                        {% else %}
+                            <p class="mb-0"><strong>{% trans "Note" %}:</strong> {% trans "This record is already signed off. You can modify it within the 7-day modification window." %}</p>
+                        {% endif %}
                     </div>
                 </form>
             </div>

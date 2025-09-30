@@ -173,6 +173,17 @@ class TrainingRecord(models.Model):
             performances__performance='needs_improvement'
         )
     
+    def reset_notification_flags(self):
+        """Reset notification flags when record is updated"""
+        # Import inside method to avoid circular imports
+        from django.apps import apps
+        PendingNotification = apps.get_model('training_records', 'PendingNotification')
+        
+        # Reset any pending notifications for this record
+        PendingNotification.objects.filter(
+            training_record=self,
+            notification_type='student_revision_needed'
+        ).update(is_sent=False)
     # Keep the sign method the same as before
     def sign(self, instructor):
         """Method to sign off a training record"""
@@ -364,3 +375,44 @@ class GroundBriefing(models.Model):
             self.save()
             return True
         return False
+    
+    def reset_notification_flags(self):
+        """Reset notification flags when record is updated"""
+        # Import inside method to avoid circular imports
+        from django.apps import apps
+        PendingNotification = apps.get_model('training_records', 'PendingNotification')
+        
+        # Reset any pending notifications for this record
+        PendingNotification.objects.filter(
+            training_record=self,
+            notification_type='student_revision_needed'
+        ).update(is_sent=False)
+    
+    def save(self, *args, **kwargs):
+        """Override save to reset notification flags on updates"""
+        is_update = self.pk is not None
+        super().save(*args, **kwargs)
+        
+        # Reset notification flags if this is an update to an existing record
+        if is_update:
+            self.reset_notification_flags()
+    
+class PendingNotification(models.Model):
+    """Track notifications that need to be sent"""
+    NOTIFICATION_TYPES = [
+        ('instructor_weekly_digest', 'Weekly Pending Records Digest'),
+        ('student_revision_needed', 'Student Record Needs Revision'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES)
+    training_record = models.ForeignKey(TrainingRecord, on_delete=models.CASCADE, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    sent_at = models.DateTimeField(null=True, blank=True)
+    is_sent = models.BooleanField(default=False)
+    
+    class Meta:
+        unique_together = ['user', 'notification_type', 'training_record']
+    
+    def __str__(self):
+        return f"{self.get_notification_type_display()} for {self.user.username}"

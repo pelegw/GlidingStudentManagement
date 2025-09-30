@@ -4,8 +4,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponse,HttpResponseForbidden
 from django.db.models import Sum, Count, Max, Q
-from ..models import TrainingRecord, User, GroundBriefing, Exercise
+from ..models import TrainingRecord, User, GroundBriefing, Exercise, ExercisePerformance
 from ..forms import SignOffForm, GroundBriefingSignOffForm
+from ..services.notification_service import NotificationService
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.utils import timezone
@@ -88,6 +89,7 @@ def instructor_dashboard(request):
 @login_required
 def sign_record(request, pk):
     """Allow instructors to sign off on a training record and edit flight details"""
+    
     record = get_object_or_404(TrainingRecord, pk=pk)
     
     # Only the instructor assigned to the record can sign it off
@@ -111,23 +113,76 @@ def sign_record(request, pk):
         if days_remaining is not None:
             modification_warning = f"⚠️ This record was already signed off. You have {days_remaining} day(s) remaining to make modifications."
     
+    # Get exercise performances for this record
+    exercise_performances = record.exercise_performances.filter(
+        performance__in=['performed_well', 'needs_improvement', 'performed_badly']
+        ).select_related('exercise').order_by('exercise__category', 'exercise__name')
+    
+    # Group exercises by category
+    pre_solo_performances = exercise_performances.filter(exercise__category='pre-solo')
+    post_solo_performances = exercise_performances.filter(exercise__category='post-solo')
+    
     if request.method == 'POST':
         form = SignOffForm(request.POST, instance=record)
+        
+        # Handle exercise performance updates
+        exercise_updates = {}
+        for key, value in request.POST.items():
+            if key.startswith('exercise_'):
+                parts = key.split('_')
+                if len(parts) >= 3:
+                    exercise_id = parts[1]
+                    field_type = '_'.join(parts[2:])  # performance
+                    
+                    exercise_updates.setdefault(exercise_id, {})[field_type] = value
+        
         if form.is_valid():
-            # Save the updated record
-            updated_record = form.save()
+            # Update exercise performances
+            for exercise_id, updates in exercise_updates.items():
+                try:
+                    performance = ExercisePerformance.objects.get(
+                        training_record=record, 
+                        exercise_id=exercise_id
+                    )
+                    if 'performance' in updates:
+                        performance.performance = updates['performance']
+                        performance.save()
+                except ExercisePerformance.DoesNotExist:
+                    pass
             
-            # Perform the sign-off if confirmed and not already signed
-            if form.cleaned_data.get('confirm_sign_off') and not record.signed_off:
+            # Save the updated record
+
+            updated_record = form.save()
+            updated_record.reset_notification_flags()
+            
+            # Check what action the instructor chose
+            action = request.POST.get('action', 'sign_off')  # Default to sign_off for already signed records
+            
+            if action == 'save_only' and not record.signed_off:
+                # Save changes but don't sign off, notify student
+                success, message = NotificationService.notify_student_revision_needed(updated_record)
+                if success:
+                    messages.success(
+                        request, 
+                        f"Training record #{record.pk} has been updated successfully. "
+                        "The student has been notified via email that changes were made."
+                    )
+                else:
+                    # Show warning but don't break the workflow
+                    messages.warning(
+                        request, 
+                        f"Training record #{record.pk} has been updated successfully. "
+                        f"However, the email notification could not be sent ({message}). "
+                        "Please inform the student directly about the changes."
+                    )
+            elif action == 'sign_off' and not record.signed_off:
+                # Save and sign off
                 updated_record.sign(request.user)
                 updated_record.save()
                 messages.success(request, f"Training record #{record.pk} has been successfully updated and signed off.")
             else:
-                # Just updating an already signed record
-                if record.signed_off:
-                    messages.success(request, f"Training record #{record.pk} has been updated successfully.")
-                else:
-                    messages.success(request, f"Training record #{record.pk} has been updated but not signed off yet.")
+                # Just updating an already signed record (modification)
+                messages.success(request, f"Training record #{record.pk} has been updated successfully.")
             
             return redirect('record_detail', pk=record.pk)
     else:
@@ -138,6 +193,9 @@ def sign_record(request, pk):
         'record': record,
         'modification_warning': modification_warning,
         'is_modification': record.signed_off,  # Flag to adjust UI
+        'pre_solo_performances': pre_solo_performances,
+        'post_solo_performances': post_solo_performances,
+        'performance_choices': ExercisePerformance.PERFORMANCE_CHOICES,
     }
     
     return render(request, 'training_records/sign_record.html', context)

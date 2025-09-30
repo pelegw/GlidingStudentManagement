@@ -28,10 +28,9 @@ class TrainingRecordListView(LoginRequiredMixin, ListView):
         if self.request.user.is_student():
             queryset = queryset.filter(student=self.request.user)
         elif self.request.user.is_instructor():
-            # Instructors can see their own records and any unsigned records
+            # Instructors can see all flights
             queryset = queryset.filter(
-                Q(instructor=self.request.user) | 
-                Q(signed_off=False)
+                
             )
         # Admin users can see all records
         

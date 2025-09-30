@@ -79,29 +79,46 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
         },
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': '/app/logs/django.log',
+            'maxBytes': 10485760,  # 10MB
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+        'notification_file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': '/app/logs/notifications.log',
+            'maxBytes': 5242880,  # 5MB
+            'backupCount': 3,
+            'formatter': 'verbose',
+        },
     },
     'root': {
-        'handlers': ['console'],
+        'handlers': ['console', 'file'],
         'level': 'INFO',
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': 'INFO',
             'propagate': False,
         },
-        'django.security': {
-            'handlers': ['console'],
+        'training_records.services.notification_service': {
+            'handlers': ['console', 'notification_file'],
             'level': 'INFO',
             'propagate': False,
         },
-        'training_records': {
-            'handlers': ['console'],
+        'training_records.management.commands': {
+            'handlers': ['console', 'notification_file'],
             'level': 'INFO',
             'propagate': False,
         },
     },
 }
+
 ROOT_URLCONF = 'gliding_club.urls'
 CLUB_NAME = "NGC - Student Records Management"  # Change this to whatever name you want
 
@@ -308,3 +325,21 @@ SOCIALACCOUNT_PROVIDERS = {
     'TENANT': os.environ.get('MICROSOFT_TENANT', 'common'),  # Add tenant
 },
 }
+
+
+# Email Configuration - Amazon SES
+EMAIL_BACKEND = 'django_ses.SESBackend'
+
+# AWS Configuration
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+AWS_SES_REGION_NAME = os.environ.get('AWS_SES_REGION', 'us-east-1')
+AWS_SES_REGION_ENDPOINT = f'email.{AWS_SES_REGION_NAME}.amazonaws.com'
+
+# Email settings
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Gliding Club <notifications@yourdomain.com>')
+SERVER_EMAIL = os.environ.get('SERVER_EMAIL', DEFAULT_FROM_EMAIL)
+EMAIL_TIMEOUT = 60
+
+# SES Configuration options
+AWS_SES_AUTO_THROTTLE = 0.5  # Delay between emails to respect SES limits

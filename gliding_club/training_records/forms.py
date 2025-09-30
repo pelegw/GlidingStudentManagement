@@ -149,11 +149,6 @@ ExercisePerformanceFormSet = forms.inlineformset_factory(
 class SignOffForm(forms.ModelForm):
     """Form for instructors to sign off on a training record with ability to edit flight details"""
     
-    confirm_sign_off = forms.BooleanField(
-        label="I confirm that this training record is accurate and complete",
-        required=True
-    )
-    
     duration_display = forms.CharField(
         label="Flight Duration (HH:MM)",
         required=True,
@@ -215,27 +210,17 @@ class SignOffForm(forms.ModelForm):
             # Set the actual flight_duration field
             self.instance.flight_duration = cleaned_data['duration_display']
         
-        # Validate that the record wasn't already signed off
-        if self.instance and self.instance.pk and self.instance.signed_off:
-            raise forms.ValidationError("Cannot modify a record that has already been signed off.")
-        
         return cleaned_data
     
     def save(self, commit=True):
         """Override save to handle the flight_duration field"""
         instance = super().save(commit=False)
         
-        # Preserve the is_solo value from the original record
-        if self.instance and self.instance.pk:
-            # This ensures we don't change the solo status even though it's hidden
-            instance.is_solo = self.instance.is_solo
-        
         if commit:
             instance.save()
             self.save_m2m()
         
         return instance
-
 
 # Update in training_records/forms.py
 

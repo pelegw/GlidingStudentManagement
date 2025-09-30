@@ -184,10 +184,12 @@
                     <div class="d-flex gap-2">
                         {% if record|is_modifiable_by:user %}
                             <a href="{% url 'sign_record' record.pk %}" class="btn btn-warning">
-                                <i class="bi bi-pencil-square"></i> 
-                                {% if record.signed_off %}
+                                
+                                {% if record.signed_off and user == record.instructor %}
+                                    <i class="bi bi-pencil-square"></i> 
                                     {% trans "Modify Record" %}
-                                {% else %}
+                                {% elif user == record.instructor %}
+                                    <i class="bi bi-pencil-square"></i> 
                                     {% trans "Sign Off" %}
                                 {% endif %}
                             </a>

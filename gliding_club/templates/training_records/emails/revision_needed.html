@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Training Record Updated</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #007bff;">Training Record Update</h2>
+        
+        <p>Hello {{ student.get_full_name|default:student.first_name }},</p>
+        
+        <p>Your instructor <strong>{{ instructor.get_full_name }}</strong> has reviewed your training record from <strong>{{ record.date|date:"F j, Y" }}</strong> and made some updates.</p>
+        
+        <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 15px; margin: 20px 0;">
+            <h3 style="margin-top: 0; color: #856404;">Action Required</h3>
+            <p style="margin-bottom: 0;">Your record has <strong>not been signed off yet</strong>. Please review the instructor's comments and make any necessary changes.</p>
+        </div>
+        
+        <div style="background-color: #f8f9fa; border-radius: 5px; padding: 15px; margin: 20px 0;">
+            <h4>Flight Details:</h4>
+            <ul>
+                <li><strong>Date:</strong> {{ record.date|date:"F j, Y" }}</li>
+                <li><strong>Duration:</strong> {{ record.flight_duration }}</li>
+                <li><strong>Glider:</strong> {{ record.glider }}</li>
+                {% if record.instructor_comments %}
+                <li><strong>Instructor Comments:</strong> {{ record.instructor_comments }}</li>
+                {% endif %}
+            </ul>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="{{ site_url }}/training/record/{{ record.pk }}/" 
+               style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                View & Edit Record
+            </a>
+        </div>
+        
+        <p>If you have any questions, please contact your instructor directly.</p>
+        
+        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+        <p style="font-size: 12px; color: #666;">
+            This is an automated message from the Gliding Club Training Management System.
+        </p>
+    </div>
+</body>
+</html>

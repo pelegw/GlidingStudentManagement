@@ -1,0 +1,23 @@
+Training Record Update
+
+Hello {{ student.get_full_name|default:student.first_name }},
+
+Your instructor {{ instructor.get_full_name }} has reviewed your training record from {{ record.date|date:"F j, Y" }} and made some updates.
+
+** ACTION REQUIRED **
+Your record has NOT been signed off yet. Please review the instructor's comments and make any necessary changes.
+
+Flight Details:
+- Date: {{ record.date|date:"F j, Y" }}
+- Duration: {{ record.flight_duration }}
+- Glider: {{ record.glider }}
+{% if record.instructor_comments %}
+- Instructor Comments: {{ record.instructor_comments }}
+{% endif %}
+
+View and edit your record at: {{ site_url }}/training/record/{{ record.pk }}/
+
+If you have any questions, please contact your instructor directly.
+
+---
+This is an automated message from the Gliding Club Training Management System.

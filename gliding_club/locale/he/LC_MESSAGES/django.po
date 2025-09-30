@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-01 23:21+0300\n"
+"POT-Creation-Date: 2025-10-01 02:02+0300\n"
 "PO-Revision-Date: 2025-03-22 14:30+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -89,7 +89,7 @@ msgstr "אישור סיסמה חדשה"
 #: .\templates\training_records\ground_briefing_sign_off.html:68
 #: .\templates\training_records\profile_update.html:94
 #: .\templates\training_records\record_form.html:506
-#: .\templates\training_records\sign_record.html:227
+#: .\templates\training_records\sign_record.html:363
 msgid "Cancel"
 msgstr "ביטול"
 
@@ -150,7 +150,7 @@ msgstr "מדריך"
 #: .\templates\training_records\record_detail.html:60
 #: .\templates\training_records\record_form.html:124
 #: .\templates\training_records\record_list.html:62
-#: .\templates\training_records\sign_record.html:85
+#: .\templates\training_records\sign_record.html:138
 #: .\templates\training_records\student_dashboard.html:146
 #: .\templates\training_records\student_ground_briefings.html:214
 #: .\templates\training_records\student_ground_briefings.html:286
@@ -291,9 +291,9 @@ msgstr "חניכים"
 #: .\templates\training_records\ground_briefing_sign_off.html:65
 #: .\templates\training_records\instructor_dashboard.html:116
 #: .\templates\training_records\instructor_dashboard.html:241
-#: .\templates\training_records\record_detail.html:191
-#: .\templates\training_records\record_detail.html:196
-#: .\templates\training_records\sign_record.html:201
+#: .\templates\training_records\record_detail.html:193
+#: .\templates\training_records\record_detail.html:198
+#: .\templates\training_records\sign_record.html:345
 msgid "Sign Off"
 msgstr "אישור"
 
@@ -408,7 +408,7 @@ msgstr "רשומות ממתינות לאישור"
 #: .\templates\training_records\record_detail.html:68
 #: .\templates\training_records\record_form.html:136
 #: .\templates\training_records\record_list.html:68
-#: .\templates\training_records\sign_record.html:97
+#: .\templates\training_records\sign_record.html:150
 msgid "Glider"
 msgstr "דאון"
 
@@ -667,7 +667,7 @@ msgstr ""
 msgid ""
 "Note: Social login is only available for existing accounts. Contact your "
 "administrator if you don't have an account yet."
-msgstr ""
+msgstr "התחברות עם חשבון רשת חברתית מותרת רק לחשבונות קיימים, צור קשר עם מנהל המערכת ליצירת חשבון"
 
 #: .\templates\training_records\profile.html:12
 #: .\templates\training_records\profile_update.html:95
@@ -823,7 +823,7 @@ msgstr "פרטי הדרכה"
 
 #: .\templates\training_records\record_detail.html:61
 #: .\templates\training_records\record_form.html:152
-#: .\templates\training_records\sign_record.html:124
+#: .\templates\training_records\sign_record.html:177
 msgid "Flight Duration"
 msgstr "משך טיסה"
 
@@ -839,13 +839,13 @@ msgstr "נושא הדרכה מרכזי"
 
 #: .\templates\training_records\record_detail.html:69
 #: .\templates\training_records\record_form.html:182
-#: .\templates\training_records\sign_record.html:154
+#: .\templates\training_records\sign_record.html:207
 msgid "Field/Location"
 msgstr "שדה/מיקום"
 
 #: .\templates\training_records\record_detail.html:71
 #: .\templates\training_records\record_form.html:167
-#: .\templates\training_records\sign_record.html:139
+#: .\templates\training_records\sign_record.html:192
 msgid "Tow Height"
 msgstr "גובה גרירה"
 
@@ -856,6 +856,7 @@ msgstr "תרגילים שבוצעו"
 
 #: .\templates\training_records\record_detail.html:80
 #: .\templates\training_records\record_form.html:284
+#: .\templates\training_records\sign_record.html:264
 #: .\templates\training_records\student_history.html:176
 msgid "Pre-Solo Exercises"
 msgstr "תרגילים טרום-סולו"
@@ -887,6 +888,7 @@ msgstr "אין תרגילי טרום-סולו"
 
 #: .\templates\training_records\record_detail.html:109
 #: .\templates\training_records\record_form.html:313
+#: .\templates\training_records\sign_record.html:299
 #: .\templates\training_records\student_history.html:189
 msgid "Post-Solo Exercises"
 msgstr "תרגילים לאחר סולו"
@@ -902,7 +904,7 @@ msgstr "לא נרשמו תרגילים ספציפיים עבורטיסת הדר�
 #: .\templates\training_records\record_detail.html:144
 #: .\templates\training_records\record_form.html:477
 #: .\templates\training_records\record_list.html:128
-#: .\templates\training_records\sign_record.html:177
+#: .\templates\training_records\sign_record.html:230
 msgid "Student Comments"
 msgstr "הערות חניך"
 
@@ -912,7 +914,7 @@ msgstr "לא סופקו הערות חניך."
 
 #: .\templates\training_records\record_detail.html:154
 #: .\templates\training_records\record_list.html:141
-#: .\templates\training_records\sign_record.html:188
+#: .\templates\training_records\sign_record.html:241
 msgid "Instructor Comments"
 msgstr "הערות מדריך"
 
@@ -932,11 +934,11 @@ msgstr "ניתן לשנות עוד"
 msgid "more day(s)"
 msgstr "ימים"
 
-#: .\templates\training_records\record_detail.html:189
+#: .\templates\training_records\record_detail.html:190
 msgid "Modify Record"
 msgstr "עדכון רשומה"
 
-#: .\templates\training_records\record_detail.html:203
+#: .\templates\training_records\record_detail.html:205
 #: .\templates\training_records\record_form.html:5
 #: .\templates\training_records\record_form.html:90
 #: .\templates\training_records\record_list.html:107
@@ -944,7 +946,7 @@ msgstr "עדכון רשומה"
 msgid "Edit"
 msgstr "עריכה"
 
-#: .\templates\training_records\record_detail.html:208
+#: .\templates\training_records\record_detail.html:210
 msgid "Back to Records"
 msgstr "חזרה לרשומות החניך"
 
@@ -963,7 +965,7 @@ msgid "Record details about your flight training session"
 msgstr "רשום פרטים על טיסת ההדרכה שלך"
 
 #: .\templates\training_records\record_form.html:105
-#: .\templates\training_records\sign_record.html:78
+#: .\templates\training_records\sign_record.html:131
 msgid "Flight Information"
 msgstr "מידע על טיסה"
 
@@ -1034,7 +1036,7 @@ msgid "Optional notes about this exercise"
 msgstr "הערכות לתרגיל זה"
 
 #: .\templates\training_records\record_form.html:472
-#: .\templates\training_records\sign_record.html:172
+#: .\templates\training_records\sign_record.html:225
 msgid "Comments"
 msgstr "הערות"
 
@@ -1133,45 +1135,117 @@ msgid "Exercise Matrix"
 msgstr "סדין"
 
 #: .\templates\training_records\sign_record.html:3
-#: .\templates\training_records\sign_record.html:228
 msgid "Sign Off Record"
 msgstr "אישור רשומה"
 
-#: .\templates\training_records\sign_record.html:48
+#: .\templates\training_records\sign_record.html:102
 msgid "Modify Signed Record"
 msgstr "שינוי רשומה"
 
-#: .\templates\training_records\sign_record.html:50
+#: .\templates\training_records\sign_record.html:104
 msgid "Sign Off Training Record"
 msgstr "אישור רשומת הדרכה"
 
-#: .\templates\training_records\sign_record.html:61
+#: .\templates\training_records\sign_record.html:115
 msgid "Important"
 msgstr "חשוב"
 
-#: .\templates\training_records\sign_record.html:61
+#: .\templates\training_records\sign_record.html:115
 msgid "Signing off on a training record confirms that:"
 msgstr "אישור רשומת הדרכה מאשר כי:"
 
-#: .\templates\training_records\sign_record.html:63
+#: .\templates\training_records\sign_record.html:117
 msgid "You supervised this training session"
 msgstr "פיקחת עלטיסת הדרכה זו"
 
-#: .\templates\training_records\sign_record.html:64
+#: .\templates\training_records\sign_record.html:118
 msgid "The information recorded is accurate"
 msgstr "המידע שנרשם הוא מדויק"
 
-#: .\templates\training_records\sign_record.html:65
-msgid "The student has completed this training element satisfactorily"
-msgstr "החניך השלים את מרכיב ההדרכה הזה באופן משביע רצון"
-
-#: .\templates\training_records\sign_record.html:68
+#: .\templates\training_records\sign_record.html:121
 msgid "Once signed off, modifications are only allowed for 7 days."
 msgstr "מרגע החתימה, ניתן לשנות את הרשומה עוד 7 ימים"
 
-#: .\templates\training_records\sign_record.html:109
+#: .\templates\training_records\sign_record.html:162
 msgid "Training Topic"
 msgstr "נושא הדרכה"
+
+#: .\templates\training_records\sign_record.html:256
+#, fuzzy
+#| msgid "Exercises Performed"
+msgid "Exercise Performance Review"
+msgstr "תרגילים שבוצעו"
+
+#: .\templates\training_records\sign_record.html:258
+msgid ""
+"Review and verify the exercises performed by the student during this flight."
+msgstr "בדוק את נכונות התרגילים שבוצעו על ידי החניך בטיסה"
+
+#: .\templates\training_records\sign_record.html:278
+#: .\templates\training_records\sign_record.html:313
+#, fuzzy
+#| msgid "Performed Well"
+msgid "Performance Level"
+msgstr "טוב"
+
+#: .\templates\training_records\sign_record.html:334
+#, fuzzy
+#| msgid "Personal Information"
+msgid "Exercise Information"
+msgstr "מידע אישי"
+
+#: .\templates\training_records\sign_record.html:338
+#, fuzzy
+#| msgid "No specific exercises recorded for this training session."
+msgid ""
+"No specific exercises were recorded for this training session. This might be "
+"a general flight or familiarization session."
+msgstr "לא נרשמו תרגילים ספציפיים עבורטיסת הדרכה זו."
+
+#: .\templates\training_records\sign_record.html:370
+#: .\templates\training_records\sign_record.html:387
+#, fuzzy
+#| msgid "Save Changes"
+msgid "Save Changes Only"
+msgstr "שמירת שינויים"
+
+#: .\templates\training_records\sign_record.html:373
+#: .\templates\training_records\sign_record.html:388
+#, fuzzy
+#| msgid "Sign Off"
+msgid "Save & Sign Off"
+msgstr "אישור"
+
+#: .\templates\training_records\sign_record.html:378
+#, fuzzy
+#| msgid "Create Record"
+msgid "Update Record"
+msgstr "יצירת רשומה"
+
+#: .\templates\training_records\sign_record.html:387
+msgid ""
+"Update the record details and exercise assessments without signing off. The "
+"record will remain unsigned so the student can make further changes if "
+"needed."
+msgstr "עדכן את פרטי הרשומה ללא חתימה - החניך יוכל לבצע שינויים במידת הצורך."
+
+#: .\templates\training_records\sign_record.html:388
+msgid ""
+"Update the record and mark it as complete. Once signed off, only instructors "
+"can modify the record within 7 days."
+msgstr "עדכן את הרשומה וסמן אותה כמבוצעת. לאחר חתימה רק מדריך יכול לשנות את הרשומה במשך 7 ימים"
+
+#: .\templates\training_records\sign_record.html:390
+#, fuzzy
+#| msgid "Notes"
+msgid "Note"
+msgstr "הערות"
+
+#: .\templates\training_records\sign_record.html:390
+msgid ""
+"This record is already signed off. You can modify it within the 7-day "
+"modification window."
+msgstr "הרשומה כבר חתומה, ניתן לבצע שינויים בחלון זמנים של 7 ימים"
 
 #: .\templates\training_records\student_dashboard.html:4
 #: .\templates\training_records\student_dashboard.html:45
@@ -1357,3 +1431,6 @@ msgstr "אין פעילות חניך אחרונה"
 #: .\templates\training_records\student_lookup.html:113
 msgid "History"
 msgstr "היסטוריה"
+
+#~ msgid "The student has completed this training element satisfactorily"
+#~ msgstr "החניך השלים את מרכיב ההדרכה הזה באופן משביע רצון"

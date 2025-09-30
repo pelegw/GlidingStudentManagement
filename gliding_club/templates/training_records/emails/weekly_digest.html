@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Weekly Training Records Digest</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #28a745;">Weekly Training Records Digest</h2>
+        
+        <p>Hello {{ instructor.get_full_name|default:instructor.first_name }},</p>
+        
+        <p>You have <strong>{{ count }} training record{{ count|pluralize }}</strong> waiting for your sign-off:</p>
+        
+        <div style="background-color: #f8f9fa; border-radius: 5px; padding: 15px; margin: 20px 0;">
+            {% for record in pending_records %}
+            <div style="border-bottom: 1px solid #eee; padding: 10px 0; {% if forloop.last %}border-bottom: none;{% endif %}">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong>{{ record.student.get_full_name }}</strong><br>
+                        <small style="color: #666;">
+                            {{ record.date|date:"M j, Y" }} • {{ record.flight_duration }} • {{ record.glider }}
+                        </small>
+                    </div>
+                    <div style="text-align: right;">
+                        <small style="color: #666;">{{ record.date|timesince }} ago</small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="{{ site_url }}/training/instructor-dashboard/" 
+               style="background-color: #28a745; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                Review Pending Records
+            </a>
+        </div>
+        
+        <p style="font-size: 14px; color: #666;">
+            You'll receive this weekly summary every Sunday as long as you have pending records to sign off.
+        </p>
+        
+        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+        <p style="font-size: 12px; color: #666;">
+            This is an automated weekly digest from the Gliding Club Training Management System.
+        </p>
+    </div>
+</body>
+</html>

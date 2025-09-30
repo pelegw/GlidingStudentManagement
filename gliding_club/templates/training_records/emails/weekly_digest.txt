@@ -1,0 +1,19 @@
+Weekly Training Records Digest
+
+Hello {{ instructor.get_full_name|default:instructor.first_name }},
+
+You have {{ count }} training record{{ count|pluralize }} waiting for your sign-off:
+
+{% for record in pending_records %}
+• {{ record.student.get_full_name }}
+  {{ record.date|date:"M j, Y" }} • {{ record.flight_duration }} • {{ record.glider }}
+  ({{ record.date|timesince }} ago)
+
+{% endfor %}
+
+Please review and sign off on these records at: {{ site_url }}/training/instructor-dashboard/
+
+You'll receive this weekly summary every Sunday as long as you have pending records to sign off.
+
+---
+This is an automated weekly digest from the Gliding Club Training Management System.

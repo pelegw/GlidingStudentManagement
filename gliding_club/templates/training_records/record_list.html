@@ -109,7 +109,7 @@
                                             {% if user == record.instructor %}
                                                 <a href="{% url 'sign_record' record.pk %}" class="btn btn-sm btn-success">{% trans "Sign" %}</a>
                                             {% endif %}
-                                        {% elif record|is_modifiable_by:user %}
+                                        {% elif record|is_modifiable_by:user and user == record.instructor %}
                                             <a href="{% url 'sign_record' record.pk %}" class="btn btn-sm btn-warning">{% trans "Modify" %}</a>
                                         {% endif %}
                                         <button type="button" class="btn btn-sm btn-outline-secondary expand-btn" data-record-id="{{ record.pk }}">
