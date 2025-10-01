@@ -15,7 +15,7 @@ Flight Details:
 - Instructor Comments: {{ record.instructor_comments }}
 {% endif %}
 
-View and edit your record at: {{ site_url }}/training/record/{{ record.pk }}/
+View and edit your record at: {{ site_url }}/training/records/{{ record.pk }}/
 
 If you have any questions, please contact your instructor directly.
 
