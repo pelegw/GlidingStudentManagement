@@ -340,6 +340,6 @@ AWS_SES_REGION_ENDPOINT = f'email.{AWS_SES_REGION_NAME}.amazonaws.com'
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Gliding Club <notifications@yourdomain.com>')
 SERVER_EMAIL = os.environ.get('SERVER_EMAIL', DEFAULT_FROM_EMAIL)
 EMAIL_TIMEOUT = 60
-
+SITE_URL = os.environ.get('SITE_URL', 'http://localhost:8000')
 # SES Configuration options
 AWS_SES_AUTO_THROTTLE = 0.5  # Delay between emails to respect SES limits
