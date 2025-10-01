@@ -53,12 +53,14 @@ class NotificationService:
                 'student': training_record.student,
                 'record': training_record,
                 'instructor': training_record.instructor,
+                'site_url': getattr(settings, 'SITE_URL', 'http://localhost:8000'),
             })
             
             plain_message = render_to_string('training_records/emails/revision_needed.txt', {
                 'student': training_record.student,
                 'record': training_record,
                 'instructor': training_record.instructor,
+                'site_url': getattr(settings, 'SITE_URL', 'http://localhost:8000'),
             })
             
             # Send email with error handling
