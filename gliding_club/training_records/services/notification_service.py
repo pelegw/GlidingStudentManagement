@@ -1,4 +1,5 @@
 import logging
+import time
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
@@ -152,10 +153,12 @@ class NotificationService:
                     
                     sent_count += 1
                     logger.info(f'Successfully sent weekly digest to {instructor.email}')
-                    
+                    time.sleep(0.1) # Throttle to avoid hitting email provider limits
+
                 except Exception as e:
                     error_count += 1
                     logger.error(f'Failed to send weekly digest to {instructor.email}: {e}', exc_info=True)
+                    time.sleep(0.1) # Throttle on error as well
             else:
                 logger.debug(f'No pending records for instructor {instructor.email}')
         
