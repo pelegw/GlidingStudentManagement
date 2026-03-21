@@ -194,8 +194,6 @@ def _export_pdf_weasyprint(student, records, request):
                 'instructor_comments': record.instructor_comments or "No comments provided.",
                 'signed_off': record.signed_off,
                 'sign_off_timestamp': record.sign_off_timestamp.strftime('%Y-%m-%d %H:%M') if record.sign_off_timestamp else "N/A",
-                'pre_solo_exercises': record.exercises.filter(category='pre-solo'),
-                'post_solo_exercises': record.exercises.filter(category='post-solo'),
             })
 
         # Process ground briefings data for the PDF
@@ -229,24 +227,25 @@ def _export_pdf_weasyprint(student, records, request):
         # Render the HTML template
         html_string = render_to_string('training_records/pdf_export_template.html', context)
         
-        # Create a temporary file to write the PDF to
+        # Create the temp file and immediately close it so WeasyPrint can write to it.
+        # delete=False because we manage cleanup ourselves via try/finally.
         with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as tmp:
-            # Generate the PDF file
+            tmp_name = tmp.name
+
+        # Ensure the temp file is always deleted even if PDF generation or reading fails.
+        try:
             HTML(string=html_string, base_url=request.build_absolute_uri('/')).write_pdf(
-                tmp.name,
+                tmp_name,
                 stylesheets=[
                     CSS(filename=os.path.join(settings.STATIC_ROOT, 'css', 'pdf_styles.css'))
                 ]
             )
-        
-        # Read the PDF file into memory and return as a response
-        with open(tmp.name, 'rb') as pdf_file:
-            response = HttpResponse(pdf_file.read(), content_type='application/pdf')
-            response['Content-Disposition'] = f'attachment; filename="{student.username}_training_records.pdf"'
-        
-        # Clean up the temporary file
-        os.unlink(tmp.name)
-        
+            with open(tmp_name, 'rb') as pdf_file:
+                response = HttpResponse(pdf_file.read(), content_type='application/pdf')
+                response['Content-Disposition'] = f'attachment; filename="{student.username}_training_records.pdf"'
+        finally:
+            os.unlink(tmp_name)
+
         return response
     
     except Exception as e:
@@ -395,24 +394,25 @@ def _export_exercise_matrix(student, records, request):
         # Render the template
         html_content = render_to_string('training_records/exercise_matrix_paginated.html', context)
         
-        # Create a temporary file to write the PDF to
+        # Create the temp file and immediately close it so WeasyPrint can write to it.
+        # delete=False because we manage cleanup ourselves via try/finally.
         with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as tmp:
-            # Generate the PDF file
+            tmp_name = tmp.name
+
+        # Ensure the temp file is always deleted even if PDF generation or reading fails.
+        try:
             HTML(string=html_content, base_url=request.build_absolute_uri('/')).write_pdf(
-                tmp.name,
+                tmp_name,
                 stylesheets=[
                     CSS(string="@page { size: landscape; margin: 0.5cm; }")
                 ]
             )
-        
-        # Read the PDF file into memory and return as a response
-        with open(tmp.name, 'rb') as pdf_file:
-            response = HttpResponse(pdf_file.read(), content_type='application/pdf')
-            response['Content-Disposition'] = f'attachment; filename="{student.username}_exercise_matrix.pdf"'
-        
-        # Clean up the temporary file
-        os.unlink(tmp.name)
-        
+            with open(tmp_name, 'rb') as pdf_file:
+                response = HttpResponse(pdf_file.read(), content_type='application/pdf')
+                response['Content-Disposition'] = f'attachment; filename="{student.username}_exercise_matrix.pdf"'
+        finally:
+            os.unlink(tmp_name)
+
         return response
     
     except Exception as e:
