@@ -274,30 +274,20 @@ class ProfileUpdateForm(forms.ModelForm):
             raise ValidationError("Image file size must be less than 5MB")
         
         # Validate that the file is actually an image using PIL
+        file_data = file_obj.read()
+        file_obj.seek(0)
+
         try:
-            # Read image data into memory
-            file_data = file_obj.read()
-            
-            # Seek back to the beginning of the file for future operations
-            file_obj.seek(0)
-            
-            # Try to open as an image
             img = Image.open(io.BytesIO(file_data))
-            
-            # Verify image integrity by loading it
             img.verify()
-            
-            # Check image format
-            if img.format not in ['JPEG', 'PNG']:
-                raise ValidationError("Only JPEG and PNG image formats are allowed")
-                
-            # You can add more image validation here if needed
-            # For example:
-            # - Check image dimensions
-            # - Check metadata
-            
+        except ValidationError:
+            raise
         except Exception as e:
             raise ValidationError(f"Invalid image file: {str(e)}")
+
+        # Check format outside the try block so ValidationError isn't re-wrapped
+        if img.format not in ['JPEG', 'PNG']:
+            raise ValidationError("Only JPEG and PNG image formats are allowed")
         
     def clean_license_expiration_date(self):
         """Validate expiration date"""

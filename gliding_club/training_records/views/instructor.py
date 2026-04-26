@@ -176,9 +176,8 @@ def sign_record(request, pk):
                         "Please inform the student directly about the changes."
                     )
             elif action == 'sign_off' and not record.signed_off:
-                # Save and sign off
+                # Save and sign off (sign() calls save() internally)
                 updated_record.sign(request.user)
-                updated_record.save()
                 messages.success(request, f"Training record #{record.pk} has been successfully updated and signed off.")
             else:
                 # Just updating an already signed record (modification)
@@ -408,12 +407,13 @@ def _export_instructor_flights(flights, instructor, start_date, end_date, format
         else:
             return HttpResponse("Invalid export format", content_type='text/plain', status=400)
     except Exception as e:
-        # Log the error and return a user-friendly response
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.error(f"Export error: {str(e)}")
-        
-        return HttpResponse(f"Export failed", content_type='text/plain', status=500)
+        logger.error(f"{format_type.upper()} export error for {instructor.username}: {str(e)}")
+        fallback = " Try exporting as CSV instead." if format_type == 'pdf' else ""
+        return HttpResponse(
+            f"{format_type.upper()} export failed.{fallback}",
+            content_type='text/plain',
+            status=500,
+        )
 
 
 # Update training_records/views/instructor.py
@@ -512,7 +512,9 @@ def _export_instructor_flights_pdf(flights, instructor, start_date, end_date):
         return response
         
     except Exception as e:
-        # Return a proper error response
-        response = HttpResponse(f"Error generating PDF", 
-                              content_type='text/plain', status=500)
-        return response
+        logger.error(f"PDF generation error for instructor {instructor.username}: {str(e)}")
+        return HttpResponse(
+            "PDF generation failed. The document could not be rendered. Try exporting as CSV instead.",
+            content_type='text/plain',
+            status=500,
+        )

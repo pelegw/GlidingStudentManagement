@@ -5,3 +5,6 @@ docker-compose*.yml
 **/nginx/
 
 gliding_club/requirements2.txt
+.claude/
+
+CLAUDE.md

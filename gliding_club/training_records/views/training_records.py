@@ -27,12 +27,7 @@ class TrainingRecordListView(LoginRequiredMixin, ListView):
         # Filter based on user type
         if self.request.user.is_student():
             queryset = queryset.filter(student=self.request.user)
-        elif self.request.user.is_instructor():
-            # Instructors can see all flights
-            queryset = queryset.filter(
-                
-            )
-        # Admin users can see all records
+        # Instructors and admins can see all records
         
         # Add search functionality
         search_query = self.request.GET.get('q')
@@ -146,9 +141,7 @@ class TrainingRecordCreateView(LoginRequiredMixin, CreateView):
                             notes=''
                         )
                     except (Exercise.DoesNotExist, ValueError) as e:
-                        # Log an error but continue processing
                         logger.error(f"Error processing exercise {exercise_id}: {str(e)}")
-                        print(f"Error processing exercise {exercise_id}: {str(e)}")
         
         # For any exercises not processed (not in the form), create a default 'not_performed' record
         for exercise in all_exercises:
@@ -179,129 +172,41 @@ class TrainingRecordUpdateView(LoginRequiredMixin, UpdateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
-        # Debug output
-        print("======= DEBUG: TrainingRecordUpdateView.get_context_data =======")
-        print(f"Record ID: {self.object.id}")
-        
-        # Add exercise categories for display
-        pre_solo_exercises = Exercise.objects.filter(category='pre-solo').order_by('number', 'name')
-        post_solo_exercises = Exercise.objects.filter(category='post-solo').order_by('number', 'name')
-        
-        # Debug output for exercises
-        print(f"Pre-solo exercises: {pre_solo_exercises.count()}")
-        print(f"Post-solo exercises: {post_solo_exercises.count()}")
-        
-        for ex in pre_solo_exercises[:3]:  # Print first 3 for debugging
-            print(f"Pre-solo example: {ex.id} - {ex.name}")
-        
-        context['pre_solo_exercises'] = pre_solo_exercises
-        context['post_solo_exercises'] = post_solo_exercises
-        
-        # Get existing performances to mark as selected in the template
-        existing_performances = {}
-        perf_count = 0
-        for perf in self.object.exercise_performances.all():
-            existing_performances[perf.exercise_id] = {
-                'performance': perf.performance,
-                'notes': perf.notes
-            }
-            perf_count += 1
-            if perf_count <= 3:  # Print first 3 for debugging
-                print(f"Performance: Exercise {perf.exercise_id} - {perf.performance}")
-        
-        # Debug output for performances
-        print(f"Total performances found: {perf_count}")
-        
-        context['existing_performances'] = existing_performances
-        
-        # Add counts to context for debugging in template
-        context['pre_solo_count'] = pre_solo_exercises.count()
-        context['post_solo_count'] = post_solo_exercises.count()
-        context['performance_count'] = perf_count
-        
-        print("============= END DEBUG =============")
-        
+
+        context['pre_solo_exercises'] = Exercise.objects.filter(category='pre-solo').order_by('number', 'name')
+        context['post_solo_exercises'] = Exercise.objects.filter(category='post-solo').order_by('number', 'name')
+
+        context['existing_performances'] = {
+            perf.exercise_id: {'performance': perf.performance, 'notes': perf.notes}
+            for perf in self.object.exercise_performances.all()
+        }
+
         return context
     
     def form_valid(self, form):
-        # Save the main form first to get/update the TrainingRecord instance
         self.object = form.save()
-        
-        print("======= DEBUG: TrainingRecordUpdateView.form_valid =======")
-        print(f"Processing form for Record ID: {self.object.id}")
-        
-        # Check if the form includes exercise-related data
-        has_exercise_data = False
-        exercise_fields = []
-        exercise_ids = []
-        
-        for key in self.request.POST:
-            if '-exercise' in key:
-                has_exercise_data = True
-                exercise_fields.append(key)
-                try:
-                    exercise_id = self.request.POST.get(key)
-                    if exercise_id:
-                        exercise_ids.append(int(exercise_id))
-                except (ValueError, TypeError):
-                    pass
-        
-        print(f"Exercise fields found: {len(exercise_fields)}")
-        print(f"Exercise IDs found: {len(exercise_ids)}")
-        
-        # Only process exercises if we have exercise data
+
+        has_exercise_data = any('-exercise' in key for key in self.request.POST)
+
         if has_exercise_data:
-            # Track processed exercises
-            processed_exercise_ids = set()
-            
-            # Process form data for exercises
             total_forms = int(self.request.POST.get('form-TOTAL_FORMS', 0))
-            print(f"TOTAL_FORMS value: {total_forms}")
-            
+
             for i in range(total_forms):
                 prefix = f'form-{i}'
                 exercise_id = self.request.POST.get(f'{prefix}-exercise')
                 performance = self.request.POST.get(f'{prefix}-performance')
-                #notes = self.request.POST.get(f'{prefix}-notes', '')
-                
-                if i < 5:  # First 5 for debugging
-                    print(f"Form data {i}: Exercise={exercise_id}, Performance={performance}")
-                
+
                 if exercise_id and performance:
                     try:
-                        exercise_id = int(exercise_id)
-                        exercise = Exercise.objects.get(pk=exercise_id)
-                        processed_exercise_ids.add(exercise_id)
-                        
-                        # Update or create performance record
-                        obj, created = ExercisePerformance.objects.update_or_create(
+                        exercise = Exercise.objects.get(pk=int(exercise_id))
+                        ExercisePerformance.objects.update_or_create(
                             training_record=self.object,
                             exercise=exercise,
-                            defaults={
-                                'performance': performance,
-                                'notes': ''
-                            }
+                            defaults={'performance': performance, 'notes': ''}
                         )
-                        
-                        if i < 5:  # First 5 for debugging
-                            print(f"Processed: {exercise.name} - {performance} - {'created' if created else 'updated'}")
-                            
                     except (Exercise.DoesNotExist, ValueError, TypeError) as e:
-                        # Log error but continue processing
-                        print(f"Error processing exercise {exercise_id}: {str(e)}")
-            
-            print(f"Total exercises processed: {len(processed_exercise_ids)}")
-            
-            # If no exercises were processed but we had exercise_ids in the form,
-            # something might have gone wrong with the form processing
-            if not processed_exercise_ids and exercise_ids:
-                print(f"WARNING: No exercises processed despite having IDs in form: {exercise_ids}")
-        else:
-            print("No exercise data found in the form submission")
-        
-        print("============= END DEBUG =============")
-        
+                        logger.error(f"Error processing exercise {exercise_id}: {str(e)}")
+
         messages.success(self.request, 'Training record updated successfully.')
         return redirect(self.get_success_url())
     
@@ -312,9 +217,17 @@ class TrainingRecordUpdateView(LoginRequiredMixin, UpdateView):
         if self.request.user.is_student():
             return queryset.filter(student=self.request.user, signed_off=False)
         
-        # Instructors can edit any record they instructed
+        # Instructors can edit records they instructed that are either unsigned,
+        # or were signed off within the last 7 days
         if self.request.user.is_instructor():
-            return queryset.filter(instructor=self.request.user)
+            from django.utils import timezone
+            from datetime import timedelta
+            from django.db.models import Q
+            cutoff = timezone.now() - timedelta(days=7)
+            return queryset.filter(instructor=self.request.user).filter(
+                Q(signed_off=False) |
+                Q(signed_off=True, sign_off_timestamp__gte=cutoff)
+            )
         
         # Admins can edit any record
         return queryset
