@@ -40,13 +40,19 @@
                     {% get_providers as socialaccount_providers %}
                     {% for provider in socialaccount_providers %}
                         {% if provider.id == "google" %}
-                            <a href="{% provider_login_url 'google' %}" class="btn btn-outline-danger">
-                                <i class="bi bi-google me-2"></i>{% trans "Login with Google" %}
-                            </a>
+                            <form method="post" action="{% provider_login_url 'google' %}" class="d-grid">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger">
+                                    <i class="bi bi-google me-2"></i>{% trans "Login with Google" %}
+                                </button>
+                            </form>
                         {% elif provider.id == "microsoft" %}
-                            <a href="{% provider_login_url 'microsoft' %}" class="btn btn-outline-primary">
-                                <i class="bi bi-microsoft me-2"></i>{% trans "Login with Microsoft" %}
-                            </a>
+                            <form method="post" action="{% provider_login_url 'microsoft' %}" class="d-grid">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-primary">
+                                    <i class="bi bi-microsoft me-2"></i>{% trans "Login with Microsoft" %}
+                                </button>
+                            </form>
                         {% endif %}
                     {% endfor %}
                 </div>

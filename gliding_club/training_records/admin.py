@@ -89,10 +89,6 @@ class TrainingRecordAdmin(admin.ModelAdmin):
         # Track who created the record if it's new
         if not change and not obj.created_by:
             obj.created_by = request.user
-            
-        import threading
-        current_thread = threading.current_thread()
-        current_thread.request = request
         super().save_model(request, obj, form, change)
 
     delete_all_student_data.short_description = "🗑️ DELETE ALL STUDENT DATA (DANGER!)"

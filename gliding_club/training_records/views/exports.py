@@ -13,7 +13,13 @@ import csv
 import tempfile
 import logging
 from datetime import datetime
-from weasyprint import HTML, CSS
+try:
+    from weasyprint import HTML, CSS
+    WEASYPRINT_AVAILABLE = True
+except (ImportError, OSError):
+    # WeasyPrint raises OSError (not ImportError) when its native
+    # libraries (GTK/Pango) are missing
+    WEASYPRINT_AVAILABLE = False
 
 from ..models import TrainingRecord, User, Exercise, ExercisePerformance, GroundBriefing
 
@@ -129,6 +135,11 @@ def _export_csv(student, records):
 
 def _export_pdf_weasyprint(student, records, request):
     """Generate a PDF export using WeasyPrint with HTML/CSS templates."""
+    if not WEASYPRINT_AVAILABLE:
+        return HttpResponse(
+            "PDF export is not available. WeasyPrint is not installed.",
+            content_type='text/plain', status=500,
+        )
     try:
         ground_briefings = GroundBriefing.objects.filter(
             student=student,
@@ -257,6 +268,11 @@ def _export_pdf_weasyprint(student, records, request):
 
 def _export_exercise_matrix(student, records, request):
     """Generate an exercise matrix PDF showing performance on each exercise across flights."""
+    if not WEASYPRINT_AVAILABLE:
+        return HttpResponse(
+            "PDF export is not available. WeasyPrint is not installed.",
+            content_type='text/plain', status=500,
+        )
     try:
         # Get all exercises, but sort properly by converting number to integer first
         pre_solo_exercises = list(Exercise.objects.filter(category='pre-solo'))

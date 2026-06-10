@@ -397,4 +397,4 @@ class GroundBriefingSignOffForm(forms.ModelForm):
         
     def sign_off(self, instructor):
         """Sign off this briefing by the given instructor"""
-        self.instance.sign_off(instructor)
+        return self.instance.sign_off(instructor)

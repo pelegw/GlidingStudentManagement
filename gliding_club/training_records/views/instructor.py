@@ -13,12 +13,16 @@ from django.utils import timezone
 from datetime import datetime, date, timedelta
 from django.core.paginator import Paginator
 import csv
-from datetime import datetime
+import logging
 try:
     from weasyprint import HTML, CSS
     WEASYPRINT_AVAILABLE = True
-except ImportError:
+except (ImportError, OSError):
+    # WeasyPrint raises OSError (not ImportError) when its native
+    # libraries (GTK/Pango) are missing
     WEASYPRINT_AVAILABLE = False
+
+logger = logging.getLogger(__name__)
 
 @login_required
 def instructor_dashboard(request):

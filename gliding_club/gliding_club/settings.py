@@ -14,7 +14,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'fallback-key-for-development-only')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False  # Set to False in production
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,*').split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,studentlog.wasserman.me').split(',')
 # Login URL
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
@@ -282,7 +282,7 @@ ACCOUNT_SESSION_REMEMBER = True
 SOCIALACCOUNT_AUTO_SIGNUP = False  # Prevent automatic account creation
 ACCOUNT_ADAPTER = 'training_records.adapters.NoNewUsersAdapter'  # Custom adapter
 SOCIALACCOUNT_ADAPTER = 'training_records.adapters.ExistingUsersOnlySocialAdapter'
-SOCIALACCOUNT_LOGIN_ON_GET = True  # Allow login via GET request
+SOCIALACCOUNT_LOGIN_ON_GET = False  # Require POST to start social login (prevents login CSRF)
 SOCIALACCOUNT_STORE_TOKENS = False  # Don't store tokens (as requested)
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'

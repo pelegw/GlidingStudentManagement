@@ -205,15 +205,13 @@ class TrainingRecord(models.Model):
     
     def get_flight_number(self):
         """Get this flight's number for the student (1-based)"""
-        student_records = TrainingRecord.objects.filter(
-            student=self.student, 
-            date__lte=self.date
-        ).order_by('date', 'created_at')
-        
-        for i, record in enumerate(student_records):
-            if record.id == self.id:
-                return i + 1  # 1-based indexing
-        return None
+        if self.pk is None:
+            return None
+        return TrainingRecord.objects.filter(
+            models.Q(date__lt=self.date)
+            | models.Q(date=self.date, created_at__lte=self.created_at),
+            student=self.student,
+        ).count()
     
     def is_modifiable_by_instructor(self, user):
         """
@@ -228,8 +226,8 @@ class TrainingRecord(models.Model):
         if not user.is_instructor():
             return False
         
-        # Check if the current user signed off this record
-        if hasattr(self, 'signed_by') and self.signed_by != user:
+        # Only the record's instructor (who signed it) can modify it
+        if self.instructor_id != user.id:
             return False
         
         # Check if it's been less than 7 days since sign-off
@@ -375,27 +373,6 @@ class GroundBriefing(models.Model):
             self.save()
             return True
         return False
-    
-    def reset_notification_flags(self):
-        """Reset notification flags when record is updated"""
-        # Import inside method to avoid circular imports
-        from django.apps import apps
-        PendingNotification = apps.get_model('training_records', 'PendingNotification')
-        
-        # Reset any pending notifications for this record
-        PendingNotification.objects.filter(
-            training_record=self,
-            notification_type='student_revision_needed'
-        ).update(is_sent=False)
-    
-    def save(self, *args, **kwargs):
-        """Override save to reset notification flags on updates"""
-        is_update = self.pk is not None
-        super().save(*args, **kwargs)
-        
-        # Reset notification flags if this is an update to an existing record
-        if is_update:
-            self.reset_notification_flags()
     
 class PendingNotification(models.Model):
     """Track notifications that need to be sent"""
