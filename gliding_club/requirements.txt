@@ -1,4 +1,4 @@
-﻿Django==5.2.15
+Django==5.2.15
 pandas==2.2.3
 Pillow==12.2.0
 weasyprint==68.0
@@ -11,7 +11,7 @@ django_allauth==65.14.1
 requests>=2.32.5
 urllib3>=2.5.0
 tzdata==2025.1
-PyJWT==2.12.0
+PyJWT==2.13.0
 cryptography==46.0.7
 django-ses>=4.3.0
 boto3 >= 1.40.40
